@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreaming Rose Hub | Studio</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader" class="loader-wrapper">
+    <div class="loader-content">
+        <img src="assets/Icons/Channel_Profile_Dreaming_Rose.png" alt="Dreaming Rose" class="loader-logo">
+
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+
+        <p id="loading-text">SYSTEM.BOOT_</p>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="nav-container">
+
+        <div class="nav-left">
+            <img src="assets/Icons/Channel_Profile_Dreaming_Rose.png" alt="Logo" class="logo">
+            <span class="brand">DREAMING ROSE</span>
+        </div>
+
+        <nav class="nav-right">
+            <a href="#proyectos">PROYECTOS</a>
+            <a href="#comunidad">COMUNIDAD</a>
+            <a href="#ranking">RANKING</a>
+            <button onclick="openUpload()" class="btn-primary">
+                PUBLICAR
+            </button>
+        </nav>
+
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+
+    <div class="hero-parallax-bg">
+        <img
+            src="assets/images/Meteor Fighters.png"
+            alt="Meteor Fighters"
+            class="hero-img"
+        >
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content reveal">
+        <span class="tagline">PROYECTO DESTACADO</span>
+
+        <h1>
+            METEOR<br>
+            FIGHTERS
+        </h1>
+
+        <p>
+            La evolución del combate técnico 2D.
+            Domina el instinto.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#" class="btn-main">
+                DESCARGAR AHORA
+            </a>
+
+            <a href="#proyectos" class="btn-outline">
+                EXPLORAR HUB
+            </a>
+        </div>
+    </div>
+
+</section>
+
+<!-- MAIN -->
+<main>
+
+    <!-- PROYECTOS -->
+    <section id="proyectos" class="section-dark">
+        <div class="container">
+
+            <div class="section-title reveal">
+                <h2>NUESTROS PROYECTOS</h2>
+                <div class="title-line"></div>
+            </div>
+
+            <div class="grid-projects">
+
+                <article class="project-card reveal">
+                    <div class="card-media">
+                        <img
+                            src="assets/images/Meteor Fighters.png"
+                            alt="Meteor Fighters"
+                        >
+                    </div>
+
+                    <div class="card-body">
+                        <h3>Meteor Fighters</h3>
+                        <p>Fighting Game / 2D Pixel Art</p>
+
+                        <a href="#" class="link-arrow">
+                            VER DETALLES →
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- COMUNIDAD -->
+    <section id="comunidad" class="section-dark">
+        <div class="container">
+
+            <div class="section-title reveal">
+                <h2>COMUNIDAD</h2>
+                <div class="title-line"></div>
+            </div>
+
+            <div
+                id="community-games"
+                class="grid-projects"
+            ></div>
+
+        </div>
+    </section>
+
+    <!-- RANKING -->
+    <section id="ranking" class="section-gradient">
+        <div class="container">
+
+            <div class="ranking-box reveal">
+
+                <div class="ranking-header">
+                    <h2>COMMUNITY RANKING</h2>
+                    <p>TEMPORADA 2026</p>
+                </div>
+
+                <div
+                    class="ranking-table"
+                    id="ranking-list"
+                ></div>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- MODAL -->
+<div id="uploadModal" class="modal-overlay">
+    <div class="modal-content">
+
+        <h2>ENVÍA TU PROYECTO</h2>
+
+        <p>
+            Únete al ecosistema de Dreaming Rose.
+            Envía tu setup y portada.
+        </p>
+
+        <div class="email-box">
+            dreamingrosesupport@gmail.com
+        </div>
+
+        <button
+            onclick="closeUpload()"
+            class="btn-close"
+        >
+            CERRAR
+        </button>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>
+        © 2026 DREAMING ROSE STUDIO.
+        TODOS LOS DERECHOS RESERVADOS.
+    </p>
+</footer>
+
+<!-- SCRIPT -->
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
