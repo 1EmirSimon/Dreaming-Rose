@@ -281,26 +281,26 @@ button {
 ========================================================= */
 
 .hero {
-
     position: relative;
 
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
 
     display: flex;
     align-items: center;
 
     overflow: hidden;
 
+    padding: 120px 0 80px;
 }
 
 .hero-parallax-bg {
-
     position: absolute;
     inset: 0;
 
     z-index: -2;
 
+    overflow: hidden;
 }
 
 .hero-img {
@@ -309,15 +309,17 @@ button {
     height: 100%;
 
     object-fit: cover;
+    object-position: center;
 
-    filter: brightness(0.4);
+    filter: brightness(0.45);
 
-    transform: scale(1.05);
+    transform: scale(1.02);
+
+    will-change: transform;
 
 }
 
 .hero-overlay {
-
     position: absolute;
     inset: 0;
 
@@ -328,12 +330,10 @@ button {
             to right,
             var(--bg) 15%,
             transparent
-        );
-
+        )
 }
 
 .hero-content {
-
     width: 100%;
     max-width: 900px;
 
@@ -342,7 +342,6 @@ button {
 }
 
 .tagline {
-
     color: var(--accent);
 
     font-size: 0.8rem;
@@ -958,4 +957,28 @@ body.loaded footer {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+}
+@media (max-width: 768px) {
+
+    .hero {
+
+        min-height: auto;
+
+        padding-top: 140px;
+        padding-bottom: 120px;
+
+    }
+
+    .hero-content {
+
+        padding: 0 25px;
+
+    }
+
+    .hero-img {
+
+        object-position: center top;
+
+    }
+
 }
