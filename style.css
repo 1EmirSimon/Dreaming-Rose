@@ -982,3 +982,8 @@ body.loaded footer {
     }
 
 }
+
+.logo1 {
+  width: 200px; /* O el ancho deseado */
+  height: auto; /* Mantiene la proporción */
+}
