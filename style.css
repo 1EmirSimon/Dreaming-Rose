@@ -167,14 +167,10 @@ button {
 }
 
 .logo {
-
-    width: 40px;
-    height: 40px;
-
-    object-fit: cover;
-
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
     margin-right: 15px;
-
 }
 
 .brand {
@@ -615,16 +611,9 @@ button {
 =============================== */
 
 .loader-wrapper {
-
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: var(--bg);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    transition: 0.8s;
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
 }
 
 .loader-content {
@@ -780,13 +769,9 @@ LOADER V2
 /* LOGO */
 
 .loader-logo {
-
-    width: 110px;
-    margin-bottom: 35px;
-
-    animation:
-        logoPulse 2s infinite ease-in-out;
-
+    width: 120px;
+    height: auto;
+    object-fit: contain;
 }
 
 @keyframes logoPulse {
@@ -826,10 +811,8 @@ LOADER V2
 }
 
 .loader-title span {
-
     animation:
-        neonShift 2s infinite alternate;
-
+        neonShift 1.2s infinite alternate;
 }
 
 /* DELAY POR LETRA */
@@ -916,7 +899,7 @@ LOADER V2
     box-shadow:
         0 0 20px var(--accent);
 
-    transition: width 0.15s linear;
+    transition: width 0.04s linear;
 
 }
 
@@ -937,7 +920,7 @@ body.loaded header,
 body.loaded footer {
 
     animation:
-        siteFade 1.2s ease forwards;
+        siteFade 0.1s ease forwards;
 
 }
 @keyframes siteFade {
