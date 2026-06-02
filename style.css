@@ -768,12 +768,17 @@ LOADER V2
 
 /* LOGO */
 
-.loader-logo {
-    width: 120px;
-    height: auto;
-    object-fit: contain;
+.loader-logo{
+    width:140px;
+    max-width:80vw;
+    height:auto;
+    object-fit:contain;
+    margin-bottom:20px;
+    animation:logoPulse 1.8s ease-in-out infinite;
 }
-
+.loader-content{
+    padding:20px;
+}
 @keyframes logoPulse {
 
     0% {

@@ -1,8 +1,5 @@
 // FIREBASE
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
     getFirestore,
     collection,
@@ -10,78 +7,49 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyCvr0YPomu92BxAeG4bgb5aaPiHdotujOo",
-
-    authDomain:
-        "dreaming-rose-a230a.firebaseapp.com",
-
-    projectId:
-        "dreaming-rose-a230a",
-
-    storageBucket:
-        "dreaming-rose-a230a.appspot.com",
-
-    messagingSenderId:
-        "183947597220",
-
-    appId:
-        "1:183947597220:web:f288dd33b98024f6bc1d31"
-
+    apiKey: "AIzaSyCvr0YPomu92BxAeG4bgb5aaPiHdotujOo",
+    authDomain: "dreaming-rose-a230a.firebaseapp.com",
+    projectId: "dreaming-rose-a230a",
+    storageBucket: "dreaming-rose-a230a.appspot.com",
+    messagingSenderId: "183947597220",
+    appId: "1:183947597220:web:f288dd33b98024f6bc1d31"
 };
-
-// =========================================================
-// INIT FIREBASE
-// =========================================================
 
 let db = null;
 
 try {
-
-    const app =
-        initializeApp(firebaseConfig);
-
-    db =
-        getFirestore(app);
-
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
     console.log("Firebase Connected");
-
 } catch (error) {
-
-    console.error(
-        "Firebase Init Error:",
-        error
-    );
-
+    console.error("Firebase Init Error:", error);
 }
 
-// ==========
-// LOADER SYSTEM
-// ==========
+// PRELOAD LOGO
+const preloadLogo = new Image();
+preloadLogo.src =
+    "assets/Icons/Channel_Profile_Dreaming_Rose.png";
+
+// =========================================================
+// LOADER
+// =========================================================
 
 function startIntro() {
 
     const loader =
         document.getElementById("loader");
+
     const progressBar =
         document.getElementById("progress-bar");
+
     const loadingText =
         document.getElementById("loading-text");
-    // SI FALTA ALGO DEL DOM
 
-    if (
-        !loader ||
-        !progressBar ||
-        !loadingText
-    ) {
-
-        console.error(
-            "Loader elements missing"
-        );
+    if (!loader || !progressBar || !loadingText) {
         showWebsite();
         return;
     }
+
     const messages = [
         "BOOTING SYSTEM...",
         "LOADING ASSETS...",
@@ -89,76 +57,44 @@ function startIntro() {
         "SYNCING COMMUNITY...",
         "INITIALIZING HUB...",
         "WELCOME TO DREAMING ROSE"
-
     ];
 
     let progress = 0;
     let msgIndex = 0;
 
-    const interval = setInterval(async () => {
+    const interval = setInterval(() => {
 
-        progress += 1;
-
-        // LIMITE
+        progress += 12.5;
 
         if (progress > 100)
             progress = 100;
 
-        // UPDATE BAR
-
         progressBar.style.width =
             progress + "%";
 
-        // UPDATE TEXT
-
-        loadingText.innerText =
-            `${messages[msgIndex]} ${progress}%`;
-
-        // CHANGE MESSAGE
+        loadingText.textContent =
+            `${messages[msgIndex]} ${Math.floor(progress)}%`;
 
         if (
             progress >= (msgIndex + 1) * 18 &&
             msgIndex < messages.length - 1
         ) {
-
             msgIndex++;
-
         }
-
-        // COMPLETE
 
         if (progress >= 100) {
 
             clearInterval(interval);
 
-            loadingText.innerText =
+            loadingText.textContent =
                 "SYSTEM READY";
 
-            // WAIT SMALL DELAY
-
-            setTimeout(async () => {
-
-                try {
-
-                    await loadContent();
-
-                } catch (e) {
-
-                    console.error(
-                        "Load Error:",
-                        e
-                    );
-
-                }
-
-                showWebsite();
-
-            }, 700);
-
+            loadContent()
+                .catch(console.error)
+                .finally(showWebsite);
         }
 
-    }, 35);
-
+    }, 70);
 }
 
 // =========================================================
@@ -167,23 +103,19 @@ function startIntro() {
 
 function showWebsite() {
 
-    const loader =
-        document.getElementById("loader");
-
-    if (loader) {
-
-        loader.classList.add("hidden");
-
-    }
+    document
+        .getElementById("loader")
+        ?.classList.add("hidden");
 
     document.body.classList.add("loaded");
 
-    initAnimations();
-
+    requestAnimationFrame(
+        initAnimations
+    );
 }
 
 // =========================================================
-// SCROLL ANIMATIONS
+// ANIMATIONS
 // =========================================================
 
 function initAnimations() {
@@ -197,17 +129,20 @@ function initAnimations() {
     const observer =
         new IntersectionObserver(
 
-            (entries) => {
+            entries => {
 
                 entries.forEach(entry => {
 
-                    if (entry.isIntersecting) {
+                    if (!entry.isIntersecting)
+                        return;
 
-                        entry.target.classList.add(
-                            "visible"
-                        );
+                    entry.target.classList.add(
+                        "visible"
+                    );
 
-                    }
+                    observer.unobserve(
+                        entry.target
+                    );
 
                 });
 
@@ -219,30 +154,22 @@ function initAnimations() {
 
         );
 
-    elements.forEach(el => {
-
-        observer.observe(el);
-
-    });
-
+    elements.forEach(el =>
+        observer.observe(el)
+    );
 }
 
 // =========================================================
-// LOAD FIREBASE CONTENT
+// FIRESTORE CONTENT
 // =========================================================
 
 async function loadContent() {
 
-    // SI FIREBASE NO EXISTE
-
     if (!db) {
-
         console.warn(
             "Firestore unavailable"
         );
-
         return;
-
     }
 
     try {
@@ -262,8 +189,6 @@ async function loadContent() {
                 "ranking-list"
             );
 
-        // SI NO EXISTEN ELEMENTOS
-
         if (
             !communityGrid ||
             !rankingList
@@ -274,63 +199,44 @@ async function loadContent() {
             );
 
             return;
-
         }
 
-        let games = [];
+        const games =
+            querySnapshot.docs.map(
+                doc => doc.data()
+            );
 
-        querySnapshot.forEach(doc => {
-
-            games.push(doc.data());
-
-        });
-
-        // =================================================
+        // =====================================
         // NO GAMES
-        // =================================================
+        // =====================================
 
         if (games.length === 0) {
 
             communityGrid.innerHTML = `
-
-                <p style="
-                    color:#888;
-                    font-size:1rem;
-                ">
-
+                <p style="color:#888;font-size:1rem;">
                     No hay juegos publicados todavía.
-
                 </p>
-
             `;
 
             rankingList.innerHTML = `
-
-                <p style="
-                    color:#888;
-                ">
-
+                <p style="color:#888;">
                     Sin ranking disponible.
-
                 </p>
-
             `;
 
             return;
-
         }
 
-        // =================================================
+        // =====================================
         // RANKING
-        // =================================================
+        // =====================================
 
         const ranked = [...games]
-
-            .sort((a, b) =>
-                (b.stars || 0) -
-                (a.stars || 0)
+            .sort(
+                (a, b) =>
+                    (b.stars || 0) -
+                    (a.stars || 0)
             )
-
             .slice(0, 5);
 
         rankingList.innerHTML =
@@ -339,69 +245,74 @@ async function loadContent() {
                 <div class="ranking-item">
 
                     <span>
-
                         #${i + 1}
                         ${g.name || "Unknown"}
-
                     </span>
 
                     <span style="color:#00fff7">
-
                         ⭐ ${g.stars || 0}
-
                     </span>
 
                 </div>
 
-            `).join('');
+            `).join("");
 
-        // =================================================
+        // =====================================
         // GAME CARDS
-        // =================================================
+        // =====================================
 
         communityGrid.innerHTML =
-            games.map(g => `
+            games.map((g, index) => `
 
                 <article
                     class="game-card"
-                    onclick='openGameModal(${JSON.stringify(g)})'
+                    data-index="${index}"
                 >
 
                     <img
-                        src="${
-                            g.cover ||
-                            "assets/images/default.png"
-                        }"
-
-                        alt="${
-                            g.name || "Game"
-                        }"
+                        src="${g.cover || "assets/images/default.png"}"
+                        alt="${g.name || "Game"}"
                     >
 
                     <div class="card-info">
 
                         <h3>
-
-                            ${
-                                g.name || "Unknown Game"
-                            }
-
+                            ${g.name || "Unknown Game"}
                         </h3>
 
                         <span>
-
-                            Por
-                            ${
-                                g.author || "Anónimo"
-                            }
-
+                            Por ${g.author || "Anónimo"}
                         </span>
 
                     </div>
 
                 </article>
 
-            `).join('');
+            `).join("");
+
+        // Eventos de click
+
+        document
+            .querySelectorAll(".game-card")
+            .forEach(card => {
+
+                card.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            parseInt(
+                                card.dataset.index
+                            );
+
+                        openGameModal(
+                            games[index]
+                        );
+
+                    }
+                );
+
+            });
 
     } catch (error) {
 
@@ -411,7 +322,6 @@ async function loadContent() {
         );
 
     }
-
 }
 
 // =========================================================
@@ -430,55 +340,43 @@ window.openGameModal = (game) => {
         if (!modal)
             return;
 
-        // IMAGE
-
         document.getElementById(
             "gameModalImg"
         ).src =
             game.cover ||
             "assets/images/default.png";
 
-        // TITLE
-
         document.getElementById(
             "gameModalTitle"
-        ).innerText =
+        ).textContent =
             game.name || "Juego";
-
-        // AUTHOR
 
         document.getElementById(
             "gameModalAuthor"
-        ).innerText =
+        ).textContent =
             `Desarrollado por ${
                 game.author || "Anónimo"
             }`;
 
-        // DESCRIPTION
-
         document.getElementById(
             "gameModalDescription"
-        ).innerText =
+        ).textContent =
             game.description ||
             "Sin descripción.";
-
-        // STARS
 
         document.getElementById(
             "gameModalStars"
         ).innerHTML =
             `⭐ ${game.stars || 0}`;
 
-        // DOWNLOAD
-
         document.getElementById(
             "gameDownloadBtn"
         ).href =
             game.fileURL || "#";
 
-        // OPEN
-
-        modal.classList.add("active");
+        modal.classList.add(
+            "active"
+        );
 
     } catch (error) {
 
@@ -491,24 +389,15 @@ window.openGameModal = (game) => {
 
 };
 
-// =============================
+// =========================================================
 // CLOSE GAME MODAL
-// =============================
+// =========================================================
 
 window.closeGameModal = () => {
 
-    const modal =
-        document.getElementById(
-            "gameModal"
-        );
-
-    if (modal) {
-
-        modal.classList.remove(
-            "active"
-        );
-
-    }
+    document
+        .getElementById("gameModal")
+        ?.classList.remove("active");
 
 };
 
@@ -518,89 +407,64 @@ window.closeGameModal = () => {
 
 window.openUpload = () => {
 
-    const modal =
-        document.getElementById(
-            "uploadModal"
-        );
-
-    if (modal) {
-
-        modal.classList.add(
-            "active"
-        );
-
-    }
+    document
+        .getElementById("uploadModal")
+        ?.classList.add("active");
 
 };
 
 window.closeUpload = () => {
 
-    const modal =
-        document.getElementById(
-            "uploadModal"
-        );
-
-    if (modal) {
-
-        modal.classList.remove(
-            "active"
-        );
-
-    }
+    document
+        .getElementById("uploadModal")
+        ?.classList.remove("active");
 
 };
 
 // =========================================================
-// CLOSE MODAL CLICK OUTSIDE
+// CLOSE MODALS OUTSIDE CLICK
 // =========================================================
 
-window.addEventListener("click", (e) => {
+window.addEventListener(
+    "click",
+    e => {
 
-    const gameModal =
-        document.getElementById(
-            "gameModal"
-        );
+        const gameModal =
+            document.getElementById(
+                "gameModal"
+            );
 
-    const uploadModal =
-        document.getElementById(
-            "uploadModal"
-        );
+        const uploadModal =
+            document.getElementById(
+                "uploadModal"
+            );
 
-    if (e.target === gameModal) {
+        if (e.target === gameModal)
+            gameModal.classList.remove(
+                "active"
+            );
 
-        gameModal.classList.remove(
-            "active"
-        );
-
-    }
-
-    if (e.target === uploadModal) {
-
-        uploadModal.classList.remove(
-            "active"
-        );
+        if (e.target === uploadModal)
+            uploadModal.classList.remove(
+                "active"
+            );
 
     }
-
-});
-
-window.onload = () => {
-
-    startIntro();
-
-};
+);
 
 // =========================================================
-// HERO MAIN GAME
+// HERO GAME
 // =========================================================
 
 window.openMeteorHero = () => {
 
-    const meteorGame = {
+    openGameModal({
 
-        name: "Meteor Fighters",
+        name:
+            "Meteor Fighters",
 
-        author: "Dreaming Rose",
+        author:
+            "Dreaming Rose",
 
         description:
             "Enfréntate a dinosaurios y criaturas prehistóricas en intensas batallas. ¡Desata combos devastadores y domina el campo de batalla jurásico!",
@@ -608,14 +472,21 @@ window.openMeteorHero = () => {
         cover:
             "assets/images/Meteor Fighters.png",
 
-        stars: 999,
+        stars:
+            999,
 
         fileURL:
             "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing"
 
-
-    };
-
-    openGameModal(meteorGame);
+    });
 
 };
+
+// =========================================================
+// START
+// =========================================================
+
+window.addEventListener(
+    "load",
+    startIntro
+);
