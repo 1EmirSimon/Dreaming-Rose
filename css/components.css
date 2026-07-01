@@ -1,0 +1,325 @@
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn-main,
+.btn-primary,
+.btn-outline,
+.btn-close {
+
+    padding: 14px 28px;
+
+    font-size: 0.8rem;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    border-radius: 6px;
+
+    transition: var(--transition);
+
+}
+
+.btn-main,
+.btn-primary {
+
+    background: var(--accent);
+    color: var(--white);
+
+}
+
+.btn-main:hover,
+.btn-primary:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 0 25px
+        rgba(255,77,109,0.4);
+
+}
+
+.btn-outline {
+
+    border: 1px solid var(--white);
+    color: var(--white);
+
+}
+
+.btn-outline:hover {
+
+    background: var(--white);
+    color: var(--bg);
+
+}
+
+.btn-close {
+
+    margin-top: 20px;
+
+    background: #1a1a1f;
+    color: var(--white);
+
+}
+
+/* =========================
+   CARDS
+============================ */
+
+.grid-projects {
+
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(320px, 1fr));
+
+    gap: 40px;
+
+}
+
+.project-card,
+.game-card {
+
+    background: var(--bg-card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    overflow: hidden;
+
+    transition: var(--transition);
+
+    cursor: pointer;
+
+}
+
+.project-card:hover,
+.game-card:hover {
+
+    transform: translateY(-10px);
+
+    border-color: var(--accent);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.4);
+
+}
+
+.card-media,
+.game-card img {
+
+    width: 100%;
+    height: 220px;
+
+    overflow: hidden;
+
+}
+
+.card-media img,
+.game-card img {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: 0.7s ease;
+
+}
+
+.project-card:hover img,
+.game-card:hover img {
+
+    transform: scale(1.08);
+
+}
+
+.card-body,
+.card-info {
+
+    padding: 25px;
+
+}
+
+.card-body h3,
+.card-info h3 {
+
+    font-family: var(--font-heading);
+
+    font-size: 1rem;
+
+    margin-bottom: 10px;
+
+}
+
+.card-body p,
+.card-info span {
+
+    color: var(--text);
+
+    font-size: 0.9rem;
+
+}
+
+.link-arrow {
+
+    display: inline-block;
+
+    margin-top: 20px;
+
+    color: var(--neon);
+
+    font-size: 0.8rem;
+
+    font-weight: 800;
+
+}
+
+/* ===================
+   RANKING
+======================*/
+
+.ranking-box {
+
+    background: rgba(255,255,255,0.02);
+
+    border:
+        1px solid rgba(255,255,255,0.05);
+
+    border-radius: 20px;
+
+    padding: 50px;
+
+    backdrop-filter: blur(20px);
+
+}
+
+.ranking-header {
+
+    margin-bottom: 40px;
+
+}
+
+.ranking-header h2 {
+
+    font-family: var(--font-heading);
+
+    margin-bottom: 10px;
+
+}
+
+.ranking-header p {
+
+    color: var(--text);
+
+}
+
+.ranking-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 18px 0;
+
+    border-bottom:
+        1px solid rgba(255,255,255,0.05);
+
+}
+
+/* ========================
+   MODALS
+=========================== */
+
+.modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.8);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: var(--transition);
+
+    z-index: 9999;
+
+}
+
+.modal-overlay.active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+.modal-content {
+
+    width: 90%;
+
+    max-width: 520px;
+
+    background: #111;
+
+    border-radius: 20px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    padding: 40px;
+
+    text-align: center;
+
+}
+
+.modal-content img {
+
+    width: 100%;
+
+    border-radius: 10px;
+
+    margin-bottom: 25px;
+
+}
+
+.modal-content h2 {
+
+    margin-bottom: 15px;
+
+    font-family: var(--font-heading);
+
+}
+
+.modal-content p {
+
+    color: var(--text);
+
+    margin-bottom: 15px;
+
+}
+
+.email-box {
+
+    margin-top: 25px;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,0.04);
+
+}

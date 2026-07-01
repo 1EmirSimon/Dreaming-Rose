@@ -1,0 +1,136 @@
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    padding: 120px 0 80px;
+
+}
+
+.hero-parallax-bg {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: -2;
+
+    overflow: hidden;
+
+}
+
+.hero-img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    filter: brightness(0.45);
+
+    transform: scale(1.02);
+
+    will-change: transform;
+
+}
+
+.hero-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: -1;
+
+    background:
+        linear-gradient(
+            to right,
+            var(--bg) 15%,
+            transparent
+        );
+
+}
+
+.hero-content {
+
+    width: 100%;
+
+    max-width: 900px;
+
+    padding: 0 8%;
+
+}
+
+.tagline {
+
+    color: var(--accent);
+
+    font-size: 0.8rem;
+
+    font-weight: 800;
+
+    letter-spacing: 5px;
+
+    margin-bottom: 15px;
+
+    display: block;
+
+}
+
+.hero h1 {
+
+    font-family: var(--font-heading);
+
+    font-size: clamp(3rem, 10vw, 6rem);
+
+    line-height: 0.9;
+
+    margin-bottom: 25px;
+
+}
+
+.hero p {
+
+    max-width: 500px;
+
+    color: var(--text);
+
+    font-size: 1.1rem;
+
+    margin-bottom: 40px;
+
+}
+
+.hero-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+}
+
+.logo1 {
+
+    width: 200px;
+
+    height: auto;
+
+}

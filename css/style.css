@@ -1,0 +1,31 @@
+@import url("./layout.css");
+@import url("./components.css");
+@import url("./pages.css");
+@import url("./animations.css");
+
+
+
+:root {
+
+    /* Colors */
+    --accent: #ff4d6d;
+    --neon: #00fff7;
+
+    --bg: #050508;
+    --bg-secondary: #08080c;
+    --bg-card: rgba(255,255,255,0.03);
+
+    --white: #ffffff;
+    --text: #cccccc;
+
+    --border: rgba(255,255,255,0.05);
+
+    /* Fonts */
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Syncopate', sans-serif;
+
+    /* Effects */
+    --transition: 0.35s ease;
+    --radius: 12px;
+
+}
