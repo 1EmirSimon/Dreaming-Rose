@@ -3,121 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Hub Connect - Mi Panel de Creador</title>
+    <title>Dreaming Rose - Panel de Creador</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
-    <style>
-        /* Reset básico para limpiar márgenes de los navegadores */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Variables con la paleta de colores de la imagen (Estilo oscuro/Neón) */
-        :root {
-            --bg-main: #0b190d;       /* El fondo casi negro de la pantalla total */
-            --bg-card: #13172c;       /* El azul oscuro de las tarjetas */
-            --bg-sidebar: #0f1123;    /* El fondo de la barra lateral */
-            --text-color: #ffffff;    /* Blanco para los títulos */
-            --text-muted: #8b949e;    /* Gris para los textos secundarios */
-            --gradient-accent: linear-gradient(135deg, #8a2be2, #00ffff); /* El degradado violeta/celeste */
-        }
-
-/* Fondo general de la página - Ahora ocupa el 100% real */
-body {
-    background-color: #0f1123; /* Usamos directamente el azul marino oscuro de fondo total */
-    color: var(--text-color);
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-}
-
-/* El contenedor ahora se estira a toda la pantalla, chau efecto caja */
-.dashboard-container {
-    width: 100%;
-    min-height: 100vh; /* Ocupa el 100% del alto de la pantalla */
-    background-color: #0b0e1a;
-    display: flex;
-    overflow-x: hidden;
-    /* Le sacamos los bordes redondeados y las sombras para que sea una web completa */
-    border-radius: 0; 
-    box-shadow: none; 
-}
-
-        /* --- ESTILOS DE LA BARRA LATERAL (SIDEBAR) --- */
-
-.sidebar {
-    width: 260px; /* Ancho fijo para el menú izquierdo */
-    background-color: #161933; /* Fondo oscuro específico del menú */
-    border-right: 1px solid rgba(255, 255, 255, 0.05); /* Una línea sutil divisoria */
-    display: flex;
-    flex-direction: column; /* Alinea los elementos (logo, menú, footer) en vertical */
-    justify-content: space-between; /* Empuja el footer hacia abajo de todo */
-    padding: 25px 0;
-}
-
-/* Contenedor del Logo (Game Hub Connect) */
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px; /* Separación entre el icono y el texto */
-    padding: 0 20px;
-    margin-bottom: 30px;
-}
-
-.logo span {
-    font-size: 28px;
-    color: #00ffff; /* Color celeste neón para el logo */
-}
-
-.logo h2 {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-/* Menú de navegación */
-.nav-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 8px; /* Espacio entre cada botón */
-    flex-grow: 1; /* Hace que el menú ocupe el espacio disponible */
-}
-
-/* Cada uno de los botones de la barra lateral */
-.nav-menu a {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Espacio entre el icono y el texto del botón */
-    padding: 14px 20px;
-    color: var(--text-muted); /* Color gris para los botones no seleccionados */
-    text-decoration: none; /* Quita el subrayado típico de los links */
-    font-size: 15px;
-    font-weight: 500;
-    transition: all 0.3s ease; /* Efecto suave cuando pasás el mouse */
-}
-
-/* Efecto cuando pasás el mouse por arriba de un botón */
-.nav-menu a:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* El botón activo/seleccionado ("Mi Perfil") con el degradado de la foto */
-.nav-menu a.active {
-    color: #ffffff;
-    background: linear-gradient(90deg, #8a2be2, #4b0082); /* Degradado violeta */
-    border-left: 4px solid #00ffff; /* Detalle celeste neón en el borde izquierdo */
-    border-radius: 0 10px 10px 0; /* Bordes redondeados solo a la derecha */
-}
-
-/* El icono dentro de los botones */
-.nav-menu a span {
-    font-size: 20px;
-}
-    </style>
+    <link rel="stylesheet" href="../css/dstyle.css">
 </head>
 <body>
 
@@ -125,14 +19,12 @@ body {
         
         <aside class="sidebar">
             <div class="logo">
-                <span class="material-symbols-outlined">sports_esports</span>
-                <h2>Game Hub Connect</h2>
+                <h2>Dreaming Rose</h2>
             </div>
             <nav class="nav-menu">
                 <a href="#"><span class="material-symbols-outlined">home</span> Inicio</a>
                 <a href="#"><span class="material-symbols-outlined">shopping_bag</span> Tienda de Juegos</a>
                 <a href="#" class="active"><span class="material-symbols-outlined">person</span> Mi Perfil</a>
-                <a href="#"><span class="material-symbols-outlined">account_circle</span> Mi Perfil</a> 
                 <a href="#"><span class="material-symbols-outlined">settings</span> Configuración</a>
             </nav>
         </aside>
@@ -142,45 +34,14 @@ body {
             <header class="header">
                 <h1>Mi Panel de Creador</h1>
                 <div class="user-profile">
-                    <span>AlexGamer2024</span>
+                    <span>UsuarioPruebam</span>
                     <span class="material-symbols-outlined">expand_more</span>
                 </div>
             </header>
 
             <div class="dashboard-grid">
-                
-                <section class="card games-section">
-                    <h3>Mis Juegos Subidos</h3>
-                    <div class="game-list">
-                        <div class="game-item">
-                            <h4>Pixel Quest</h4>
-                            <span class="status public">Publicado</span>
-                        </div>
-                        <button class="btn-upload">SUBIR NUEVO JUEGO <span class="material-symbols-outlined">north_east</span></button>
-                    </div>
-                </section>
+                </div>
 
-                <section class="card stats-section">
-                    <h3>Estadísticas Rápidas</h3>
-                    <p>Descargas Totales: 22.372</p>
-                    <p>Puntuación Promedio: 4.05</p>
-                </section>
-
-                <section class="card comments-section">
-                    <h3>Últimos Comentarios</h3>
-                    <p><strong>AlexGamer2024:</strong> Comentario de prueba...</p>
-                </section>
-
-                <section class="card tools-section">
-                    <h3>Herramientas del Creador</h3>
-                    <ul>
-                        <li>Analíticas Avanzadas</li>
-                        <li>Gestión de Versiones</li>
-                        <li>Comunidad de Desarrolladores</li>
-                    </ul>
-                </section>
-
-            </div>
         </main>
     </div>
 

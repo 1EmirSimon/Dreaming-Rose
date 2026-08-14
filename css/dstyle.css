@@ -1,0 +1,150 @@
+/* FUENTE GENERAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* PALETA DE COLORES */
+:root {
+    --bg-main: #0b0e1a;       /* Fondo de la mayor parte de la pantalla */
+    --bg-card: #161933;       /* Fondo de las secciones y barra lateral */
+    --rose-accent: #ff2a75;   /* Rosa brillante para botones principales */
+    --leaf-green: #00e676;    /* Verde agua esmeralda para los detalles */
+    --text-main: #ffffff;     /* Blanco para los títulos */
+    --text-muted: #8b949e;    /* Gris suave para textos secundarios o descripciones */
+    --gradient-rose: linear-gradient(90deg, #ff2a75, #ff5e97);
+}
+
+/* ESTILOS GENERALES DE TEXTOS */
+h1, h2, h3, h4 {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+p, span, li, a {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+strong {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* ESTRUCTURA PANTALLA COMPLETA */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* DISEÑO DE LA BARRA LATERAL (SIDEBAR) */
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-card);
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+    display: flex;
+    flex-direction: column;
+    padding-top: 40px; 
+    padding-bottom: 25px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px 20px 20px;
+    margin-bottom: 0px;
+}
+
+.logo h2 {
+    font-size: 24px;       
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin: 0;            
+    line-height: 1.2;     
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 16px;
+    color: var(--text-muted); 
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 8px;
+    background: transparent; 
+    transition: all 0.2s ease-in-out; 
+}
+
+.nav-menu a span {
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.nav-menu a:hover {
+    color: #ff2a75; 
+    background-color: rgba(0, 255, 255, 0.05); 
+}
+
+/* El botón activo ahora es rosa neón/fucsia */
+.nav-menu a:hover span {
+    color: #ff2a75; /* El icono también se ilumina en rosa */
+}
+
+.nav-menu a.active {
+    color: #ffffff !important; /* Texto blanco obligatorio */
+    background: var(--gradient-rose) !important; /* Tu degradado fucsia */
+}
+
+.nav-menu a.active span {
+    color: #ffffff !important; /* Icono blanco obligatorio */
+}
+
+/* CONTENIDO DE LA DERECHA */
+.main-content {
+    flex-grow: 1;
+    padding: 40px; /* Al tener 40px de padding arriba, se alinea perfecto con la sidebar */
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 24px;       
+    font-weight: 600;
+    margin: 0;           
+    line-height: 1.2;    
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
