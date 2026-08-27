@@ -22,9 +22,9 @@
                 <h2>Dreaming Rose</h2>
             </div>
             <nav class="nav-menu">
-                <a href="#"><span class="material-symbols-outlined">home</span> Inicio</a>
-                <a href="#"><span class="material-symbols-outlined">shopping_bag</span> Tienda de Juegos</a>
-                <a href="#" class="active"><span class="material-symbols-outlined">person</span> Mi Perfil</a>
+                <a href="#" class="active"><span class="material-symbols-outlined">home</span> Inicio</a>
+                <a href="#"><span class="material-symbols-outlined">library_books</span> Biblioteca de Juegos</a>
+                <a href="#"><span class="material-symbols-outlined">build</span> Publica tu Juego</a>
                 <a href="#"><span class="material-symbols-outlined">settings</span> Configuración</a>
             </nav>
         </aside>
@@ -40,10 +40,23 @@
             </header>
 
             <div class="dashboard-grid">
-                </div>
-
+            </div>
         </main>
     </div>
 
+    <script>
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Evita que la página salte al hacer clic en '#'
+            
+            // 1. Quita el fondo rosa de todos los enlaces
+            navLinks.forEach(item => item.classList.remove('active'));
+            
+            // 2. Le pone el fondo rosa únicamente al que acabas de presionar
+            this.classList.add('active');
+        });
+    });
+</script>
 </body>
 </html>
