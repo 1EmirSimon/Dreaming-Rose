@@ -33,9 +33,22 @@
             
             <header class="header">
                 <h1>Mi Panel de Creador</h1>
-                <div class="user-profile">
-                    <span>UsuarioPruebam</span>
-                    <span class="material-symbols-outlined">expand_more</span>
+                <div class="user-dropdown">
+                    <div class="user-profile" id="userProfileBtn">
+                        <span>UsuarioPruebam</span>
+                        <span class="material-symbols-outlined icon-arrow">expand_more</span>
+                    </div>
+                    
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="#">
+                            <span class="material-symbols-outlined">switch_account</span>
+                            Cambiar de cuenta
+                        </a>
+                        <a href="#" class="logout-btn">
+                            <span class="material-symbols-outlined">logout</span>
+                            Cerrar sesión
+                        </a>
+                    </div>
                 </div>
             </header>
 
@@ -56,6 +69,23 @@
             // 2. Le pone el fondo rosa únicamente al que acabas de presionar
             this.classList.add('active');
         });
+    });
+    // Lógica del menú desplegable del usuario
+    const userProfileBtn = document.getElementById('userProfileBtn');
+    const userDropdownContainer = document.querySelector('.user-dropdown');
+    const userDropdown = document.getElementById('userDropdown');
+
+    userProfileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdownContainer.classList.toggle('active');
+        userDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!userDropdownContainer.contains(e.target)) {
+            userDropdownContainer.classList.remove('active');
+            userDropdown.classList.remove('show');
+        }
     });
 </script>
 </body>
