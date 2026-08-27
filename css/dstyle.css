@@ -91,27 +91,25 @@ body {
     font-weight: 500;
     border-radius: 8px;
     background: transparent; 
-    transition: all 0.2s ease-in-out; 
+    transition: color 0.2s ease-in-out; 
 }
 
 .nav-menu a span {
     color: var(--text-muted);
-    transition: color 0.2s ease;
+    transition: color 0.2s ease-in-out;
 }
 
-.nav-menu a:hover {
-    color: #ff2a75; 
-    background-color: rgba(0, 255, 255, 0.05); 
-}
-
-/* El botón activo ahora es rosa neón/fucsia */
+/* Cambia de color cuando pasas el mouse por encima */
+.nav-menu a:hover,
 .nav-menu a:hover span {
-    color: #ff2a75; /* El icono también se ilumina en rosa */
+    color: var(--rose-accent);   /* Rosa brillante para botones principales */
+    background: transparent;
 }
 
-.nav-menu a.active {
-    color: #ffffff !important; /* Texto blanco obligatorio */
-    background: var(--gradient-rose) !important; /* Tu degradado fucsia */
+ /* Cuando clickeas una categoría aparece seleccionada */
+.nav-menu a.active { 
+    color: #ffffff !important; 
+    background: var(--gradient-rose) !important;
 }
 
 .nav-menu a.active span {
