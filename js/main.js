@@ -1,27 +1,15 @@
 import { startIntro } from "./loader.js";
 import { showWebsite } from "./animations.js";
-import { loadContent, setGames } from "./games.js";
-
+import { initGames } from "./games.js";
+import { initAuth } from "./auth.js";
 import "./hero.js";
+import "./admin.js"; // Se importa el panel de administración
 
-// preload
+initAuth();
+
 const preloadLogo = new Image();
-preloadLogo.src =
-    "assets/Icons/Channel_Profile_Dreaming_Rose.png";
-
-// TEMP DATA (hasta MySQL)
-const demoGames = [
-    {
-        name: "Meteor Fighters",
-        author: "Dreaming Rose",
-        stars: 999,
-        cover: "assets/images/Meteor Fighters.png",
-        fileURL: "#"
-    }
-];
-
-setGames(demoGames);
+preloadLogo.src = "assets/Icons/Channel_Profile_Dreaming_Rose.png";
 
 window.addEventListener("load", () => {
-    startIntro(loadContent, showWebsite);
+    startIntro(initGames, showWebsite);
 });

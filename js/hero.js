@@ -1,30 +1,11 @@
-import {
-    openGameModal
-} from "./modals.js";
-
-// Juego destacado
+// js/hero.js
 export function openMeteorHero() {
-
-    openGameModal({
-
-        name: "Meteor Fighters",
-
-        author: "Dreaming Rose",
-
-        description:
-            "Enfréntate a dinosaurios y criaturas prehistóricas en intensas batallas. ¡Desata combos devastadores y domina el campo de batalla jurásico!",
-
-        cover:
-            "assets/images/Meteor Fighters.png",
-
-        stars: 999,
-
-        fileURL:
-            "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing"
-
-    });
-
+    if (typeof window.openGameDetails === "function") {
+        // Abre el modal buscando el juego por su título exacto en la base de datos
+        window.openGameDetails("Meteor Fighters");
+    } else {
+        window.open("https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing", "_blank");
+    }
 }
 
-// Compatibilidad HTML
 window.openMeteorHero = openMeteorHero;

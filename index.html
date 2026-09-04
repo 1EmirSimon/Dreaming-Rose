@@ -9,344 +9,338 @@
     <link rel="stylesheet" href="css/style.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    
+    <!-- LIBRERÍA DE SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <!-- LOADER -->
 <div id="loader" class="loader-wrapper">
-
     <div class="loader-content">
-
-        <img
-            src="assets/Icons/Channel_Profile_Dreaming_Rose.png"
-            alt="Dreaming Rose"
-            class="loader-logo"
-        >
-
+        <img src="assets/Icons/Channel_Profile_Dreaming_Rose.png" alt="Dreaming Rose" class="loader-logo">
         <div class="loader-title">
-
-            <span>D</span>
-            <span>R</span>
-            <span>E</span>
-            <span>A</span>
-            <span>M</span>
-            <span>I</span>
-            <span>N</span>
-            <span>G</span>
-
-            <span>R</span>
-            <span>O</span>
-            <span>S</span>
-            <span>E</span>
-
+            <span>D</span><span>R</span><span>E</span><span>A</span><span>M</span><span>I</span><span>N</span><span>G</span>
+            <span>R</span><span>O</span><span>S</span><span>E</span>
         </div>
-
         <div class="progress-container">
-
-            <div
-                id="progress-bar"
-                class="progress-bar"
-            ></div>
-
+            <div id="progress-bar" class="progress-bar"></div>
         </div>
-
-        <p id="loading-text">
-            INICIANDO...
-        </p>
-
+        <p id="loading-text">INICIANDO...</p>
     </div>
-
 </div>
 
 <!-- NAVBAR -->
 <header class="navbar">
-
     <div class="nav-container">
-
         <div class="nav-left">
-
-            <img
-                src="/assets/Icons/rosaaa MArlo icono.png"
-                alt="Logo"
-                class="logo"
-            >
-
-            <span class="brand">
-                DREAMING ROSE
-            </span>
-
+            <img src="/assets/Icons/rosaaa MArlo icono.png" alt="Logo" class="logo">
+            <span class="brand">DREAMING ROSE</span>
         </div>
 
         <nav class="nav-right">
+            <a href="#proyectos">PROYECTOS</a>
+            <a href="#comunidad">COMUNIDAD</a>
+            <a href="#ranking">RANKING</a>
 
-            <a href="#proyectos">
-                PROYECTOS
-            </a>
-
-            <a href="#comunidad">
-                COMUNIDAD
-            </a>
-
-            <a href="#ranking">
-                RANKING
-            </a>
-
-            <button
-                onclick="openUpload()"
-                class="btn-primary"
-            >
+            <!-- Botón para Creadores/Moderador/Root -->
+            <button id="btnPublish" onclick="openUpload()" class="btn-primary" style="display: none;">
                 PUBLICAR
             </button>
 
+            <!-- Botón para Panel Admin (Solo Moderador y Root) -->
+            <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline" style="display: none; border-color: var(--neon); color: var(--neon);">
+                PANEL ADMIN
+            </button>
+
+            <!-- Área de Usuario / Sesión -->
+            <div id="authArea" style="margin-left: 20px;">
+                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline">
+                    INGRESAR
+                </button>
+
+                <div id="userInfo" style="display: none; align-items: center; gap: 10px;">
+                    <span id="userBadge" style="font-size: 0.75rem; font-weight: 800; color: var(--neon);">
+                        @usuario
+                    </span>
+                    <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
+                        SALIR
+                    </button>
+                </div>
+            </div>
         </nav>
-
     </div>
-
 </header>
 
 <!-- HERO -->
 <section class="hero">
-
     <div class="hero-parallax-bg">
-
-        <img
-            src="assets/images/Meteor Fighters.png"
-            alt="Meteor Fighters"
-            class="hero-img"
-        >
-
+        <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters" class="hero-img">
     </div>
-
     <div class="hero-overlay"></div>
-
     <div class="hero-content reveal">
-
-        <span class="tagline">
-            PROYECTO DESTACADO
-        </span>
-
-        <h1>
-            METEOR <br>
-            FIGHTER
-        </h1>
-
-        <p>
-            La evolución del combate técnico 2D.
-            Domina el instinto.
-        </p>
-
+        <span class="tagline">PROYECTO DESTACADO</span>
+        <h1>METEOR <br> FIGHTER</h1>
+        <p>La evolución del combate técnico 2D. Domina el instinto.</p>
         <div class="hero-actions">
-
-            <button
-    class="btn-main"
-    onclick="openMeteorHero()"
-    >
-    DESCARGAR AHORA!
-</button>
-
-            <a href="#proyectos" class="btn-outline">
-                EXPLORAR HUB
-            </a>
-
+            <button class="btn-main" onclick="openMeteorHero()">DESCARGAR AHORA!</button>
+            <a href="#proyectos" class="btn-outline">EXPLORAR HUB</a>
         </div>
-
     </div>
-
 </section>
 
 <!-- MAIN -->
 <main>
-
-    <!-- PROYECTOS -->
     <section id="proyectos" class="section-dark">
-
         <div class="container">
-
             <div class="section-title reveal">
-
-                <h2>
-                    NUESTROS PROYECTOS
-                </h2>
-
+                <h2>NUESTROS PROYECTOS</h2>
                 <div class="title-line"></div>
-
             </div>
-
             <div class="grid-projects">
-
                 <article class="project-card reveal">
-
                     <div class="card-media">
-
-                        <img
-                            src="assets/images/Meteor Fighters.png"
-                            alt="Meteor Fighters"
-                        >
-
+                        <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters">
                     </div>
-
                     <div class="card-body">
-
-                        <h3>
-                            Meteor Fighters
-                        </h3>
-
-                        <p>
-                            Fighting Game / 2D Pixel Art
-                        </p>
-
-                        <a href="#" class="link-arrow">
-                            VER DETALLES →
-                        </a>
-
+                        <h3>Meteor Fighters</h3>
+                        <p>Fighting Game / 2D Pixel Art</p>
+                        <a href="#" class="link-arrow">VER DETALLES →</a>
                     </div>
-
                 </article>
-
             </div>
-
         </div>
-
     </section>
 
-    <!-- COMUNIDAD -->
-    <section id="comunidad" class="section-dark">
-
-        <div class="container">
-
-            <div class="section-title reveal">
-
-                <h2>
-                    COMUNIDAD
-                </h2>
-
-                <div class="title-line"></div>
-
+<!-- SECCIÓN COMUNIDAD ESTILO HUB CON FILTROS -->
+<section id="comunidad" class="section-dark">
+    <div class="container">
+        <div class="hub-container">
+            <div class="hub-header">
+                <h2>Proyectos y Juegos Comunidad</h2>
             </div>
 
-            <div
-                id="community-games"
-                class="grid-projects"
-            ></div>
+            <!-- Filtros de Categoría Superior -->
+            <div class="filter-tabs-primary">
+                <button class="tab-btn active" onclick="filterGames('todos', this)">Todos los Juegos</button>
+                <button class="tab-btn" onclick="filterGames('top', this)">Más Valorados</button>
+            </div>
 
+            <!-- Filtros Secundarios de Ordenamiento -->
+            <div class="filter-tabs-secondary">
+                <button class="sub-tab-btn active" onclick="sortGames('recientes', this)">Más Recientes ▾</button>
+                <button class="sub-tab-btn" onclick="sortGames('valorados', this)">Más Valorados</button>
+            </div>
+
+            <!-- Grid Horizontal / Multilínea de Tarjetas -->
+            <div id="community-games" class="games-grid">
+                <!-- Se cargan dinámicamente -->
+            </div>
         </div>
+    </div>
+</section>
 
-    </section>
+<!-- SECCIÓN RANKING + COMENTARIOS RECIENTES -->
+<section id="ranking" class="section-gradient">
+    <div class="container">
+        <div class="ranking-layout-box">
+            <div class="ranking-header">
+                <h2>🏆 Ranking Comunidad</h2>
+                <span class="season-badge">TEMPORADA 2026</span>
+            </div>
 
-    <!-- RANKING -->
-    <section id="ranking" class="section-gradient">
-
-        <div class="container">
-
-            <div class="ranking-box reveal">
-
-                <div class="ranking-header">
-
-                    <h2>
-                        COMMUNITY RANKING
-                    </h2>
-
-                    <p>
-                        TEMPORADA 2026
-                    </p>
-
+            <div class="ranking-grid-content">
+                <!-- Columna Izquierda: Top 5 Juegos -->
+                <div class="ranking-left-col">
+                    <div id="ranking-list" class="ranking-cards-wrapper">
+                        <!-- Carga dinámica del Top 5 -->
+                    </div>
                 </div>
 
-                <div
-                    class="ranking-table"
-                    id="ranking-list"
-                ></div>
-
+                <!-- Columna Derecha: Comentarios Recientes -->
+                <div class="ranking-right-col">
+                    <h3>Comentarios Recientes</h3>
+                    <div id="recent-comments-list" class="recent-comments-box">
+                        <!-- Carga dinámica de últimos comentarios -->
+                    </div>
+                </div>
             </div>
-
         </div>
-
-    </section>
-
-</main>
+    </div>
+</section>
 
 <!-- MODAL UPLOAD -->
 <div id="uploadModal" class="modal-overlay">
-
     <div class="modal-content">
+        <h2>ENVÍA TU PROYECTO</h2>
+        <p>Únete al ecosistema de Dreaming Rose. Envía tu setup y portada.</p>
+        <div class="email-box">dreamingrosesupport@gmail.com</div>
+        <button onclick="closeUpload()" class="btn-close">CERRAR</button>
+    </div>
+</div>
 
-        <h2>
-            ENVÍA TU PROYECTO
-        </h2>
+<!-- MODAL DE DETALLES DEL JUEGO ESTILO HUB (NUEVO DISEÑO) -->
+<div id="gameModal" class="modal-overlay">
+    <div class="modal-content game-detail-modal">
+        <button onclick="closeGameModal()" class="modal-close-icon">✕</button>
 
-        <p>
-            Únete al ecosistema de Dreaming Rose.
-            Envía tu setup y portada.
-        </p>
-
-        <div class="email-box">
-            dreamingrosesupport@gmail.com
+        <!-- Header: Título e Icono del Creador -->
+        <div class="game-modal-header">
+            <div class="game-title-container">
+                <span class="game-icon">⚔️</span>
+                <div>
+                    <h2 id="gameModalTitle">Pixel Quest Adventures</h2>
+                    <span id="gameModalAuthor" class="game-creator-text">Creator: Dreaming Rose</span>
+                </div>
+            </div>
         </div>
 
-        <button
-            onclick="closeUpload()"
-            class="btn-close"
-        >
-            CERRAR
-        </button>
+        <!-- Banner Principal del Juego -->
+        <div class="game-modal-body">
+            <!-- Portada Izquierda -->
+            <div class="game-modal-cover">
+                <img id="gameModalImg" src="assets/images/Meteor Fighters.png" alt="Portada del Juego">
+            </div>
 
+            <!-- Centro: Descripción + Botón Jugar -->
+            <div class="game-modal-center">
+                <p id="gameModalDescription" class="game-description-text">
+                    Sin descripción disponible.
+                </p>
+                <a id="gameDownloadBtn" href="#" target="_blank" class="btn-play-large">
+                    JUGAR - ¡INICIA LA AVENTURA!
+                </a>
+            </div>
+
+            <!-- Derecha: Estadísticas -->
+            <div class="game-modal-stats">
+                <h3>Estadísticas del Juego</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Personas Jugando Ahora:</span>
+                    <span class="stat-value">👤 <span id="statPlaying">1,245</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total de Likes:</span>
+                    <span class="stat-value">👍 <span id="statLikes">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total de Visitas:</span>
+                    <span class="stat-value"><span id="statVisits">1,500,000+</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Creado:</span>
+                    <span class="stat-value" id="statCreated">2023-01-15</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Inferior: Comentarios de la Comunidad -->
+        <div class="game-modal-comments-section">
+            <h3>💬 Comentarios de la Comunidad</h3>
+            <div class="comments-layout">
+                <!-- Lista de Comentarios -->
+                <div class="comments-main-col">
+                    <div id="commentsContainer" class="comments-list-box">
+                        <!-- Carga dinámica -->
+                    </div>
+                    
+                    <!-- Formulario de comentario -->
+                    <form id="commentForm" onsubmit="submitComment(event)" class="comment-input-form">
+                        <input type="text" id="commentInput" placeholder="Escribe un comentario..." required>
+                        <button type="submit" class="btn-primary">ENVIAR</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
 
-<!-- MODAL GAME -->
-<div id="gameModal" class="modal-overlay">
+<!-- MODAL AUTH (LOGIN / REGISTRO) -->
+<div id="authModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 id="authTitle">INICIAR SESIÓN</h2>
+        
+        <form id="authForm" onsubmit="handleAuth(event)" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+            <input type="text" id="authUsername" placeholder="Nombre de usuario" style="display: none; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <input type="email" id="authEmail" placeholder="Correo electrónico" required style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <input type="password" id="authPassword" placeholder="Contraseña" required style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
 
-    <div class="modal-content game-modal">
+            <p id="authError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
 
-        <img
-            id="gameModalImg"
-            src=""
-            alt="Game"
-        >
+            <button type="submit" class="btn-main" id="btnAuthSubmit">ENTRAR</button>
+        </form>
 
-        <h2 id="gameModalTitle"></h2>
+        <p style="margin-top: 15px; font-size: 0.8rem; color: #888;">
+            <span id="authToggleText">¿No tienes cuenta?</span>
+            <a href="#" onclick="toggleAuthMode(event)" id="authToggleLink" style="color: var(--neon); text-decoration: underline;">Registrarse</a>
+        </p>
 
-        <p id="gameModalAuthor"></p>
-
-        <p id="gameModalDescription"></p>
-
-        <div
-            class="game-stars"
-            id="gameModalStars"
-        ></div>
-
-        <a
-            id="gameDownloadBtn"
-            href="#"
-            target="_blank"
-            class="btn-main"
-        >
-            DESCARGAR JUEGO
-        </a>
-
-        <button
-            onclick="closeGameModal()"
-            class="btn-close"
-        >
-            CERRAR
-        </button>
-
+        <button onclick="closeAuthModal()" class="btn-close">CERRAR</button>
     </div>
-
 </div>
 
-<!-- FOOTER -->
+<!-- MODAL PANEL DE ADMINISTRACIÓN (SOLO PARA ROOT Y MODERADOR) -->
+<div id="adminModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px; width: 90%;">
+        <h2>PANEL DE ADMINISTRACIÓN</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Gestión de Roles y Usuarios de Dreaming Rose</p>
+
+        <div style="max-height: 350px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border); color: var(--neon);">
+                        <th style="padding: 10px;">Usuario</th>
+                        <th style="padding: 10px;">Email</th>
+                        <th style="padding: 10px;">Rol</th>
+                        <th style="padding: 10px;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="adminUsersList">
+                    <!-- Carga dinámica mediante js/admin.js -->
+                </tbody>
+            </table>
+        </div>
+
+        <button onclick="closeAdminModal()" class="btn-close" style="margin-top: 20px;">CERRAR</button>
+    </div>
+</div>
+
+<!-- MODAL PUBLICAR JUEGO (CREADORES) -->
+<div id="publishModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
+        <!-- Botón X en la esquina superior -->
+        <button onclick="closePublishModal()" class="modal-close-icon">✕</button>
+        
+        <h2>PUBLICAR NUEVO JUEGO</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">Sube tu proyecto seleccionando una portada local y tu enlace de Google Drive.</p>
+
+        <form id="publishForm" onsubmit="handlePublishGame(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Tus campos actuales del formulario -->
+            <input type="text" id="pubTitle" placeholder="Título del juego *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <textarea id="pubDescription" placeholder="Descripción breve *" rows="3" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
+            <input type="text" id="pubAuthor" placeholder="Nombre del creador / Estudio" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.75rem; color: #888;">Portada del juego (Imagen desde tus archivos) *</label>
+                <input type="file" id="pubImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            </div>
+            
+            <input type="url" id="pubDownloadUrl" placeholder="Enlace obligatorio de Google Drive (https://drive.google.com/...) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="publishError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main" id="btnPublishSubmit">PUBLICAR AHORA</button>
+        </form>
+    </div>
+</div>
+
 <footer class="footer">
-
-    <p>
-        © 2026 DREAMING ROSE.
-        TODOS LOS DERECHOS RESERVADOS.
-    </p>
-
+    <p>© 2026 DREAMING ROSE. TODOS LOS DERECHOS RESERVADOS.</p>
 </footer>
 
+<!-- Carga de Scripts -->
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/admin.js"></script>
 
 </body>
 </html>

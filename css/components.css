@@ -234,92 +234,92 @@
    MODALS
 =========================== */
 
-.modal-overlay {
-
-    position: fixed;
-
-    inset: 0;
-
-    background: rgba(0,0,0,0.8);
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    transition: var(--transition);
-
-    z-index: 9999;
-
+/* Contenedor general de cualquier modal (centrado y flotante) */
+.modal-overlay, 
+.game-modal-container, 
+.auth-modal, 
+.admin-modal, 
+.publish-modal {
+    display: none; /* Oculto por defecto */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    z-index: 99999 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow-y: auto !important; /* Permite scroll interno si la ventana es pequeña */
 }
 
-.modal-overlay.active {
-
-    opacity: 1;
-
-    visibility: visible;
-
+/* Estado activo cuando JavaScript añade la clase .active */
+.modal-overlay.active, 
+.game-modal-container.active, 
+.auth-modal.active, 
+.admin-modal.active, 
+.publish-modal.active {
+    display: flex !important;
 }
 
-.modal-content {
-
+/* Caja interna del modal (para que no ocupe toda la pantalla a lo ancho) */
+.game-modal-content, 
+.auth-modal-content, 
+.admin-modal-content, 
+.publish-modal-content {
+    position: relative;
+    max-width: 600px;
     width: 90%;
-
-    max-width: 520px;
-
-    background: #111;
-
-    border-radius: 20px;
-
-    border:
-        1px solid rgba(255,255,255,0.08);
-
-    padding: 40px;
-
-    text-align: center;
-
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #121214; /* Ajusta a tu color de fondo */
+    border: 1px solid var(--neon, #00ffcc);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin: auto; /* Forzar centrado automático */
 }
 
-.modal-content img {
+/* =========================================================
+   FORMULARIO DE AUTENTICACIÓN EN MODALES
+========================================================= */
 
+#authForm input {
     width: 100%;
-
-    border-radius: 10px;
-
-    margin-bottom: 25px;
-
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #1a1a24;
+    color: var(--white);
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
 }
 
-.modal-content h2 {
-
-    margin-bottom: 15px;
-
-    font-family: var(--font-heading);
-
+#authForm input:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 10px rgba(0, 255, 247, 0.2);
 }
 
-.modal-content p {
-
-    color: var(--text);
-
-    margin-bottom: 15px;
-
+#authForm input::placeholder {
+    color: #666;
 }
 
-.email-box {
+#authError {
+    background: rgba(255, 77, 109, 0.1);
+    border: 1px solid var(--accent);
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
 
-    margin-top: 25px;
+#authToggleLink {
+    color: var(--neon);
+    cursor: pointer;
+    text-decoration: underline;
+    transition: var(--transition);
+}
 
-    padding: 15px;
-
-    border-radius: 10px;
-
-    background:
-        rgba(255,255,255,0.04);
-
+#authToggleLink:hover {
+    color: var(--accent);
 }
