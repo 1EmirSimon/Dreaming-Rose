@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dreaming Rose Hub | Studio</title>
 
-    <link rel="icon" href="/assets/Icons/rosaaa MArlo icono.png" type="image/png">
+    <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
 <header class="navbar">
     <div class="nav-container">
         <div class="nav-left">
-            <img src="/assets/Icons/rosaaa MArlo icono.png" alt="Logo" class="logo">
+            <img src="assets/Icons/rosaaa MArlo icono.png" alt="Logo" class="logo">
             <span class="brand">DREAMING ROSE</span>
         </div>
 
@@ -105,7 +105,7 @@
                     <div class="card-body">
                         <h3>Meteor Fighters</h3>
                         <p>Fighting Game / 2D Pixel Art</p>
-                        <a href="#" class="link-arrow">VER DETALLES →</a>
+                        <a href="#" class="link-arrow" onclick="event.preventDefault(); window.openGameDetails('Meteor Fighters');">VER DETALLES →</a>
                     </div>
                 </article>
             </div>
@@ -168,6 +168,7 @@
         </div>
     </div>
 </section>
+</main>
 
 <!-- MODAL UPLOAD -->
 <div id="uploadModal" class="modal-overlay">
@@ -340,7 +341,6 @@
 
 <!-- Carga de Scripts -->
 <script type="module" src="js/main.js"></script>
-<script type="module" src="js/admin.js"></script>
 
 </body>
 </html>

@@ -233,6 +233,11 @@ body.loaded footer {
     animation:
         siteFade 0.1s ease forwards;
 
+    /* Importante: al terminar la animación, transform debe volver a "none".
+       Si no, este contenedor pasa a ser el punto de referencia de cualquier
+       position:fixed que tenga adentro (como los modales), rompiéndolos. */
+    animation-fill-mode: none;
+
 }
 
 @keyframes siteFade {
