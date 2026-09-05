@@ -543,9 +543,9 @@
 }
 
 .tab-btn.active, .sub-tab-btn.active {
-    background-color: var(--neon, #ff0055) !important;
+    background-color: var(--accent, #ff2a75) !important;
     color: #ffffff !important;
-    border-color: var(--neon, #ff0055) !important;
+    border-color: var(--accent, #ff2a75) !important;
 }
 
 /* Estilo base para cualquier modal */
@@ -572,8 +572,8 @@
 
 /* Asegura que por defecto la página siempre tenga scroll disponible */
 body {
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Cuando cualquier modal esté activo, se bloquea el scroll de atrás */
