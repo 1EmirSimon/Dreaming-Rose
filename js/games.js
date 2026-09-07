@@ -173,7 +173,7 @@ window.submitComment = async function(event) {
 
     const containsBadWord = BAD_WORDS.some(word => texto.toLowerCase().includes(word));
     if (containsBadWord) {
-        alert("Por favor mantén un lenguaje respetuoso.");
+        alert("⚠️ Por favor mantén un lenguaje respetuoso. Este tipo de mensajes generan una advertencia en tu cuenta.");
         return;
     }
 
@@ -185,6 +185,26 @@ window.submitComment = async function(event) {
     }]);
 
     if (error) {
+        const msg = error.message || "";
+
+        if (msg.includes("ADVERTENCIA")) {
+            alert("⚠️ Tu comentario fue bloqueado por lenguaje inapropiado.\nEsta es tu primera advertencia: la próxima vez tu cuenta va a ser suspendida.");
+            if (input) input.value = "";
+            return;
+        }
+
+        if (msg.includes("CUENTA_BANEADA")) {
+            alert("⛔ Tu cuenta fue suspendida por reincidir con lenguaje inapropiado.");
+            await supabase.auth.signOut();
+            location.reload();
+            return;
+        }
+
+        if (msg.includes("COMENTARIO_BLOQUEADO")) {
+            alert("⚠️ Tu comentario fue bloqueado por lenguaje inapropiado.");
+            return;
+        }
+
         console.error("Error al comentar:", error);
         alert("Ocurrió un error al enviar el comentario.");
         return;
@@ -221,7 +241,7 @@ window.handleDirectLike = async function(event, juegoId) {
     const modalLikes = document.getElementById("statLikes");
     if (modalLikes && Number(currentGameId) === Number(targetId)) modalLikes.textContent = newLikes;
 
-    await supabase.from('juegos').update({ likes_count: newLikes }).eq('id', targetId);
+    await supabase.rpc('increment_juego_likes', { juego_id: targetId });
     renderRankingTop(allGames);
 };
 
@@ -371,7 +391,7 @@ window.openGameDetails = async function(gameInput) {
     if (typeof game.id === 'number') {
         const newViews = (game.views_count || 0) + 1;
         game.views_count = newViews;
-        await supabase.from('juegos').update({ views_count: newViews }).eq('id', game.id);
+        await supabase.rpc('increment_juego_views', { juego_id: game.id });
     }
 
     if (document.getElementById("gameModalTitle")) document.getElementById("gameModalTitle").textContent = game.title || "Juego sin título";
