@@ -1,21 +1,42 @@
 import { supabase } from "./supabase.js";
 
-const ADMIN_MASTER_PASSWORD = "DreamingRose2026!";
+const ALLOWED_ADMIN_ROLES = ['moderador', 'root'];
+let currentAdminRole = null;
 
 export async function openAdminModal() {
-    const inputPassword = prompt("🔐 ACCESO RESTRINGIDO\nIngresa la contraseña maestra de administración:");
-    if (inputPassword === null) return;
+    try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    if (inputPassword !== ADMIN_MASTER_PASSWORD) {
-        alert("❌ Contraseña incorrecta. Acceso denegado.");
-        return;
-    }
+        if (userError || !user) {
+            alert("⚠️ Tenés que iniciar sesión primero.");
+            return;
+        }
 
-    const modal = document.getElementById("adminModal");
-    if (modal) {
-        modal.classList.add("active");
-        document.body.style.overflow = "hidden";
-        await loadUsersList();
+        const { data: profile, error: profileError } = await supabase
+            .from('usuarios')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        const myRole = (profile?.role || '').toLowerCase();
+
+        if (profileError || !ALLOWED_ADMIN_ROLES.includes(myRole)) {
+            console.error("No se pudo verificar el rol:", profileError);
+            alert("❌ No tenés permisos para acceder al panel de administración.");
+            return;
+        }
+
+        currentAdminRole = myRole;
+
+        const modal = document.getElementById("adminModal");
+        if (modal) {
+            modal.classList.add("active");
+            document.body.style.overflow = "hidden";
+            await loadUsersList(currentAdminRole);
+        }
+    } catch (err) {
+        console.error("Error abriendo el panel de admin:", err);
+        alert("⚠️ Ocurrió un error al abrir el panel. Mirá la consola (F12) para más detalle.");
     }
 }
 
@@ -27,26 +48,13 @@ export function closeAdminModal() {
     }
 }
 
-async function loadUsersList() {
+async function loadUsersList(currentRole) {
     const tbody = document.getElementById("adminUsersList");
     if (!tbody) return;
 
     tbody.innerHTML = "<tr><td colspan='4'>Cargando usuarios...</td></tr>";
 
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
-    let isRoot = false;
-
-    if (currentUser) {
-        const { data: myProfile } = await supabase
-            .from('usuarios')
-            .select('role')
-            .eq('id', currentUser.id)
-            .single();
-        
-        if (myProfile && myProfile.role?.toLowerCase() === 'root') {
-            isRoot = true;
-        }
-    }
+    const isRoot = currentRole === 'root';
 
     const { data: usuarios, error } = await supabase
         .from('usuarios')
@@ -94,7 +102,7 @@ export async function changeUserRole(userId, newRole) {
         if (error) throw error;
 
         alert(`✅ Rol actualizado a [${newRole.toUpperCase()}] exitosamente.`);
-        await loadUsersList();
+        await loadUsersList(currentAdminRole);
     } catch (err) {
         console.error("Error cambiando el rol:", err);
         alert("⚠️ No se pudo cambiar el rol. Verifica las políticas RLS en Supabase.");
