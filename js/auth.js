@@ -1,9 +1,27 @@
 import { supabase } from "./supabase.js";
 
 let isRegisterMode = false;
+let authWidgetId = null;
 
 export function initAuth() {
     checkUserSession();
+    initAuthCaptcha();
+}
+
+// Renderizamos el captcha del login "a mano" (explícito), porque hay otro
+// widget más en la página (el de publicar) y no queremos que se mezclen.
+function initAuthCaptcha() {
+    if (!window.turnstile) {
+        setTimeout(initAuthCaptcha, 200);
+        return;
+    }
+    const container = document.getElementById("turnstileAuth");
+    if (container && authWidgetId === null) {
+        authWidgetId = window.turnstile.render(container, {
+            sitekey: container.dataset.sitekey,
+            theme: "dark",
+        });
+    }
 }
 
 async function checkUserSession() {
@@ -135,14 +153,27 @@ export async function handleAuth(e) {
     const password = passwordInput ? passwordInput.value : "";
     const username = usernameInput ? usernameInput.value : "";
 
+    // Token del captcha "No soy un robot" (Cloudflare Turnstile)
+    const captchaToken = (window.turnstile && authWidgetId !== null)
+        ? window.turnstile.getResponse(authWidgetId)
+        : null;
+
     if (errorMsg) errorMsg.style.display = "none";
+
+    if (!captchaToken) {
+        if (errorMsg) {
+            errorMsg.textContent = "⚠️ Completá la verificación \"No soy un robot\" antes de continuar.";
+            errorMsg.style.display = "block";
+        }
+        return;
+    }
 
     try {
         if (isRegisterMode) {
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
-                options: { data: { username } }
+                options: { data: { username }, captchaToken }
             });
             if (error) throw error;
             alert("¡Cuenta creada con éxito!");
@@ -150,7 +181,8 @@ export async function handleAuth(e) {
         } else {
             const { error } = await supabase.auth.signInWithPassword({
                 email,
-                password
+                password,
+                options: { captchaToken }
             });
             if (error) throw error;
             closeAuthModal();
@@ -160,6 +192,9 @@ export async function handleAuth(e) {
             errorMsg.textContent = error.message;
             errorMsg.style.display = "block";
         }
+    } finally {
+        // Los tokens de Turnstile son de un solo uso: siempre hay que resetear
+        if (window.turnstile && authWidgetId !== null) window.turnstile.reset(authWidgetId);
     }
 }
 

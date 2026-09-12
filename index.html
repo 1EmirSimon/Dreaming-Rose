@@ -12,8 +12,32 @@
     
     <!-- LIBRERÍA DE SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 </head>
 <body>
+
+<div id="scrollProgress" class="scroll-progress"></div>
+
+<div id="launchCurtain" class="launch-curtain">
+    <div class="launch-panel left"></div>
+    <div class="launch-panel right"></div>
+    <div class="launch-eyes"><span class="eye"></span><span class="eye"></span></div>
+    <div class="launch-content">
+        <img src="assets/Icons/rosaaa MArlo icono.png" alt="Dreaming Rose" class="launch-logo">
+        <h1 class="launch-title">DREAMING ROSE</h1>
+        <p class="launch-subtitle">La espera casi termina...</p>
+        <div class="launch-countdown">
+            <div class="launch-unit"><span id="launchDays">00</span><small>DÍAS</small></div>
+            <div class="launch-sep">:</div>
+            <div class="launch-unit"><span id="launchHours">00</span><small>HS</small></div>
+            <div class="launch-sep">:</div>
+            <div class="launch-unit"><span id="launchMinutes">00</span><small>MIN</small></div>
+            <div class="launch-sep">:</div>
+            <div class="launch-unit"><span id="launchSeconds">00</span><small>SEG</small></div>
+        </div>
+        <p class="launch-date">20 DE SEPTIEMBRE — 13:30 HS (ARG)</p>
+    </div>
+</div>
 
 <!-- LOADER -->
 <div id="loader" class="loader-wrapper">
@@ -124,12 +148,14 @@
             <div class="filter-tabs-primary">
                 <button class="tab-btn active" onclick="filterGames('todos', this)">Todos los Juegos</button>
                 <button class="tab-btn" onclick="filterGames('top', this)">Más Valorados</button>
+                <span class="tab-slider"></span>
             </div>
 
             <!-- Filtros Secundarios de Ordenamiento -->
             <div class="filter-tabs-secondary">
                 <button class="sub-tab-btn active" onclick="sortGames('recientes', this)">Más Recientes ▾</button>
                 <button class="sub-tab-btn" onclick="sortGames('valorados', this)">Más Valorados</button>
+                <span class="tab-slider sub"></span>
             </div>
 
             <!-- Grid Horizontal / Multilínea de Tarjetas -->
@@ -266,6 +292,8 @@
             <input type="email" id="authEmail" placeholder="Correo electrónico" required style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
             <input type="password" id="authPassword" placeholder="Contraseña" required style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
 
+            <div id="turnstileAuth" class="cf-turnstile" data-sitekey="0x4AAAAAAExq3kgeKfmbyC_i" data-theme="dark"></div>
+
             <p id="authError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
 
             <button type="submit" class="btn-main" id="btnAuthSubmit">ENTRAR</button>
@@ -328,9 +356,38 @@
             
             <input type="url" id="pubDownloadUrl" placeholder="Enlace obligatorio de Google Drive (https://drive.google.com/...) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
 
+            <div class="publish-schedule">
+                <label for="pubScheduleDate">🕒 Programar publicación (opcional)</label>
+                <input type="datetime-local" id="pubScheduleDate">
+                <small>Si lo dejás vacío, el juego se publica al toque. Si elegís una fecha, queda oculto y aparece solo en el sitio en ese momento.</small>
+            </div>
+
+            <div class="publish-rules">
+                <p class="publish-rules-title">📋 Reglas para publicar tu juego</p>
+                <ol class="publish-rules-list">
+                    <li>El juego debe ser de tu autoría o tener los permisos correspondientes (nada de plagio).</li>
+                    <li>No se permite contenido con violencia extrema, sexual o discriminatorio.</li>
+                    <li>No se permiten virus, malware ni archivos que puedan dañar la computadora de otros usuarios.</li>
+                    <li>El título, la descripción y la portada no pueden tener lenguaje ofensivo.</li>
+                    <li>La descripción y la portada deben corresponder al contenido real del juego.</li>
+                    <li>El juego tiene que ser funcional y jugable al momento de publicarlo.</li>
+                    <li>El link de descarga debe ser válido, accesible y no pedir contraseñas ni redirigir a otro sitio.</li>
+                    <li>Dreaming Rose puede eliminar cualquier juego que incumpla estas reglas.</li>
+                    <li>Incumplir las reglas de forma reiterada puede derivar en la suspensión de tu cuenta.</li>
+                    <li>Al publicar, aceptás que tu juego aparezca en el ranking público y pueda ser jugado y comentado por otros usuarios.</li>
+                </ol>
+            </div>
+
+            <label class="publish-terms-check">
+                <input type="checkbox" id="pubAcceptTerms" required>
+                <span>Leí y acepto las reglas y los <a href="#" onclick="event.preventDefault(); alert('Términos y condiciones: al publicar un juego, aceptás las 10 reglas de arriba. El incumplimiento puede derivar en la eliminación del juego y/o la suspensión de tu cuenta.');">términos y condiciones</a> de Dreaming Rose *</span>
+            </label>
+
+            <div id="turnstilePublish" class="cf-turnstile" data-sitekey="0x4AAAAAAExq3kgeKfmbyC_i" data-theme="dark"></div>
+
             <p id="publishError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
 
-            <button type="submit" class="btn-main" id="btnPublishSubmit">PUBLICAR AHORA</button>
+            <button type="submit" class="btn-main" id="btnPublishSubmit" disabled>PUBLICAR AHORA</button>
         </form>
     </div>
 </div>

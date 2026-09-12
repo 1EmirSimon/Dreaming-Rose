@@ -3,8 +3,44 @@ import { supabase } from "./supabase.js";
 
 let allGames = [];
 let currentGameId = null;
+let publishWidgetId = null;
+
+// Renderizamos el captcha de publicar "a mano" (explícito), porque hay otro
+// widget más en la página (el del login) y no queremos que se mezclen.
+function initPublishCaptcha() {
+    if (!window.turnstile) {
+        setTimeout(initPublishCaptcha, 200);
+        return;
+    }
+    const container = document.getElementById("turnstilePublish");
+    if (container && publishWidgetId === null) {
+        publishWidgetId = window.turnstile.render(container, {
+            sitekey: container.dataset.sitekey,
+            theme: "dark",
+        });
+    }
+}
 
 const BAD_WORDS = ["pelotudo", "boludo", "puto", "maricon", "hijo de puta", "imbecil", "estupido", "basura"];
+
+// Anima un número subiendo desde 0 hasta su valor real (usado en las
+// estadísticas del modal de detalles: likes, visitas, jugando ahora).
+function animateCount(el, target) {
+    if (!el) return;
+    const finalValue = Number(target) || 0;
+    const duration = 600;
+    const start = performance.now();
+
+    function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cúbico
+        el.textContent = Math.round(finalValue * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = finalValue;
+    }
+
+    requestAnimationFrame(tick);
+}
 
 export async function initGames() {
     // Limpieza preventiva inicial de estilos bloqueados en el body
@@ -12,8 +48,100 @@ export async function initGames() {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
 
-    await loadGamesData();
-    await loadRecentComments();
+    initPublishCaptcha();
+
+    try {
+        await loadGamesData();
+    } catch (err) {
+        console.error("Error cargando los juegos:", err);
+    }
+
+    try {
+        await loadRecentComments();
+    } catch (err) {
+        console.error("Error cargando comentarios recientes:", err);
+    }
+
+    startScheduledGamesWatcher();
+}
+
+// Revisa cada 30 segundos si algún juego programado ya llegó a su hora,
+// y si es así, lo mete en la grilla sin que nadie tenga que recargar.
+let knownGameIds = new Set();
+
+function startScheduledGamesWatcher() {
+    knownGameIds = new Set(
+        document.querySelectorAll("[data-game-id]")
+            ? Array.from(document.querySelectorAll("[data-game-id]")).map(el => el.dataset.gameId)
+            : []
+    );
+
+    setInterval(async () => {
+        const { data: juegos, error } = await supabase
+            .from('juegos')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error || !juegos) return;
+
+        const now = new Date();
+        const visiblesAhora = juegos.filter(g => !g.publish_at || new Date(g.publish_at) <= now);
+        const idsVisiblesAhora = new Set(visiblesAhora.map(g => String(g.id)));
+
+        const nuevosIds = [...idsVisiblesAhora].filter(id => !knownGameIds.has(id));
+
+        if (nuevosIds.length === 0) return;
+
+        allGames = juegos;
+        renderGamesGrid(visiblesAhora);
+        renderRankingTop(visiblesAhora);
+
+        nuevosIds.forEach(id => {
+            const juego = visiblesAhora.find(g => String(g.id) === id);
+            if (juego) mostrarAvisoNuevoJuego(juego.title);
+
+            const card = document.querySelector(`[data-game-id="${id}"]`);
+            if (card) {
+                card.classList.add("just-published");
+                setTimeout(() => card.classList.remove("just-published"), 4000);
+            }
+        });
+
+        knownGameIds = idsVisiblesAhora;
+    }, 30000);
+}
+
+function mostrarAvisoNuevoJuego(titulo) {
+    const aviso = document.createElement("div");
+    aviso.className = "new-game-toast";
+    aviso.textContent = `🎮 ¡Nuevo juego publicado: ${titulo}!`;
+    document.body.appendChild(aviso);
+
+    setTimeout(() => aviso.classList.add("visible"), 10);
+    setTimeout(() => {
+        aviso.classList.remove("visible");
+        setTimeout(() => aviso.remove(), 500);
+    }, 5000);
+}
+
+// Cartel de éxito con tilde animado, para reemplazar los alert() feos
+// del navegador en acciones importantes (como publicar un juego).
+function mostrarExito(mensaje) {
+    const aviso = document.createElement("div");
+    aviso.className = "success-toast";
+    aviso.innerHTML = `
+        <span class="success-check">
+            <svg viewBox="0 0 52 52"><path d="M14 27l7 7 17-17" /></svg>
+        </span>
+        <span>${mensaje}</span>
+    `;
+    document.body.appendChild(aviso);
+
+    setTimeout(() => aviso.classList.add("visible"), 10);
+    setTimeout(() => {
+        aviso.classList.remove("visible");
+        setTimeout(() => aviso.remove(), 500);
+    }, 3200);
 }
 
 async function loadGamesData() {
@@ -41,8 +169,17 @@ async function loadGamesData() {
         allGames = juegos;
     }
 
-    renderGamesGrid(allGames);
-    renderRankingTop(allGames);
+    // Un juego programado para el futuro puede seguir siendo visible para
+    // su propio creador (por la política de RLS), pero no debe mezclarse
+    // con la grilla pública hasta que llegue su hora.
+    const now = new Date();
+    const gamesVisiblesAhora = allGames.filter(g => {
+        if (!g.publish_at) return true;
+        return new Date(g.publish_at) <= now;
+    });
+
+    renderGamesGrid(gamesVisiblesAhora);
+    renderRankingTop(gamesVisiblesAhora);
 }
 
 function renderGamesGrid(gamesList) {
@@ -56,9 +193,10 @@ function renderGamesGrid(gamesList) {
         return;
     }
 
-    gamesList.forEach(game => {
+    gamesList.forEach((game, index) => {
         const card = document.createElement("div");
-        card.className = "game-card-hub";
+        card.className = "game-card-hub card-stagger";
+        card.dataset.gameId = game.id;
         
         card.innerHTML = `
             <img src="${game.image_url || 'assets/images/Meteor Fighters.png'}" class="game-card-thumb" data-game-id="${game.id}">
@@ -77,8 +215,27 @@ function renderGamesGrid(gamesList) {
         card.querySelector('.game-card-thumb').addEventListener('click', () => window.openGameDetails(game.id));
         card.querySelector('.game-title-click').addEventListener('click', () => window.openGameDetails(game.id));
         card.querySelector('.like-btn-direct').addEventListener('click', (e) => window.handleDirectLike(e, game.id));
+        addTiltEffect(card);
 
         container.appendChild(card);
+
+        setTimeout(() => card.classList.add("card-visible"), 40 * Math.min(index, 12));
+    });
+}
+
+// Inclinación 3D sutil siguiendo el mouse, se desactiva sola en celulares
+function addTiltEffect(card) {
+    if (window.matchMedia("(pointer: coarse)").matches) return; // sin tilt en touch
+
+    card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(700px) rotateX(${(-y * 8).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg) translateY(-4px)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+        card.style.transform = "";
     });
 }
 
@@ -138,6 +295,8 @@ async function loadRecentComments() {
     });
 }
 
+let knownCommentIds = new Set();
+
 async function loadGameComments(juegoId) {
     const container = document.getElementById("commentsContainer");
     if (!container) return;
@@ -150,15 +309,21 @@ async function loadGameComments(juegoId) {
 
     if (!comentarios || comentarios.length === 0) {
         container.innerHTML = "<p style='font-size: 0.8rem; color: #888;'>Sé el primero en comentar.</p>";
+        knownCommentIds = new Set();
         return;
     }
 
-    container.innerHTML = comentarios.map(c => `
-        <div class="comment-card" style="margin-bottom: 8px;">
+    container.innerHTML = comentarios.map(c => {
+        const esNuevo = !knownCommentIds.has(c.id);
+        return `
+        <div class="comment-card ${esNuevo ? 'comment-enter' : ''}" style="margin-bottom: 8px;">
             <strong style="color: var(--neon);">${c.username}:</strong> 
             <span style="color: #ccc;">${c.comentario}</span>
         </div>
-    `).join("");
+    `;
+    }).join("");
+
+    knownCommentIds = new Set(comentarios.map(c => c.id));
 }
 
 window.submitComment = async function(event) {
@@ -238,6 +403,19 @@ window.handleDirectLike = async function(event, juegoId) {
     const cardCount = document.getElementById(`like-count-${targetId}`);
     if (cardCount) cardCount.textContent = newLikes;
 
+    // Micro-animación: el botón "salta" y aparece un +1 flotante
+    const likeBtn = event?.currentTarget || document.querySelector(`[data-like-id="${targetId}"]`);
+    if (likeBtn) {
+        likeBtn.classList.add("like-pop");
+        setTimeout(() => likeBtn.classList.remove("like-pop"), 420);
+
+        const plusOne = document.createElement("span");
+        plusOne.className = "like-float";
+        plusOne.textContent = "+1";
+        likeBtn.appendChild(plusOne);
+        setTimeout(() => plusOne.remove(), 800);
+    }
+
     const modalLikes = document.getElementById("statLikes");
     if (modalLikes && Number(currentGameId) === Number(targetId)) modalLikes.textContent = newLikes;
 
@@ -247,8 +425,10 @@ window.handleDirectLike = async function(event, juegoId) {
 
 window.filterGames = function(type, element) {
     if (element) {
+        const container = element.closest('.filter-tabs-primary');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         element.classList.add('active');
+        moveTabSlider(container, element);
     }
 
     let filtered = [...allGames];
@@ -260,8 +440,10 @@ window.filterGames = function(type, element) {
 
 window.sortGames = function(order, element) {
     if (element) {
+        const container = element.closest('.filter-tabs-secondary');
         document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
         element.classList.add('active');
+        moveTabSlider(container, element);
     }
 
     let sorted = [...allGames];
@@ -273,17 +455,69 @@ window.sortGames = function(order, element) {
     renderGamesGrid(sorted);
 };
 
+function moveTabSlider(container, activeBtn) {
+    const slider = container?.querySelector('.tab-slider');
+    if (!slider || !activeBtn) return;
+    slider.style.width = `${activeBtn.offsetWidth}px`;
+    slider.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+}
+
+// Posiciona los subrayados en su lugar inicial apenas carga la página
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.filter-tabs-primary, .filter-tabs-secondary').forEach(container => {
+        const active = container.querySelector('.active');
+        if (active) moveTabSlider(container, active);
+    });
+});
+
 window.handlePublishGame = async function(event) {
     event.preventDefault();
 
+    const { data: { user } } = await supabase.auth.getUser();
     const title = document.getElementById("pubTitle")?.value.trim();
     const description = document.getElementById("pubDescription")?.value.trim();
     const author = document.getElementById("pubAuthor")?.value.trim() || "Creador Anónimo";
     const imageFileInput = document.getElementById("pubImageFile");
     const downloadUrl = document.getElementById("pubDownloadUrl")?.value.trim();
+    const scheduleInput = document.getElementById("pubScheduleDate")?.value;
+    const acceptedTerms = document.getElementById("pubAcceptTerms")?.checked;
     const errorMsg = document.getElementById("publishError");
 
     if (errorMsg) errorMsg.style.display = "none";
+
+    if (!acceptedTerms) {
+        if (errorMsg) {
+            errorMsg.textContent = "⚠️ Tenés que aceptar las reglas y los términos y condiciones para publicar.";
+            errorMsg.style.display = "block";
+        }
+        return;
+    }
+
+    const captchaToken = (window.turnstile && publishWidgetId !== null)
+        ? window.turnstile.getResponse(publishWidgetId)
+        : null;
+
+    if (!captchaToken) {
+        if (errorMsg) {
+            errorMsg.textContent = "⚠️ Completá la verificación \"No soy un robot\" antes de publicar.";
+            errorMsg.style.display = "block";
+        }
+        return;
+    }
+
+    const { data: captchaCheck, error: captchaError } = await supabase.functions.invoke(
+        'verificar-captcha',
+        { body: { token: captchaToken } }
+    );
+
+    if (captchaError || !captchaCheck?.success) {
+        if (errorMsg) {
+            errorMsg.textContent = "⚠️ No pudimos verificar que no sos un robot. Probá de nuevo.";
+            errorMsg.style.display = "block";
+        }
+        if (window.turnstile && publishWidgetId !== null) window.turnstile.reset(publishWidgetId);
+        return;
+    }
 
     if (!downloadUrl || !downloadUrl.toLowerCase().includes("drive.google.com")) {
         if (errorMsg) {
@@ -338,7 +572,9 @@ window.handlePublishGame = async function(event) {
         file_url: downloadUrl,
         likes_count: 0,
         views_count: 0,
-        playing_count: 0
+        playing_count: 0,
+        user_id: user ? user.id : null,
+        publish_at: scheduleInput ? new Date(scheduleInput).toISOString() : null
     };
 
     const { error } = await supabase.from('juegos').insert([newGame]);
@@ -352,7 +588,7 @@ window.handlePublishGame = async function(event) {
         return;
     }
 
-    alert("¡Juego y portada publicados con éxito!");
+    mostrarExito("¡Tu juego se publicó con éxito! 🎉");
     document.getElementById("publishForm")?.reset();
     closePublishModal();
 
@@ -399,9 +635,16 @@ window.openGameDetails = async function(gameInput) {
     if (document.getElementById("gameModalImg")) document.getElementById("gameModalImg").src = game.image_url || 'assets/images/Meteor Fighters.png';
     if (document.getElementById("gameModalDescription")) document.getElementById("gameModalDescription").textContent = game.description || "Sin descripción disponible.";
     
-    if (document.getElementById("statLikes")) document.getElementById("statLikes").textContent = game.likes_count || 0;
-    if (document.getElementById("statVisits")) document.getElementById("statVisits").textContent = game.views_count || 1;
-    if (document.getElementById("statPlaying")) document.getElementById("statPlaying").textContent = game.playing_count || 1;
+    animateCount(document.getElementById("statLikes"), game.likes_count || 0);
+    animateCount(document.getElementById("statVisits"), game.views_count || 1);
+    animateCount(document.getElementById("statPlaying"), game.playing_count || 1);
+
+    if (document.getElementById("statCreated")) {
+        const fecha = game.created_at ? new Date(game.created_at) : null;
+        document.getElementById("statCreated").textContent = fecha && !isNaN(fecha)
+            ? fecha.toLocaleDateString('es-AR', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            : "Sin fecha";
+    }
 
     // --- MANEJO DE DESCARGA BLINDADO (SIN CONGELAR) ---
     const playBtn = document.getElementById("gameDownloadBtn");
@@ -452,7 +695,21 @@ window.closePublishModal = function() {
         modal.classList.remove("active");
         document.body.style.overflow = "auto"; // Restaura siempre el scroll
     }
+    if (window.turnstile && publishWidgetId !== null) window.turnstile.reset(publishWidgetId);
 };
+
+// El botón de publicar arranca deshabilitado y solo se habilita
+// cuando se tilda la casilla de términos y condiciones.
+document.addEventListener("DOMContentLoaded", () => {
+    const termsCheckbox = document.getElementById("pubAcceptTerms");
+    const submitBtn = document.getElementById("btnPublishSubmit");
+
+    if (termsCheckbox && submitBtn) {
+        termsCheckbox.addEventListener("change", () => {
+            submitBtn.disabled = !termsCheckbox.checked;
+        });
+    }
+});
 
 window.addEventListener("click", function(event) {
     const gameModal = document.getElementById("gameModal");

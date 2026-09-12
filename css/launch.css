@@ -1,0 +1,512 @@
+/* =========================================================
+   CORTINA DE LANZAMIENTO (cuenta regresiva estilo FNAF)
+========================================================= */
+
+.launch-curtain {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999999; /* por encima de todo, incluso del loader */
+    overflow: hidden;
+    background: #030002;
+}
+
+.launch-curtain.active {
+    display: block;
+}
+
+/* Dos paneles de "cortina" que cubren toda la pantalla y se abren al final */
+.launch-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #2a0008 0px,
+            #3a000d 18px,
+            #200006 36px
+        );
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.8);
+    transition: transform 1.4s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+.launch-panel.left {
+    left: 0;
+}
+
+.launch-panel.right {
+    right: 0;
+}
+
+.launch-curtain.opening .launch-panel.left {
+    transform: translateX(-100%);
+}
+
+.launch-curtain.opening .launch-panel.right {
+    transform: translateX(100%);
+}
+
+/* Ojos brillando en la oscuridad, guiño FNAF */
+.launch-eyes {
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 60px;
+    z-index: 1;
+}
+
+.launch-eyes .eye {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent, #ff4d6d);
+    box-shadow: 0 0 12px 4px var(--accent, #ff4d6d);
+    animation: launchEyeBlink 3.2s ease-in-out infinite;
+}
+
+.launch-eyes .eye:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+@keyframes launchEyeBlink {
+    0%, 92%, 100% { opacity: 1; transform: scaleY(1); }
+    95% { opacity: 0.2; transform: scaleY(0.1); }
+}
+
+/* Contenido central: logo + cuenta regresiva, no se mueve con los paneles */
+.launch-content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 0.6s ease;
+}
+
+.launch-curtain.opening .launch-content {
+    opacity: 0;
+}
+
+.launch-logo {
+    width: 90px;
+    height: auto;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 0 12px var(--accent, #ff4d6d));
+}
+
+.launch-title {
+    font-family: var(--font-heading, 'Syncopate', sans-serif);
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    letter-spacing: 6px;
+    color: #fff;
+    text-shadow: 0 0 12px var(--accent, #ff4d6d), 0 0 30px var(--accent, #ff4d6d);
+    margin-bottom: 10px;
+}
+
+.launch-subtitle {
+    color: #999;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+}
+
+.launch-countdown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.launch-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 64px;
+    padding: 10px 6px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,77,109,0.3);
+    border-radius: 8px;
+}
+
+.launch-unit span {
+    font-family: var(--font-heading, 'Syncopate', sans-serif);
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    color: #fff;
+    text-shadow: 0 0 10px var(--accent, #ff4d6d);
+    line-height: 1;
+}
+
+.launch-unit small {
+    margin-top: 6px;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: #888;
+}
+
+.launch-sep {
+    font-family: var(--font-heading, 'Syncopate', sans-serif);
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    color: var(--accent, #ff4d6d);
+    margin-bottom: 18px;
+}
+
+.launch-date {
+    color: #777;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 500px) {
+    .launch-countdown { gap: 6px; }
+    .launch-unit { min-width: 52px; padding: 8px 4px; }
+    .launch-eyes { top: 14%; gap: 40px; }
+}
+
+/* =========================================================
+   AVISO EN VIVO DE JUEGO RECIÉN PUBLICADO
+========================================================= */
+
+.new-game-toast {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #121214;
+    border: 1px solid var(--accent, #ff4d6d);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,77,109,0.3);
+    z-index: 100000;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+}
+
+.new-game-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@keyframes justPublishedGlow {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,77,109,0); }
+    50% { box-shadow: 0 0 25px 4px rgba(255,77,109,0.6); }
+}
+
+.game-card-hub.just-published {
+    animation: justPublishedGlow 1.1s ease-in-out 3;
+    border-color: var(--accent, #ff4d6d) !important;
+}
+
+/* =========================================================
+   PROGRAMAR PUBLICACIÓN
+========================================================= */
+
+/* =========================================================
+   MEJORAS DE ANIMACIÓN — sin cambiar la esencia del diseño
+========================================================= */
+
+/* Navbar: se intensifica un poco al scrollear, da sensación de profundidad */
+.navbar {
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.navbar.scrolled {
+    background: linear-gradient(to bottom, rgba(5,5,8,0.97), rgba(5,5,8,0.75));
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+
+/* Entrada escalonada de las tarjetas del hub de la comunidad */
+.card-stagger {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-stagger.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hover más suave y con más "peso" en las tarjetas */
+.game-card-hub {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.35s ease,
+                box-shadow 0.35s ease;
+}
+
+.game-card-hub:hover {
+    box-shadow: 0 14px 30px rgba(255, 42, 117, 0.18);
+}
+
+.project-card,
+.game-card {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
+}
+
+/* Feedback táctil: los botones se "hunden" un poco al presionarlos */
+.btn-main:active,
+.btn-primary:active,
+.btn-outline:active,
+.like-btn-direct:active,
+.tab-btn:active,
+.sub-tab-btn:active {
+    transform: scale(0.95);
+}
+
+/* Pop del corazón + "+1" flotante al dar like */
+.like-btn-direct {
+    position: relative;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+@keyframes likePop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+.like-btn-direct.like-pop {
+    animation: likePop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes likeFloatUp {
+    0%   { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -22px); }
+}
+
+.like-float {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    color: var(--accent, #ff4d6d);
+    font-size: 0.75rem;
+    font-weight: 800;
+    pointer-events: none;
+    animation: likeFloatUp 0.8s ease forwards;
+}
+
+/* Comentario nuevo entra suave, los viejos no se re-animan */
+@keyframes commentFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.comment-enter {
+    animation: commentFadeIn 0.4s ease;
+}
+
+/* Cartel de éxito con tilde animado */
+.success-toast {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #121214;
+    border: 1px solid #2ecc71;
+    color: #fff;
+    padding: 14px 26px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(46,204,113,0.3);
+    z-index: 100000;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+}
+
+.success-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.success-check {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.success-check svg {
+    width: 100%;
+    height: 100%;
+}
+
+.success-check path {
+    fill: none;
+    stroke: #2ecc71;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: drawCheck 0.5s ease 0.15s forwards;
+}
+
+@keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+}
+
+/* Barra fina de progreso de scroll, arriba de todo */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent, #ff4d6d), var(--neon, #00fff7));
+    z-index: 1000000;
+    transition: width 0.1s linear;
+    pointer-events: none;
+}
+
+/* Pestañas con "píldora" deslizante en vez de cambio de color de golpe */
+.filter-tabs-primary,
+.filter-tabs-secondary {
+    position: relative;
+}
+
+.tab-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 6px;
+    background: var(--accent, #ff2a75);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.tab-slider.sub {
+    background: transparent;
+    border: 1px solid var(--accent, #ff2a75);
+}
+
+.tab-btn, .sub-tab-btn {
+    position: relative;
+    z-index: 1;
+}
+
+.tab-btn.active, .sub-tab-btn.active {
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+/* Los botones principales ya tenían hover con lift; lo hacemos más elástico */
+.btn-main,
+.btn-primary {
+    transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
+                box-shadow 0.3s ease;
+}
+
+.publish-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.publish-schedule label {
+    font-size: 0.8rem;
+    color: #ccc;
+    font-weight: 600;
+}
+
+.publish-schedule input[type="datetime-local"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    background: #1a1a24;
+    color: #fff;
+    font-family: inherit;
+}
+
+.publish-schedule small {
+    color: #888;
+    font-size: 0.72rem;
+    line-height: 1.3;
+}
+
+/* =========================================================
+   REGLAS Y TÉRMINOS AL PUBLICAR UN JUEGO
+========================================================= */
+
+.publish-rules {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: 8px;
+    padding: 14px 16px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.publish-rules-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.publish-rules-list {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.publish-rules-list li {
+    font-size: 0.78rem;
+    color: #aaa;
+    line-height: 1.4;
+}
+
+.publish-terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.publish-terms-check input[type="checkbox"] {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent, #ff4d6d);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.publish-terms-check a {
+    color: var(--neon, #00fff7);
+    text-decoration: underline;
+}
+
+#btnPublishSubmit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
