@@ -3,6 +3,11 @@
 // lanzamiento. Al llegar la hora, se abre sola para todos los que tengan
 // la página abierta, sin que nadie tenga que recargar.
 
+// Interruptor rápido para pruebas: ponelo en false para que la cortina
+// NUNCA aparezca (útil mientras probamos otras cosas), y volvé a ponerlo
+// en true unos días antes del lanzamiento real.
+const CURTAIN_ENABLED = false;
+
 const LAUNCH_DATE = new Date("2026-09-20T13:30:00-03:00");
 
 function pad(n) {
@@ -11,6 +16,12 @@ function pad(n) {
 
 export function waitForLaunch() {
     return new Promise((resolve) => {
+        // Interruptor manual: si está apagado, ni se molesta en chequear la fecha.
+        if (!CURTAIN_ENABLED) {
+            resolve();
+            return;
+        }
+
         // Llave secreta para que el equipo pueda probar el sitio antes de
         // la apertura, sin que se abra para el resto de los visitantes.
         // Ejemplo: https://dreaming-rose.com/?preview=rose2026

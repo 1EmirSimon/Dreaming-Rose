@@ -91,6 +91,14 @@ function updateUI(user, profile) {
     }
 }
 
+export async function signInWithGoogle() {
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin }
+    });
+    if (error) alert("Error al iniciar sesión con Google: " + error.message);
+}
+
 export function openAuthModal() {
     const modal = document.getElementById("authModal");
     if (modal) {
@@ -203,6 +211,7 @@ export async function logout() {
 }
 
 window.openAuthModal = openAuthModal;
+window.signInWithGoogle = signInWithGoogle;
 window.closeAuthModal = closeAuthModal;
 window.toggleAuthMode = toggleAuthMode;
 window.handleAuth = handleAuth;

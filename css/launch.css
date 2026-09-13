@@ -312,6 +312,53 @@
     animation: commentFadeIn 0.4s ease;
 }
 
+/* Botón de Google + separador en el modal de login */
+.btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 12px;
+    background: #fff;
+    color: #1f1f1f;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-google:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,255,255,0.15);
+}
+
+.btn-google:active {
+    transform: scale(0.97);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #666;
+    font-size: 0.75rem;
+    margin: 18px 0 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border, rgba(255,255,255,0.1));
+}
+
+.auth-divider span {
+    padding: 0 12px;
+}
+
 /* Cartel de éxito con tilde animado */
 .success-toast {
     position: fixed;
