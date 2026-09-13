@@ -3,10 +3,7 @@
 // lanzamiento. Al llegar la hora, se abre sola para todos los que tengan
 // la página abierta, sin que nadie tenga que recargar.
 
-// Interruptor rápido para pruebas: ponelo en false para que la cortina
-// NUNCA aparezca (útil mientras probamos otras cosas), y volvé a ponerlo
-// en true unos días antes del lanzamiento real.
-const CURTAIN_ENABLED = false;
+const CURTAIN_ENABLED = true;
 
 const LAUNCH_DATE = new Date("2026-09-20T13:30:00-03:00");
 
