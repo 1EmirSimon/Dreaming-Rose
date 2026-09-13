@@ -48,8 +48,6 @@ export async function initGames() {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
 
-    initPublishCaptcha();
-
     try {
         await loadGamesData();
     } catch (err) {
@@ -679,6 +677,7 @@ window.openUpload = function() {
         modal.classList.add("active");
         document.body.style.overflow = "hidden";
     }
+    initPublishCaptcha();
 };
 
 window.closeGameModal = function() {
