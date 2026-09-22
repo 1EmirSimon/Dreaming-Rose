@@ -1,6 +1,7 @@
 // js/games.js
 import { supabase } from "./supabase.js";
 
+let misLikes = new Set(); // IDs de juegos que el usuario logueado ya likeó
 let allGames = [];
 let currentGameId = null;
 let publishWidgetId = null;
@@ -61,6 +62,26 @@ export async function initGames() {
     }
 
     startScheduledGamesWatcher();
+}
+
+// Trae todos los juegos que el usuario logueado ya likeó.
+// Se llama al iniciar sesión y al cerrar sesión (con user = null limpia el set).
+export async function cargarMisLikes(userId) {
+    misLikes = new Set();
+
+    if (!userId) return;
+
+    const { data, error } = await supabase
+        .from('likes_juegos')
+        .select('juego_id')
+        .eq('user_id', userId);
+
+    if (error) {
+        console.error("Error cargando mis likes:", error);
+        return;
+    }
+
+    (data || []).forEach(row => misLikes.add(Number(row.juego_id)));
 }
 
 // Revisa cada 30 segundos si algún juego programado ya llegó a su hora,
@@ -202,8 +223,8 @@ function renderGamesGrid(gamesList) {
                 <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">${game.title}</h4>
                 <div class="game-card-author">☑ ${game.author || 'Anónimo'}</div>
                 <div class="game-card-footer">
-                    <button class="like-btn-direct" data-like-id="${game.id}">
-                        ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
+                    <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
+                    ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
                     </button>
                     <div class="star-rating">★★★★☆</div>
                 </div>
@@ -381,27 +402,72 @@ window.submitComment = async function(event) {
 window.handleDirectLike = async function(event, juegoId) {
     if (event) event.stopPropagation();
 
-    const targetId = juegoId || currentGameId;
+    const targetId = Number(juegoId || currentGameId);
     if (!targetId) return;
 
-    const likeStorageKey = `liked_game_${targetId}`;
-    if (localStorage.getItem(likeStorageKey)) {
-        alert("⚠️ Ya le has dado like a este juego anteriormente.");
+    // 1. Requerir sesión
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        alert("⚠️ Tenés que iniciar sesión para dar like.");
+        if (typeof window.openAuthModal === "function") window.openAuthModal();
         return;
     }
 
-    const game = allGames.find(g => Number(g.id) === Number(targetId));
-    if (!game) return;
+    const yaLiked = misLikes.has(targetId);
 
-    const newLikes = (game.likes_count || 0) + 1;
-    game.likes_count = newLikes;
+    if (yaLiked) {
+        // ============ QUITAR LIKE ============
+        const { error } = await supabase
+            .from('likes_juegos')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('juego_id', targetId);
 
-    localStorage.setItem(likeStorageKey, "true");
+        if (error) {
+            console.error("Error al quitar like:", error);
+            alert("Ocurrió un error al quitar tu like.");
+            return;
+        }
 
-    const cardCount = document.getElementById(`like-count-${targetId}`);
-    if (cardCount) cardCount.textContent = newLikes;
+        misLikes.delete(targetId);
 
-    // Micro-animación: el botón "salta" y aparece un +1 flotante
+        const game = allGames.find(g => Number(g.id) === targetId);
+        if (game) {
+            game.likes_count = Math.max((game.likes_count || 0) - 1, 0);
+            actualizarUIContadorLike(targetId, game.likes_count, false);
+            renderRankingTop(allGames);
+        }
+
+        return;
+    }
+
+    // ============ DAR LIKE ============
+    const { error } = await supabase
+        .from('likes_juegos')
+        .insert([{ user_id: user.id, juego_id: targetId }]);
+
+    if (error) {
+        if (error.code === '23505') {
+            // Ya existía en la DB (raro si misLikes está sincronizado, pero por las dudas)
+            misLikes.add(targetId);
+            alert("⚠️ Ya le habías dado like a este juego.");
+            return;
+        }
+        console.error("Error al dar like:", error);
+        alert("Ocurrió un error al registrar tu like.");
+        return;
+    }
+
+    misLikes.add(targetId);
+
+    const game = allGames.find(g => Number(g.id) === targetId);
+    if (game) {
+        game.likes_count = (game.likes_count || 0) + 1;
+        actualizarUIContadorLike(targetId, game.likes_count, true);
+        renderRankingTop(allGames);
+    }
+
+    // Animación del "+1"
     const likeBtn = event?.currentTarget || document.querySelector(`[data-like-id="${targetId}"]`);
     if (likeBtn) {
         likeBtn.classList.add("like-pop");
@@ -413,13 +479,24 @@ window.handleDirectLike = async function(event, juegoId) {
         likeBtn.appendChild(plusOne);
         setTimeout(() => plusOne.remove(), 800);
     }
+};
+
+// Helper para actualizar el contador y el estado visual del botón
+function actualizarUIContadorLike(targetId, nuevoValor, likeado) {
+    const cardCount = document.getElementById(`like-count-${targetId}`);
+    if (cardCount) cardCount.textContent = nuevoValor;
 
     const modalLikes = document.getElementById("statLikes");
-    if (modalLikes && Number(currentGameId) === Number(targetId)) modalLikes.textContent = newLikes;
+    if (modalLikes && Number(currentGameId) === Number(targetId)) {
+        modalLikes.textContent = nuevoValor;
+    }
 
-    await supabase.rpc('increment_juego_likes', { juego_id: targetId });
-    renderRankingTop(allGames);
-};
+    // Pintamos el botón de la tarjeta según el estado
+    const btn = document.querySelector(`[data-like-id="${targetId}"]`);
+    if (btn) {
+        btn.classList.toggle("liked", likeado);
+    }
+}
 
 window.filterGames = function(type, element) {
     if (element) {
@@ -734,4 +811,5 @@ window.addEventListener("keydown", function(event) {
     }
 });
 
+window.cargarMisLikes = cargarMisLikes;
 window.initGames = initGames;

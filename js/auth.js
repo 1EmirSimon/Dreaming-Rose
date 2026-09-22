@@ -82,6 +82,11 @@ async function handleProfile(user) {
     }
 
     updateUI(user, profile);
+
+    // Refrescar los likes del usuario logueado
+if (typeof window.cargarMisLikes === "function") {
+    await window.cargarMisLikes(user?.id || null);
+}
 }
 
 // Muestra/oculta los botones de arriba a la derecha según si hay

@@ -46,6 +46,15 @@
     padding: 15px 5px;
     width: 100%;
 }
+.like-btn-direct.liked {
+    background: var(--accent, #ff2a75);
+    border-color: var(--accent, #ff2a75);
+    color: #fff;
+}
+
+.like-btn-direct.liked:hover {
+    background: #ff1a5c;
+}   
 
 .horizontal-scroll-container::-webkit-scrollbar {
     display: none; /* Ocultar barra de scroll en Chrome/Safari */
