@@ -176,7 +176,6 @@ async function loadGamesData() {
         description: "Enfréntate a criaturas prehistóricas en intensas batallas 2D. ¡Desata combos devastadores y domina el campo de batalla!",
         image_url: "assets/images/Meteor Fighters.png",
         download_url: "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing",
-        file_url: "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing",
         likes_count: 0,
         views_count: 1,
         playing_count: 1
@@ -644,7 +643,6 @@ window.handlePublishGame = async function(event) {
         author: author,
         image_url: finalImageUrl,
         download_url: downloadUrl,
-        file_url: downloadUrl,
         likes_count: 0,
         views_count: 0,
         playing_count: 0,
@@ -724,7 +722,7 @@ window.openGameDetails = async function(gameInput) {
     // --- MANEJO DE DESCARGA BLINDADO (SIN CONGELAR) ---
     const playBtn = document.getElementById("gameDownloadBtn");
     if (playBtn) {
-        const urlFinal = game.download_url || game.file_url || "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing";
+                const urlFinal = game.download_url || "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing";
         
         playBtn.style.display = "inline-flex"; 
         

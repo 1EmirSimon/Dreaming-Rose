@@ -216,8 +216,34 @@ button {
 
 @media (max-width: 900px) {
 
-    .nav-right {
+    /* Antes se ocultaba TODO .nav-right (links + login).
+       Ahora ocultamos solo los links, y dejamos visible el
+       área de autenticación para poder loguearse desde el celu. */
+    .nav-right > a {
         display: none;
+    }
+
+    .nav-right {
+        gap: 8px;
+    }
+
+    /* Achicamos los botones para que entren en pantalla */
+    .nav-right button {
+        padding: 8px 12px;
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+    }
+
+    #userInfo {
+        gap: 6px !important;
+    }
+
+    #userBadge {
+        font-size: 0.65rem !important;
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .hero-content {
@@ -225,21 +251,17 @@ button {
     }
 
     .hero-overlay {
-
         background:
             linear-gradient(
                 to bottom,
                 rgba(5,5,8,0.7),
                 rgba(5,5,8,0.9)
             );
-
     }
 
     .hero-actions {
-
         justify-content: center;
         flex-wrap: wrap;
-
     }
 
 }
@@ -288,21 +310,30 @@ button {
 
 @media (max-width: 500px) {
 
-    .container {
-        padding: 0 20px;
+    .nav-container {
+        padding: 0 15px;
     }
 
-    .hero-actions {
-        flex-direction: column;
+    .brand {
+        display: none;
     }
 
-    .btn-main,
-    .btn-outline,
-    .btn-primary {
+    .logo {
+        width: 42px;
+        height: 42px;
+        margin-right: 0;
+    }
 
-        width: 100%;
-        text-align: center;
+    /* Los botones mas chicos */
+    .nav-right button {
+        padding: 7px 10px;
+        font-size: 0.65rem;
+    }
 
+    /* El botón PUBLICAR es un ícono chico */
+    #btnPublish {
+        font-size: 0.65rem;
+        padding: 7px 9px;
     }
 
 }
