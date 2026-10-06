@@ -25,22 +25,19 @@ export function initAuth() {
 // Por eso cada uno se dibuja por separado y guardamos su ID real.
 function initAuthCaptcha() {
     if (!window.turnstile) {
-        // El script de Turnstile capaz todavía no terminó de cargar:
-        // reintentamos cada 200ms hasta que esté listo.
         setTimeout(initAuthCaptcha, 200);
         return;
     }
     const container = document.getElementById("turnstileAuth");
     if (container && authWidgetId === null) {
         authWidgetId = window.turnstile.render(container, {
-            sitekey: container.dataset.sitekey, // la Site Key pública, puesta en el HTML
+            sitekey: container.dataset.sitekey,
             theme: "dark",
         });
     }
 }
 
-// Se fija si ya hay una sesión guardada (por ejemplo, si cerraste el
-// navegador y lo volviste a abrir) y se queda escuchando cualquier
+// Se fija si ya hay una sesión guardada y se queda escuchando cualquier
 // cambio futuro de sesión (login, logout, etc.) para actualizar la
 // pantalla automáticamente sin tener que recargar.
 async function checkUserSession() {
@@ -83,9 +80,9 @@ async function handleProfile(user) {
     updateUI(user, profile);
 
     // Refrescar los likes del usuario logueado
-if (typeof window.cargarMisLikes === "function") {
-    await window.cargarMisLikes(user?.id || null);
-}
+    if (typeof window.cargarMisLikes === "function") {
+        await window.cargarMisLikes(user?.id || null);
+    }
 }
 
 // Muestra/oculta los botones de arriba a la derecha según si hay
@@ -96,14 +93,12 @@ function updateUI(user, profile) {
     const userBadge = document.getElementById("userBadge");
     const btnPublish = document.getElementById("btnPublish");
     const btnAdminPanel = document.getElementById("btnAdminPanel");
+    const btnSolicitar = document.getElementById("btnSolicitarCreador");
 
     if (user && profile) {
         // Hay sesión: ocultar "Ingresar" y mostrar el nombre de usuario
         if (btnLogin) btnLogin.style.display = "none";
         if (userInfo) userInfo.style.display = "flex";
-
-        if (typeof window.actualizarMenuMobile === "function") {
-            window.actualizarMenuMobile(user, profile);
 
         const userRole = (profile.role || 'usuario').toLowerCase();
         const roleTag = userRole !== 'usuario' ? ` [${userRole.toUpperCase()}]` : '';
@@ -115,9 +110,8 @@ function updateUI(user, profile) {
             btnPublish.style.display = allowedPublishRoles.includes(userRole) ? "inline-block" : "none";
         }
 
-        const btnSolicitar = document.getElementById("btnSolicitarCreador");
+        // El botón de "Ser Creador" solo lo ve un usuario común
         if (btnSolicitar) {
-            // Solo lo ve un usuario común (no creador, no moderador, no root, no baneado)
             btnSolicitar.style.display = userRole === 'usuario' ? "inline-block" : "none";
         }
 
@@ -128,28 +122,33 @@ function updateUI(user, profile) {
         if (btnAdminPanel) {
             btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "inline-block" : "none";
         }
+
+        // Actualizar el menú mobile (solo se ve en pantallas chicas)
+        if (typeof window.actualizarMenuMobile === "function") {
+            window.actualizarMenuMobile(user, profile);
+        }
+
     } else {
         // No hay sesión: mostrar "Ingresar" y ocultar todo lo demás
         if (btnLogin) btnLogin.style.display = "inline-block";
         if (userInfo) userInfo.style.display = "none";
         if (btnPublish) btnPublish.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
-        const btnSolicitar = document.getElementById("btnSolicitarCreador");
         if (btnSolicitar) btnSolicitar.style.display = "none";
+
+        // Actualizar el menú mobile (sin sesión)
         if (typeof window.actualizarMenuMobile === "function") {
             window.actualizarMenuMobile(null, null);
+        }
     }
 }
 
 // Botón "Continuar con Google". Supabase se encarga de todo el ida-y-vuelta
 // con Google; cuando el usuario vuelve, onAuthStateChange (más arriba)
-// detecta la sesión nueva solo, sin que tengamos que hacer nada más acá.
+// detecta la sesión nueva solo.
 export async function signInWithGoogle() {
     // Importante: usamos origin + pathname (no solo origin) porque en
-    // GitHub Pages el sitio vive dentro de una carpeta
-    // (https://usuario.github.io/Dreaming-Rose/), no en la raíz del
-    // dominio. Si usáramos solo origin, Google nos devolvería a la raíz
-    // del dominio (que no existe) en vez de a la carpeta real del sitio.
+    // GitHub Pages el sitio vive dentro de una carpeta.
     const currentPath = window.location.origin + window.location.pathname;
 
     const { error } = await supabase.auth.signInWithOAuth({
@@ -175,8 +174,7 @@ export function closeAuthModal() {
     }
 }
 
-// Cambia el formulario entre modo "Iniciar Sesión" y modo "Registrarse"
-// (mismo formulario, solo cambia qué campos se ven y los textos).
+// Cambia el formulario entre modo "Iniciar Sesión" y modo "Registrarse".
 export function toggleAuthMode(e) {
     if (e) e.preventDefault();
     isRegisterMode = !isRegisterMode;
@@ -211,8 +209,7 @@ export function toggleAuthMode(e) {
     }
 }
 
-// Se dispara al enviar el formulario (tanto login como registro,
-// según isRegisterMode). Antes de nada valida el captcha.
+// Se dispara al enviar el formulario (login o registro según isRegisterMode).
 export async function handleAuth(e) {
     e.preventDefault();
 
@@ -225,9 +222,6 @@ export async function handleAuth(e) {
     const password = passwordInput ? passwordInput.value : "";
     const username = usernameInput ? usernameInput.value : "";
 
-    // Le pedimos al widget el token que generó (si el usuario ya se
-    // verificó como "no robot"). Si todavía no se verificó, esto va
-    // a venir vacío.
     const captchaToken = (window.turnstile && authWidgetId !== null)
         ? window.turnstile.getResponse(authWidgetId)
         : null;
@@ -244,10 +238,6 @@ export async function handleAuth(e) {
 
     try {
         if (isRegisterMode) {
-            // signUp crea la cuenta en auth.users. La fila correspondiente
-            // en la tabla "usuarios" la crea SOLA la base de datos, gracias
-            // a un trigger (ver 12_perfil_automatico.sql) — acá no hace
-            // falta insertarla a mano.
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
@@ -271,9 +261,7 @@ export async function handleAuth(e) {
             errorMsg.style.display = "block";
         }
     } finally {
-        // Los tokens de Turnstile son de un solo uso: se resetea el
-        // widget después de cada intento (haya salido bien o mal),
-        // para que la próxima vez pida una verificación nueva.
+        // Los tokens de Turnstile son de un solo uso.
         if (window.turnstile && authWidgetId !== null) window.turnstile.reset(authWidgetId);
     }
 }
