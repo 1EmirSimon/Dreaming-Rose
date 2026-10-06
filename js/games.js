@@ -776,10 +776,31 @@ window.openGameDetails = async function(gameInput) {
 
     currentGameId = game.id;
 
+    // Registrar la visita (modelo YouTube):
+    //   • Cada apertura del modal cuenta 1 vista.
+    //   • Anónimos también cuentan (user_id = null).
+    //   • Se excluye al creador del juego (no se cuenta su propia visita).
     if (typeof game.id === 'number') {
-        const newViews = (game.views_count || 0) + 1;
-        game.views_count = newViews;
-        await supabase.rpc('increment_juego_views', { juego_id: game.id });
+        const { data: { user } } = await supabase.auth.getUser();
+        const soyElCreador = user && game.user_id && user.id === game.user_id;
+
+        if (!soyElCreador) {
+            // Actualización local (para reflejar el cambio al toque)
+            game.views_count = (game.views_count || 0) + 1;
+
+            // Insertar la visita (el trigger actualiza views_count en la DB)
+            const { error: errorVisita } = await supabase
+                .from('visitas_juegos')
+                .insert([{
+                    juego_id: game.id,
+                    user_id: user ? user.id : null
+                }]);
+
+            if (errorVisita) {
+                console.error("Error registrando visita:", errorVisita);
+                // Si falla, no rompemos la UI: solo logueamos
+            }
+        }
     }
 
     if (document.getElementById("gameModalTitle")) document.getElementById("gameModalTitle").textContent = game.title || "Juego sin título";
