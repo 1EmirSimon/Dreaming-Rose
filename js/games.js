@@ -401,23 +401,34 @@ window.submitComment = async function(event) {
 
     if (!texto || !currentGameId) return;
 
-        const { data: { user } } = await supabase.auth.getUser();
-    const username = user
-        ? (user.user_metadata?.username
-            || user.email?.split("@")[0]
-            || "Jugador_Anónimo")
-        : "Jugador_Anónimo";
-
-
-    const containsBadWord = BAD_WORDS.some(word => texto.toLowerCase().includes(word));
-    if (containsBadWord) {
-        alert("⚠️ Por favor mantén un lenguaje respetuoso. Este tipo de mensajes generan una advertencia en tu cuenta.");
+    // 1. Requerir sesión
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        mostrarError("Tenés que iniciar sesión para comentar.");
+        if (typeof window.openAuthModal === "function") window.openAuthModal();
         return;
     }
 
+    // 2. Traer username desde la DB
+    const { data: perfil } = await supabase
+        .from('usuarios')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+    const username = perfil?.username || user.email?.split("@")[0] || "Jugador";
+
+    // 3. Chequear palabras prohibidas
+    const containsBadWord = BAD_WORDS.some(word => texto.toLowerCase().includes(word));
+    if (containsBadWord) {
+        mostrarError("Por favor mantené un lenguaje respetuoso. Este tipo de mensajes generan una advertencia en tu cuenta.");
+        return;
+    }
+
+    // 4. Insertar
     const { error } = await supabase.from('comentarios_juegos').insert([{
         juego_id: currentGameId,
-        user_id: user ? user.id : null,
+        user_id: user.id,
         username: username,
         comentario: texto
     }]);
@@ -426,25 +437,25 @@ window.submitComment = async function(event) {
         const msg = error.message || "";
 
         if (msg.includes("ADVERTENCIA")) {
-            alert("⚠️ Tu comentario fue bloqueado por lenguaje inapropiado.\nEsta es tu primera advertencia: la próxima vez tu cuenta va a ser suspendida.");
+            mostrarError("Tu comentario fue bloqueado por lenguaje inapropiado. Esta es tu primera advertencia.");
             if (input) input.value = "";
             return;
         }
 
         if (msg.includes("CUENTA_BANEADA")) {
-            alert("⛔ Tu cuenta fue suspendida por reincidir con lenguaje inapropiado.");
+            mostrarError("Tu cuenta fue suspendida por reincidir con lenguaje inapropiado.");
             await supabase.auth.signOut();
             location.reload();
             return;
         }
 
         if (msg.includes("COMENTARIO_BLOQUEADO")) {
-            alert("⚠️ Tu comentario fue bloqueado por lenguaje inapropiado.");
+            mostrarError("Tu comentario fue bloqueado por lenguaje inapropiado.");
             return;
         }
 
         console.error("Error al comentar:", error);
-        alert("Ocurrió un error al enviar el comentario.");
+        mostrarError("Ocurrió un error al enviar el comentario.");
         return;
     }
 
@@ -807,12 +818,32 @@ window.openGameDetails = async function(gameInput) {
 
     await loadGameComments(game.id);
 
+    // Mostrar/ocultar el formulario de comentario según la sesión
+    await actualizarFormularioComentario();
+
     const modal = document.getElementById("gameModal");
     if (modal) {
         modal.classList.add("active");
         document.body.style.overflow = "hidden";
     }
 };
+
+// Muestra el form si hay sesión, o el aviso de login si no.
+async function actualizarFormularioComentario() {
+    const form = document.getElementById("commentForm");
+    const prompt = document.getElementById("commentLoginPrompt");
+    if (!form || !prompt) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+        form.style.display = "flex";
+        prompt.style.display = "none";
+    } else {
+        form.style.display = "none";
+        prompt.style.display = "flex";
+    }
+}
 
 window.openUpload = function() {
     const modal = document.getElementById("publishModal");
@@ -879,3 +910,4 @@ window.addEventListener("keydown", function(event) {
 
 window.cargarMisLikes = cargarMisLikes;
 window.initGames = initGames;
+window.actualizarFormularioComentario = actualizarFormularioComentario;

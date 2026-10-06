@@ -284,11 +284,17 @@
                         <!-- Carga dinámica -->
                     </div>
                     
-                    <!-- Formulario de comentario -->
-                    <form id="commentForm" onsubmit="submitComment(event)" class="comment-input-form">
-                        <input type="text" id="commentInput" placeholder="Escribe un comentario..." required>
-                        <button type="submit" class="btn-primary">ENVIAR</button>
-                    </form>
+                    <!-- Formulario de comentario (solo si hay sesión) -->
+<form id="commentForm" onsubmit="submitComment(event)" class="comment-input-form" style="display: none;">
+    <input type="text" id="commentInput" placeholder="Escribe un comentario..." required>
+    <button type="submit" class="btn-primary">ENVIAR</button>
+</form>
+
+<!-- Aviso de login (solo si NO hay sesión) -->
+<div id="commentLoginPrompt" class="comment-login-prompt" style="display: none;">
+    <p>🔒 Tenés que iniciar sesión para comentar.</p>
+    <button onclick="closeGameModal(); openAuthModal();" class="btn-primary">INICIAR SESIÓN</button>
+</div>
                 </div>
             </div>
         </div>

@@ -142,6 +142,10 @@ function updateUI(user, profile) {
         }
     }
 }
+        // Actualizar el formulario de comentarios (si hay uno abierto)
+        if (typeof window.actualizarFormularioComentario === "function") {
+            window.actualizarFormularioComentario();
+        }
 
 // Botón "Continuar con Google". Supabase se encarga de todo el ida-y-vuelta
 // con Google; cuando el usuario vuelve, onAuthStateChange (más arriba)
