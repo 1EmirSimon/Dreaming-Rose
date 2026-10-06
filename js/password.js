@@ -169,3 +169,16 @@ window.guardarNuevaPassword = async function(event) {
     document.getElementById("newPasswordModal")?.classList.remove("active");
     document.body.style.overflow = "auto";
 };
+
+window.togglePasswordVisibility = function(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🙈";
+    } else {
+        input.type = "password";
+        btn.textContent = "👁";
+    }
+};
