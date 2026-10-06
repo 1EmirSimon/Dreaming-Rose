@@ -557,3 +557,48 @@
     transform: none !important;
     box-shadow: none !important;
 }
+
+/* Toast de error, mismo estilo que el de éxito pero en rojo */
+.error-toast {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #121214;
+    border: 1px solid #ff4d6d;
+    color: #fff;
+    padding: 14px 26px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,77,109,0.3);
+    z-index: 100000;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+}
+
+.error-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.error-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.error-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.error-icon line {
+    stroke: #ff4d6d;
+    stroke-width: 5;
+    stroke-linecap: round;
+}

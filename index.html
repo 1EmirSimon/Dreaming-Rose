@@ -90,6 +90,12 @@
     <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" class="btn-outline" style="display: none; padding: 6px 10px; font-size: 0.65rem; border-color: var(--neon); color: var(--neon);">
         SER CREADOR
     </button>
+    <button onclick="openUsernameModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
+        USUARIO
+    </button>
+    <button onclick="openPasswordModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
+        CONTRASEÑA
+    </button>
     <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
         SALIR
     </button>
@@ -445,6 +451,71 @@
             Una vez enviada, vas a poder ver su estado desde acá.
         </p>
         <div id="solicitudEstado" style="margin-top: 10px;"></div>
+    </div>
+</div>
+
+<!-- MODAL CAMBIO DE CONTRASEÑA -->
+<div id="passwordModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; width: 90%; position: relative;">
+        <button onclick="closePasswordModal()" class="modal-close-icon">✕</button>
+
+        <h2>CAMBIAR CONTRASEÑA</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
+            Te vamos a mandar un mail con un link para crear una contraseña nueva.
+        </p>
+
+        <form id="passwordForm" onsubmit="enviarCambioPassword(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="email" id="passwordEmail" placeholder="Tu correo electrónico" required
+                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="passwordError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+            <p id="passwordSuccess" style="color: #2ecc71; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">ENVIAR LINK</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL NUEVA CONTRASEÑA (viene del mail) -->
+<div id="newPasswordModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; width: 90%; position: relative;">
+        <h2>NUEVA CONTRASEÑA</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
+            Elegí tu nueva contraseña. Mínimo 8 caracteres.
+        </p>
+
+        <form id="newPasswordForm" onsubmit="guardarNuevaPassword(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="password" id="newPasswordInput" placeholder="Nueva contraseña" required minlength="8"
+                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <input type="password" id="newPasswordConfirm" placeholder="Repetir contraseña" required minlength="8"
+                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="newPasswordError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">GUARDAR</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL CAMBIO DE USUARIO -->
+<div id="usernameModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; width: 90%; position: relative;">
+        <button onclick="closeUsernameModal()" class="modal-close-icon">✕</button>
+
+        <h2>CAMBIAR NOMBRE DE USUARIO</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
+            Elegí un nombre nuevo. Tiene que ser único.
+        </p>
+
+        <form id="usernameForm" onsubmit="guardarNuevoUsername(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="newUsernameInput" placeholder="Nuevo nombre de usuario" required minlength="3" maxlength="20"
+                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="usernameError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+            <p id="usernameSuccess" style="color: #2ecc71; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">GUARDAR</button>
+        </form>
     </div>
 </div>
 

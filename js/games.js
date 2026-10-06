@@ -143,6 +143,29 @@ function mostrarAvisoNuevoJuego(titulo) {
     }, 5000);
 }
 
+
+// Cartel de error con el mismo estilo que el de éxito.
+function mostrarError(mensaje) {
+    const aviso = document.createElement("div");
+    aviso.className = "error-toast";
+    aviso.innerHTML = `
+        <span class="error-icon">
+            <svg viewBox="0 0 52 52">
+                <line x1="16" y1="16" x2="36" y2="36" />
+                <line x1="36" y1="16" x2="16" y2="36" />
+            </svg>
+        </span>
+        <span>${mensaje}</span>
+    `;
+    document.body.appendChild(aviso);
+
+    setTimeout(() => aviso.classList.add("visible"), 10);
+    setTimeout(() => {
+        aviso.classList.remove("visible");
+        setTimeout(() => aviso.remove(), 500);
+    }, 3200);
+}
+
 // Cartel de éxito con tilde animado, para reemplazar los alert() feos
 // del navegador en acciones importantes (como publicar un juego).
 function mostrarExito(mensaje) {
@@ -351,8 +374,13 @@ window.submitComment = async function(event) {
 
     if (!texto || !currentGameId) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const username = user ? (user.user_metadata?.username || user.email.split("@")[0]) : "Jugador_Anónimo";
+        const { data: { user } } = await supabase.auth.getUser();
+    const username = user
+        ? (user.user_metadata?.username
+            || user.email?.split("@")[0]
+            || "Jugador_Anónimo")
+        : "Jugador_Anónimo";
+
 
     const containsBadWord = BAD_WORDS.some(word => texto.toLowerCase().includes(word));
     if (containsBadWord) {
@@ -559,6 +587,19 @@ window.handlePublishGame = async function(event) {
 
     if (errorMsg) errorMsg.style.display = "none";
 
+
+        // Validar que la fecha programada sea futura
+    if (scheduleInput) {
+        const fechaElegida = new Date(scheduleInput);
+        const ahora = new Date();
+        if (fechaElegida <= ahora) {
+            if (errorMsg) {
+                errorMsg.textContent = "⚠️ La fecha programada tiene que ser futura.";
+                errorMsg.style.display = "block";
+            }
+            return;
+        }
+    }
     if (!acceptedTerms) {
         if (errorMsg) {
             errorMsg.textContent = "⚠️ Tenés que aceptar las reglas y los términos y condiciones para publicar.";
