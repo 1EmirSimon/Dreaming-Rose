@@ -1,12 +1,32 @@
 // js/password.js
 import { supabase } from "./supabase.js";
 
+let passwordWidgetId = null;
+
+// Renderiza el captcha del modal de contraseña (explícito, con ID propio,
+// porque ya hay otros dos en la página: login y publicar).
+function initPasswordCaptcha() {
+    if (!window.turnstile) {
+        setTimeout(initPasswordCaptcha, 200);
+        return;
+    }
+    const container = document.getElementById("turnstilePassword");
+    if (container && passwordWidgetId === null) {
+        passwordWidgetId = window.turnstile.render(container, {
+            sitekey: container.dataset.sitekey,
+            theme: "dark",
+        });
+    }
+}
+
 window.openPasswordModal = async function() {
     const modal = document.getElementById("passwordModal");
     if (modal) {
         modal.classList.add("active");
         document.body.style.overflow = "hidden";
     }
+
+    initPasswordCaptcha();
 
     const { data: { user } } = await supabase.auth.getUser();
     const inputEmail = document.getElementById("passwordEmail");
@@ -27,6 +47,11 @@ window.closePasswordModal = function() {
     const ok = document.getElementById("passwordSuccess");
     if (err) err.style.display = "none";
     if (ok) ok.style.display = "none";
+
+    // Reset del captcha para la próxima apertura
+    if (window.turnstile && passwordWidgetId !== null) {
+        window.turnstile.reset(passwordWidgetId);
+    }
 };
 
 window.enviarCambioPassword = async function(event) {
@@ -39,6 +64,19 @@ window.enviarCambioPassword = async function(event) {
     if (errorMsg) errorMsg.style.display = "none";
     if (successMsg) successMsg.style.display = "none";
 
+    // Leer el token del captcha
+    const captchaToken = (window.turnstile && passwordWidgetId !== null)
+        ? window.turnstile.getResponse(passwordWidgetId)
+        : null;
+
+    if (!captchaToken) {
+        if (errorMsg) {
+            errorMsg.textContent = "⚠️ Completá la verificación \"No soy un robot\" antes de continuar.";
+            errorMsg.style.display = "block";
+        }
+        return;
+    }
+
     if (!email) {
         if (errorMsg) {
             errorMsg.textContent = "⚠️ Ingresá tu correo.";
@@ -49,13 +87,20 @@ window.enviarCambioPassword = async function(event) {
 
     const redirectTo = window.location.origin + window.location.pathname;
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+        captchaToken
+    });
 
     if (error) {
         console.error("Error enviando link:", error);
         if (errorMsg) {
             errorMsg.textContent = "Error: " + error.message;
             errorMsg.style.display = "block";
+        }
+        // Resetear el captcha si falló (los tokens son de un solo uso)
+        if (window.turnstile && passwordWidgetId !== null) {
+            window.turnstile.reset(passwordWidgetId);
         }
         return;
     }
