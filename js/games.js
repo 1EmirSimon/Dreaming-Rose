@@ -22,7 +22,31 @@ function initPublishCaptcha() {
     }
 }
 
-const BAD_WORDS = ["pelotudo", "boludo", "puto", "maricon", "hijo de puta", "imbecil", "estupido", "basura"];
+// Lista de palabras prohibidas. Se carga desde la DB al iniciar la web.
+// Si la DB falla, se usa esta lista como fallback mínimo.
+let BAD_WORDS = ["pelotudo", "boludo", "puto", "imbecil"];
+
+// Trae las palabras prohibidas desde Supabase y actualiza el array global.
+// Se llama una sola vez al inicio.
+export async function cargarPalabrasProhibidas() {
+    try {
+        const { data, error } = await supabase
+            .from('palabras_prohibidas')
+            .select('palabra');
+
+        if (error) {
+            console.error("Error cargando palabras prohibidas:", error);
+            return; // se queda con el fallback
+        }
+
+        if (data && data.length > 0) {
+            BAD_WORDS = data.map(row => row.palabra.toLowerCase());
+            console.log(`✅ ${BAD_WORDS.length} palabras prohibidas cargadas.`);
+        }
+    } catch (err) {
+        console.error("Excepción cargando palabras prohibidas:", err);
+    }
+}
 
 // Anima un número subiendo desde 0 hasta su valor real (usado en las
 // estadísticas del modal de detalles: likes, visitas, jugando ahora).
@@ -48,6 +72,9 @@ export async function initGames() {
     document.body.style.overflow = "auto";
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
+
+    // Cargar las palabras prohibidas desde la DB (antes que cualquier otra cosa)
+    await cargarPalabrasProhibidas();
 
     try {
         await loadGamesData();
