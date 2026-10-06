@@ -67,49 +67,45 @@
             <a href="#comunidad">COMUNIDAD</a>
             <a href="#ranking">RANKING</a>
 
-            <!-- Botón para Creadores/Moderador/Root -->
             <button id="btnPublish" onclick="openUpload()" class="btn-primary" style="display: none;">
                 PUBLICAR
             </button>
 
-            <!-- Botón para Panel Admin (Solo Moderador y Root) -->
             <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline" style="display: none; border-color: var(--neon); color: var(--neon);">
                 PANEL ADMIN
             </button>
 
-            <!-- Área de Usuario / Sesión -->
             <div id="authArea" style="margin-left: 20px;">
                 <button id="btnLogin" onclick="openAuthModal()" class="btn-outline">
                     INGRESAR
                 </button>
 
                 <div id="userInfo" style="display: none; align-items: center; gap: 10px;">
-    <span id="userBadge" style="font-size: 0.75rem; font-weight: 800; color: var(--neon);">
-        @usuario
-    </span>
-    <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" class="btn-outline" style="display: none; padding: 6px 10px; font-size: 0.65rem; border-color: var(--neon); color: var(--neon);">
-        SER CREADOR
-    </button>
-    <button onclick="openUsernameModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
-        USUARIO
-    </button>
-    <button onclick="openPasswordModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
-        CONTRASEÑA
-    </button>
-    <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
-        SALIR
-    </button>
-
-    <!-- Botón hamburguesa (solo visible en mobile) -->
-<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
-    <span></span>
-    <span></span>
-    <span></span>
-</button>
-
-</div>
+                    <span id="userBadge" style="font-size: 0.75rem; font-weight: 800; color: var(--neon);">
+                        @usuario
+                    </span>
+                    <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" class="btn-outline" style="display: none; padding: 6px 10px; font-size: 0.65rem; border-color: var(--neon); color: var(--neon);">
+                        SER CREADOR
+                    </button>
+                    <button onclick="openUsernameModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
+                        USUARIO
+                    </button>
+                    <button onclick="openPasswordModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
+                        CONTRASEÑA
+                    </button>
+                    <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
+                        SALIR
+                    </button>
+                </div>
             </div>
         </nav>
+
+        <!-- Botón hamburguesa (FUERA de nav-right, hermano directo) -->
+        <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
 </header>
 
