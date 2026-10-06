@@ -472,7 +472,7 @@
             <p id="passwordSuccess" style="color: #2ecc71; font-size: 0.8rem; display: none;"></p>
 
             <div id="turnstilePassword" class="cf-turnstile" data-sitekey="0x4AAAAAAExq3kgeKfmbyC_i" data-theme="dark"></div>
-            
+
             <button type="submit" class="btn-main">ENVIAR LINK</button>
         </form>
     </div>
@@ -487,10 +487,22 @@
         </p>
 
         <form id="newPasswordForm" onsubmit="guardarNuevaPassword(event)" style="display: flex; flex-direction: column; gap: 12px;">
-            <input type="password" id="newPasswordInput" placeholder="Nueva contraseña" required minlength="8"
-                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-            <input type="password" id="newPasswordConfirm" placeholder="Repetir contraseña" required minlength="8"
-                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <div style="position: relative;">
+                <input type="password" id="newPasswordInput" placeholder="Nueva contraseña" required minlength="8"
+                    style="width: 100%; padding: 12px 45px 12px 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+                <button type="button" onclick="togglePasswordVisibility('newPasswordInput', this)" class="toggle-pass-btn">
+                    👁
+                </button>
+            </div>
+
+            <div style="position: relative;">
+                <input type="password" id="newPasswordConfirm" placeholder="Repetir contraseña" required minlength="8"
+                    style="width: 100%; padding: 12px 45px 12px 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+                <button type="button" onclick="togglePasswordVisibility('newPasswordConfirm', this)" class="toggle-pass-btn">
+                    👁
+                </button>
+            </div>
 
             <p id="newPasswordError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
 
