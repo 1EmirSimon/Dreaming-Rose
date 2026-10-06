@@ -102,6 +102,9 @@ function updateUI(user, profile) {
         if (btnLogin) btnLogin.style.display = "none";
         if (userInfo) userInfo.style.display = "flex";
 
+        if (typeof window.actualizarMenuMobile === "function") {
+            window.actualizarMenuMobile(user, profile);
+
         const userRole = (profile.role || 'usuario').toLowerCase();
         const roleTag = userRole !== 'usuario' ? ` [${userRole.toUpperCase()}]` : '';
         if (userBadge) userBadge.textContent = `@${profile.username || 'usuario'}${roleTag}`;
@@ -133,6 +136,8 @@ function updateUI(user, profile) {
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
         const btnSolicitar = document.getElementById("btnSolicitarCreador");
         if (btnSolicitar) btnSolicitar.style.display = "none";
+        if (typeof window.actualizarMenuMobile === "function") {
+            window.actualizarMenuMobile(null, null);
     }
 }
 

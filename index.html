@@ -99,6 +99,14 @@
     <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
         SALIR
     </button>
+
+    <!-- Botón hamburguesa (solo visible en mobile) -->
+<button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
 </div>
             </div>
         </nav>
@@ -531,6 +539,81 @@
             <button type="submit" class="btn-main">GUARDAR</button>
         </form>
     </div>
+</div>
+
+<!-- MENÚ MOBILE (DRAWER) -->
+<div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-backdrop" onclick="closeMobileMenu()"></div>
+    <aside class="mobile-menu-panel">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-title">MENÚ</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Cerrar">✕</button>
+        </div>
+
+        <!-- Sección navegación (siempre visible) -->
+        <nav class="mobile-menu-section">
+            <a href="#proyectos" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🎮</span>
+                <span>PROYECTOS</span>
+            </a>
+            <a href="#comunidad" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🌐</span>
+                <span>COMUNIDAD</span>
+            </a>
+            <a href="#ranking" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🏆</span>
+                <span>RANKING</span>
+            </a>
+        </nav>
+
+        <!-- Sección cuenta (solo si hay sesión) -->
+        <div class="mobile-menu-section" id="mobileMenuUserSection" style="display: none;">
+            <div class="mobile-menu-divider">MI CUENTA</div>
+
+            <button id="mobileBtnPublish" class="mobile-menu-link" onclick="closeMobileMenu(); openUpload();" style="display: none;">
+                <span class="mobile-menu-icon">📤</span>
+                <span>PUBLICAR JUEGO</span>
+            </button>
+
+            <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
+                <span class="mobile-menu-icon">🛡️</span>
+                <span>PANEL ADMIN</span>
+            </button>
+
+            <button id="mobileBtnSolicitar" class="mobile-menu-link" onclick="closeMobileMenu(); openSolicitudCreador();" style="display: none;">
+                <span class="mobile-menu-icon">⭐</span>
+                <span>SER CREADOR</span>
+            </button>
+
+            <button class="mobile-menu-link" onclick="closeMobileMenu(); openUsernameModal();">
+                <span class="mobile-menu-icon">👤</span>
+                <span>CAMBIAR USUARIO</span>
+            </button>
+
+            <button class="mobile-menu-link" onclick="closeMobileMenu(); openPasswordModal();">
+                <span class="mobile-menu-icon">🔒</span>
+                <span>CAMBIAR CONTRASEÑA</span>
+            </button>
+
+            <button class="mobile-menu-link mobile-menu-danger" onclick="closeMobileMenu(); logout();">
+                <span class="mobile-menu-icon">🚪</span>
+                <span>CERRAR SESIÓN</span>
+            </button>
+        </div>
+
+        <!-- Sección login (solo si NO hay sesión) -->
+        <div class="mobile-menu-section" id="mobileMenuGuestSection">
+            <button class="mobile-menu-link mobile-menu-cta" onclick="closeMobileMenu(); openAuthModal();">
+                <span class="mobile-menu-icon">🔑</span>
+                <span>INGRESAR</span>
+            </button>
+        </div>
+
+        <!-- Footer del menú -->
+        <div class="mobile-menu-footer">
+            <span>DREAMING ROSE © 2026</span>
+        </div>
+    </aside>
 </div>
 
 <footer class="footer">
