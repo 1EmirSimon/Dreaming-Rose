@@ -1,12 +1,11 @@
 // js/auth.js
-// ============================================================
+
 // TODO lo relacionado a login/registro/sesión:
 // - Login con correo y contraseña
 // - Login con Google
 // - Captcha "No soy un robot" (Cloudflare Turnstile)
 // - Mostrar/ocultar botones según el rol del usuario logueado
 // - Cerrar sesión automática si el usuario está baneado
-// ============================================================
 
 import { supabase } from "./supabase.js";
 
@@ -113,6 +112,12 @@ function updateUI(user, profile) {
             btnPublish.style.display = allowedPublishRoles.includes(userRole) ? "inline-block" : "none";
         }
 
+        const btnSolicitar = document.getElementById("btnSolicitarCreador");
+        if (btnSolicitar) {
+            // Solo lo ve un usuario común (no creador, no moderador, no root, no baneado)
+            btnSolicitar.style.display = userRole === 'usuario' ? "inline-block" : "none";
+        }
+
         // El botón de "Panel Admin" solo lo ven moderador/root
         // (esto es solo para mostrar/ocultar el botón; la seguridad de
         // verdad está en admin.js + las políticas RLS de Supabase)
@@ -126,6 +131,8 @@ function updateUI(user, profile) {
         if (userInfo) userInfo.style.display = "none";
         if (btnPublish) btnPublish.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
+        const btnSolicitar = document.getElementById("btnSolicitarCreador");
+        if (btnSolicitar) btnSolicitar.style.display = "none";
     }
 }
 

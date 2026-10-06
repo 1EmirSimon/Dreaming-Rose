@@ -1,4 +1,5 @@
 import { startIntro } from "./loader.js";
+import "./solicitudes.js";
 import { showWebsite } from "./animations.js";
 import { initGames } from "./games.js";
 import { initAuth } from "./auth.js";

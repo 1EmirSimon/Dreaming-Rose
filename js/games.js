@@ -1,6 +1,6 @@
 // js/games.js
+import { escapeHTML } from "./utils.js";
 import { supabase } from "./supabase.js";
-
 let misLikes = new Set(); // IDs de juegos que el usuario logueado ya likeó
 let allGames = [];
 let currentGameId = null;
@@ -216,11 +216,11 @@ function renderGamesGrid(gamesList) {
         card.className = "game-card-hub card-stagger";
         card.dataset.gameId = game.id;
         
-        card.innerHTML = `
-            <img src="${game.image_url || 'assets/images/Meteor Fighters.png'}" class="game-card-thumb" data-game-id="${game.id}">
+                card.innerHTML = `
+            <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="game-card-thumb" data-game-id="${game.id}">
             <div class="game-card-info">
-                <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">${game.title}</h4>
-                <div class="game-card-author">☑ ${game.author || 'Anónimo'}</div>
+                <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">${escapeHTML(game.title)}</h4>
+                <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
                 <div class="game-card-footer">
                     <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
                     ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
@@ -269,13 +269,13 @@ function renderRankingTop(gamesList) {
         const item = document.createElement("div");
         item.className = "ranking-item-card";
         
-        item.innerHTML = `
+                item.innerHTML = `
             <div class="ranking-item-left">
                 <div class="rank-number rank-${rankPos}">${rankPos}</div>
-                <img src="${game.image_url || 'assets/images/Meteor Fighters.png'}" class="rank-thumb">
+                <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="rank-thumb">
                 <div>
-                    <strong style="color: #fff; font-size: 0.95rem;">${game.title}</strong>
-                    <div style="font-size: 0.75rem; color: #8a8b9e;">☑ ${game.author || 'Creador'}</div>
+                    <strong style="color: #fff; font-size: 0.95rem;">${escapeHTML(game.title)}</strong>
+                    <div style="font-size: 0.75rem; color: #8a8b9e;">☑ ${escapeHTML(game.author) || 'Creador'}</div>
                 </div>
             </div>
             <div class="rank-pts">${(game.likes_count || 0) * 10} pts</div>
@@ -303,11 +303,11 @@ async function loadRecentComments() {
     comentarios.forEach(c => {
         const div = document.createElement("div");
         div.className = "recent-comment-card";
-        div.innerHTML = `
+                div.innerHTML = `
             <div class="comment-user-header">
-                <strong style="font-size: 0.85rem; color: var(--neon);">${c.username}:</strong>
+                <strong style="font-size: 0.85rem; color: var(--neon);">${escapeHTML(c.username)}:</strong>
             </div>
-            <div class="comment-text">${c.comentario}</div>
+            <div class="comment-text">${escapeHTML(c.comentario)}</div>
         `;
         container.appendChild(div);
     });
@@ -331,12 +331,12 @@ async function loadGameComments(juegoId) {
         return;
     }
 
-    container.innerHTML = comentarios.map(c => {
+        container.innerHTML = comentarios.map(c => {
         const esNuevo = !knownCommentIds.has(c.id);
         return `
         <div class="comment-card ${esNuevo ? 'comment-enter' : ''}" style="margin-bottom: 8px;">
-            <strong style="color: var(--neon);">${c.username}:</strong> 
-            <span style="color: #ccc;">${c.comentario}</span>
+            <strong style="color: var(--neon);">${escapeHTML(c.username)}:</strong> 
+            <span style="color: #ccc;">${escapeHTML(c.comentario)}</span>
         </div>
     `;
     }).join("");
