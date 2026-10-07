@@ -981,3 +981,59 @@ select:focus {
     border: 1px solid rgba(255, 77, 109, 0.4);
     box-shadow: 0 0 30px rgba(255, 77, 109, 0.2);
 }
+
+
+
+/* =========================================================
+   BADGE DE VERIFICACIÓN
+========================================================= */
+
+.verified-badge {
+    display: inline-block;
+    color: #00fff7;
+    font-size: 0.75rem;
+    margin-left: 5px;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 247, 0.6));
+    animation: verifiedPulse 3s ease-in-out infinite;
+}
+
+@keyframes verifiedPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(0, 255, 247, 0.4)); }
+    50% { filter: drop-shadow(0 0 10px rgba(0, 255, 247, 0.8)); }
+}
+
+/* Carteles en el modal del juego */
+.verificacion-ok,
+.verificacion-pendiente,
+.verificacion-peligro {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.verificacion-ok {
+    background: rgba(0, 255, 247, 0.08);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    color: #00fff7;
+}
+
+.verificacion-pendiente {
+    background: rgba(255, 184, 0, 0.08);
+    border: 1px solid rgba(255, 184, 0, 0.3);
+    color: #ffb800;
+}
+
+.verificacion-peligro {
+    background: rgba(255, 77, 109, 0.1);
+    border: 1px solid rgba(255, 77, 109, 0.4);
+    color: #ff4d6d;
+    font-weight: 700;
+}

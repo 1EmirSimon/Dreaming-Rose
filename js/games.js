@@ -269,7 +269,8 @@ function renderGamesGrid(gamesList) {
                 card.innerHTML = `
             <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="game-card-thumb" data-game-id="${game.id}">
             <div class="game-card-info">
-                <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">${escapeHTML(game.title)}</h4>
+                <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">
+    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}</h4>
                 <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
                 <div class="game-card-footer">
                     <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
@@ -324,7 +325,9 @@ function renderRankingTop(gamesList) {
                 <div class="rank-number rank-${rankPos}">${rankPos}</div>
                 <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="rank-thumb">
                 <div>
-                    <strong style="color: #fff; font-size: 0.95rem;">${escapeHTML(game.title)}</strong>
+                    <strong style="color: #fff; font-size: 0.95rem;">
+    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado">✅</span>' : ''}
+</strong>
                     <div style="font-size: 0.75rem; color: #8a8b9e;">☑ ${escapeHTML(game.author) || 'Creador'}</div>
                 </div>
             </div>
@@ -810,7 +813,31 @@ window.openGameDetails = async function(gameInput) {
     if (document.getElementById("gameModalAuthor")) document.getElementById("gameModalAuthor").textContent = `Creador: ${game.author || 'Dreaming Rose'}`;
     if (document.getElementById("gameModalImg")) document.getElementById("gameModalImg").src = game.image_url || 'assets/images/Meteor Fighters.png';
     if (document.getElementById("gameModalDescription")) document.getElementById("gameModalDescription").textContent = game.description || "Sin descripción disponible.";
-    
+    // Mostrar el badge de verificación
+const verificacionBadge = document.getElementById("gameVerificationBadge");
+if (verificacionBadge) {
+    if (game.verificado) {
+        verificacionBadge.innerHTML = `
+            <div class="verificacion-ok">
+                ✅ Verificado por Google Safe Browsing
+            </div>
+        `;
+    } else if (game.verificado_at) {
+        // Ya fue analizado pero dio positivo
+        verificacionBadge.innerHTML = `
+            <div class="verificacion-peligro">
+                ⚠️ Este juego fue marcado como sospechoso. Descarágalo bajo tu propio riesgo.
+            </div>
+        `;
+    } else {
+        // Todavía no fue analizado
+        verificacionBadge.innerHTML = `
+            <div class="verificacion-pendiente">
+                ⏳ Este juego aún no fue verificado. Descargalo bajo tu propio riesgo.
+            </div>
+        `;
+    }
+}
     animateCount(document.getElementById("statLikes"), game.likes_count || 0);
     animateCount(document.getElementById("statVisits"), game.views_count || 1);
     animateCount(document.getElementById("statPlaying"), game.playing_count || 1);
