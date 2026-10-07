@@ -346,17 +346,28 @@
         <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Gestión de Roles y Usuarios de Dreaming Rose</p>
 
         <!-- Pestañas -->
-        <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-            <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
-            <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
-                Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
-            </button>
-        </div>
+<div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+    <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
+    <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
+        Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
+    </button>
+    <button onclick="mostrarTabAdmin('apelaciones')" id="tabAdminApelaciones" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
+        Apelaciones <span id="badgeApelaciones" style="background: #ff4d6d; color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
+    </button>
+</div>
 
         <!-- Tab Usuarios -->
-        <div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
-            <div id="adminUsersList"></div>
-        </div>
+<div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
+    <!-- Sub-pestañas -->
+    <div class="admin-subtabs">
+        <button onclick="filtrarUsuariosAdmin('todos', this)" class="admin-subtab active" data-filter="todos">Todos</button>
+        <button onclick="filtrarUsuariosAdmin('admins', this)" class="admin-subtab" data-filter="admins">Admins</button>
+        <button onclick="filtrarUsuariosAdmin('usuarios', this)" class="admin-subtab" data-filter="usuarios">Usuarios</button>
+        <button onclick="filtrarUsuariosAdmin('baneados', this)" class="admin-subtab" data-filter="baneados">⛔ Baneados</button>
+    </div>
+
+    <div id="adminUsersList"></div>
+</div>
 
         <!-- Tab Solicitudes -->
         <div id="tabContentSolicitudes" style="max-height: 400px; overflow-y: auto; display: none;">
@@ -365,7 +376,13 @@
 
         <button onclick="closeAdminModal()" class="btn-close" style="margin-top: 20px;">CERRAR</button>
     </div>
+
+    <!-- Tab Apelaciones -->
+<div id="tabContentApelaciones" style="max-height: 400px; overflow-y: auto; display: none;">
+    <div id="listaApelaciones"></div>
 </div>
+</div>
+
 
 <!-- MODAL PUBLICAR JUEGO (CREADORES) -->
 <div id="publishModal" class="modal-overlay">
@@ -602,6 +619,55 @@
             <span>DREAMING ROSE © 2026</span>
         </div>
     </aside>
+</div>
+
+<!-- MODAL DE APELACIÓN (para baneados) -->
+<div id="apelacionModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
+        <h2>CUENTA SUSPENDIDA</h2>
+        <p style="color: #ff4d6d; font-size: 0.9rem; margin-bottom: 15px; font-weight: 700;">
+            🚫 Tu cuenta fue suspendida por incumplir las reglas de Dreaming Rose.
+        </p>
+
+        <!-- Estado 1: sin apelación enviada -->
+        <div id="apelacionFormContainer">
+            <p style="color: #ccc; font-size: 0.85rem; margin-bottom: 15px;">
+                Tenés <strong>una sola oportunidad</strong> para apelar. Si tu apelación es rechazada, no vas a poder volver a intentarlo.
+            </p>
+
+            <form id="apelacionForm" onsubmit="enviarApelacion(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <textarea id="apelacionMensaje" placeholder="Explicá por qué creés que tu suspensión fue un error o por qué deberíamos darte otra oportunidad..." rows="5" maxlength="1000" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
+
+                <p id="apelacionError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+                <button type="submit" class="btn-main" id="btnApelacionSubmit">ENVIAR APELACIÓN</button>
+            </form>
+        </div>
+
+        <!-- Estado 2: apelación pendiente -->
+        <div id="apelacionPendiente" style="display: none;">
+            <p style="color: #ffb800; font-size: 0.9rem;">
+                ⏳ Tu apelación está pendiente de revisión. Te vamos a avisar cuando un moderador la revise.
+            </p>
+        </div>
+
+        <!-- Estado 3: apelación rechazada -->
+        <div id="apelacionRechazada" style="display: none;">
+            <p style="color: #ff4d6d; font-size: 0.9rem;">
+                ❌ Tu apelación fue rechazada. No podés volver a apelar.
+            </p>
+        </div>
+
+        <!-- Estado 4: apelación aprobada -->
+        <div id="apelacionAprobada" style="display: none;">
+            <p style="color: #2ecc71; font-size: 0.9rem;">
+                ✅ ¡Tu apelación fue aprobada! Recargá la página para volver a usar tu cuenta.
+            </p>
+            <button onclick="window.location.reload()" class="btn-main" style="margin-top: 15px;">RECARGAR</button>
+        </div>
+
+        <button onclick="logout()" class="btn-close" style="margin-top: 20px;">CERRAR SESIÓN</button>
+    </div>
 </div>
 
 <footer class="footer">

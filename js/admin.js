@@ -4,6 +4,8 @@ import { escapeHTML } from "./utils.js";
 const ALLOWED_ADMIN_ROLES = ['moderador', 'root'];
 let currentAdminRole = null;
 let currentAdminId = null;
+let allUsersData = [];        // Cache de usuarios
+let filtroActual = 'todos';   // Filtro activo
 
 export async function openAdminModal() {
     try {
@@ -36,6 +38,7 @@ export async function openAdminModal() {
             modal.classList.add("active");
             document.body.style.overflow = "hidden";
             await loadUsersList(currentAdminRole);
+            await cargarApelaciones();
             await cargarSolicitudes();
         }
     } catch (err) {
@@ -59,8 +62,6 @@ async function loadUsersList(currentRole) {
 
     contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando usuarios...</p>";
 
-    const isRoot = currentRole === 'root';
-
     const { data: usuarios, error } = await supabase
         .from('usuarios')
         .select('id, username, email, role')
@@ -72,7 +73,32 @@ async function loadUsersList(currentRole) {
         return;
     }
 
-    // ¿Estamos en mobile?
+    allUsersData = usuarios;
+    renderUsersByFilter();
+}
+
+// Filtra y renderiza según la sub-pestaña activa
+function renderUsersByFilter() {
+    const contenedor = document.getElementById("adminUsersList");
+    if (!contenedor) return;
+
+    let usuarios = [...allUsersData];
+
+    // Filtrar según el filtro activo
+    if (filtroActual === 'admins') {
+        usuarios = usuarios.filter(u => ['moderador', 'root'].includes((u.role || '').toLowerCase()));
+    } else if (filtroActual === 'usuarios') {
+        usuarios = usuarios.filter(u => (u.role || 'usuario').toLowerCase() === 'usuario');
+    } else if (filtroActual === 'baneados') {
+        usuarios = usuarios.filter(u => (u.role || '').toLowerCase() === 'banned');
+    }
+
+    if (usuarios.length === 0) {
+        contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>No hay usuarios en esta categoría.</p>";
+        return;
+    }
+
+    const isRoot = currentAdminRole === 'root';
     const esMobile = window.innerWidth <= 700;
 
     contenedor.innerHTML = "";
@@ -115,32 +141,45 @@ async function loadUsersList(currentRole) {
         const email = escapeHTML(userItem.email) || 'N/A';
 
         if (esMobile) {
-            // En mobile: tarjeta
             const card = document.createElement("div");
             card.className = "admin-user-card";
+            if (currentUserRole === 'banned') card.classList.add("admin-user-banned");
+            if (['moderador', 'root'].includes(currentUserRole)) card.classList.add("admin-user-staff");
             card.innerHTML = `
                 <div class="admin-user-card-header">
                     <strong>@${username}</strong>
-                    <span class="badge-role">${currentUserRole.toUpperCase()}</span>
+                    <span class="badge-role badge-${currentUserRole}">${currentUserRole.toUpperCase()}</span>
                 </div>
                 <div class="admin-user-card-email">${email}</div>
                 <div class="admin-user-card-action">${accionHTML}</div>
             `;
             contenedor.appendChild(card);
         } else {
-            // En desktop: fila tipo tabla
             const row = document.createElement("div");
             row.className = "admin-user-row";
+            if (currentUserRole === 'banned') row.classList.add("admin-user-banned");
+            if (['moderador', 'root'].includes(currentUserRole)) row.classList.add("admin-user-staff");
             row.innerHTML = `
                 <div class="admin-cell admin-cell-user"><strong>@${username}</strong></div>
                 <div class="admin-cell admin-cell-email">${email}</div>
-                <div class="admin-cell admin-cell-role"><span class="badge-role">${currentUserRole.toUpperCase()}</span></div>
+                <div class="admin-cell admin-cell-role"><span class="badge-role badge-${currentUserRole}">${currentUserRole.toUpperCase()}</span></div>
                 <div class="admin-cell admin-cell-action">${accionHTML}</div>
             `;
             contenedor.appendChild(row);
         }
     });
 }
+
+// Cambiar el filtro desde las sub-pestañas
+window.filtrarUsuariosAdmin = function(filtro, btn) {
+    filtroActual = filtro;
+
+    // Actualizar clases de los botones
+    document.querySelectorAll(".admin-subtab").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+
+    renderUsersByFilter();
+};
 
 export async function changeUserRole(userId, newRole) {
     try {
@@ -166,20 +205,26 @@ export async function changeUserRole(userId, newRole) {
 window.mostrarTabAdmin = function(tab) {
     const tabUsuarios = document.getElementById("tabContentUsuarios");
     const tabSolicitudes = document.getElementById("tabContentSolicitudes");
+    const tabApelaciones = document.getElementById("tabContentApelaciones");
     const btnUsuarios = document.getElementById("tabAdminUsuarios");
     const btnSolicitudes = document.getElementById("tabAdminSolicitudes");
+    const btnApelaciones = document.getElementById("tabAdminApelaciones");
+
+    // Ocultar todos
+    [tabUsuarios, tabSolicitudes, tabApelaciones].forEach(el => el && (el.style.display = "none"));
+    [btnUsuarios, btnSolicitudes, btnApelaciones].forEach(el => el && el.classList.remove("active"));
 
     if (tab === 'usuarios') {
         tabUsuarios.style.display = "block";
-        tabSolicitudes.style.display = "none";
         btnUsuarios.classList.add("active");
-        btnSolicitudes.classList.remove("active");
-    } else {
-        tabUsuarios.style.display = "none";
+    } else if (tab === 'solicitudes') {
         tabSolicitudes.style.display = "block";
-        btnUsuarios.classList.remove("active");
         btnSolicitudes.classList.add("active");
         cargarSolicitudes();
+    } else if (tab === 'apelaciones') {
+        tabApelaciones.style.display = "block";
+        btnApelaciones.classList.add("active");
+        cargarApelaciones();
     }
 };
 
@@ -274,6 +319,106 @@ window.resolverSolicitud = async function(solicitudId, nuevoEstado) {
     alert(`✅ Solicitud ${nuevoEstado === 'aprobado' ? 'aprobada' : 'rechazada'}.`);
     await cargarSolicitudes();
 };
+
+async function cargarApelaciones() {
+    const contenedor = document.getElementById("listaApelaciones");
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando apelaciones...</p>";
+
+    const { data: apelaciones, error } = await supabase
+        .from('apelaciones')
+        .select('*, usuarios!apelaciones_user_id_fkey(username, email)')
+        .eq('estado', 'pendiente')
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        console.error("Error al cargar apelaciones:", error);
+        contenedor.innerHTML = "<p style='color:#ff4d6d; text-align:center;'>Error al cargar apelaciones.</p>";
+        return;
+    }
+
+    const badge = document.getElementById("badgeApelaciones");
+    if (badge) {
+        if (apelaciones && apelaciones.length > 0) {
+            badge.textContent = apelaciones.length;
+            badge.style.display = "inline-block";
+        } else {
+            badge.style.display = "none";
+        }
+    }
+
+    if (!apelaciones || apelaciones.length === 0) {
+        contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>No hay apelaciones pendientes.</p>";
+        return;
+    }
+
+    contenedor.innerHTML = apelaciones.map(a => `
+        <div class="solicitud-card">
+            <div class="solicitud-header">
+                <div>
+                    <strong>@${escapeHTML(a.usuarios?.username) || 'sin_nombre'}</strong>
+                    <div class="solicitud-email">${escapeHTML(a.usuarios?.email) || 'N/A'}</div>
+                </div>
+                <span class="solicitud-fecha">${new Date(a.created_at).toLocaleDateString('es-AR')}</span>
+            </div>
+            <p class="solicitud-mensaje">"${escapeHTML(a.mensaje)}"</p>
+            <div class="solicitud-acciones">
+                <button onclick="resolverApelacion(${a.id}, 'aprobada')" class="btn-primary solicitud-btn">✅ Aprobar</button>
+                <button onclick="resolverApelacion(${a.id}, 'rechazada')" class="btn-outline solicitud-btn">❌ Rechazar</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+window.resolverApelacion = async function(apelacionId, nuevoEstado) {
+    const mensaje = nuevoEstado === 'aprobada'
+        ? '¿Aprobar esta apelación? El usuario va a recuperar su cuenta como "usuario común".'
+        : '⚠️ ¿Rechazar esta apelación? El usuario NO va a poder volver a apelar nunca más.';
+
+    if (!confirm(mensaje)) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // 1. Actualizar la apelación
+    const { data: apelacion, error: errorApelacion } = await supabase
+        .from('apelaciones')
+        .update({
+            estado: nuevoEstado,
+            revisado_por: user.id,
+            revisado_at: new Date().toISOString()
+        })
+        .eq('id', apelacionId)
+        .select()
+        .single();
+
+    if (errorApelacion) {
+        console.error("Error actualizando apelación:", errorApelacion);
+        alert("⚠️ No se pudo actualizar la apelación.");
+        return;
+    }
+
+    // 2. Si se aprobó, cambiar el rol del usuario a 'usuario'
+    if (nuevoEstado === 'aprobada' && apelacion?.user_id) {
+        const { error: errorRol } = await supabase
+            .from('usuarios')
+            .update({ role: 'usuario' })
+            .eq('id', apelacion.user_id);
+
+        if (errorRol) {
+            console.error("Error actualizando rol:", errorRol);
+            alert("⚠️ Se aprobó la apelación, pero no se pudo restaurar el rol. Hacelo manualmente.");
+            return;
+        }
+    }
+
+    alert(`✅ Apelación ${nuevoEstado === 'aprobada' ? 'aprobada' : 'rechazada'}.`);
+    await cargarApelaciones();
+    await loadUsersList(currentAdminRole);
+};
+
+window.cargarApelaciones = cargarApelaciones;
 
 // ============================================================
 // RE-RENDER AL ROTAR / CAMBIAR TAMAÑO

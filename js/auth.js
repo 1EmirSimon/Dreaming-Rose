@@ -9,6 +9,7 @@
 
 import { supabase } from "./supabase.js";
 
+
 let isRegisterMode = false; // false = pantalla de login, true = pantalla de registro
 let authWidgetId = null;    // ID que nos da Cloudflare para ESTE widget de captcha en particular
 
@@ -71,9 +72,12 @@ async function handleProfile(user) {
     // Chequeo de baneo: si su rol es "banned", lo sacamos de la sesión
     // apenas lo detectamos (esto se dispara solo, en cualquier página).
     if (profile && profile.role?.toLowerCase() === 'banned') {
-        alert("Tu cuenta ha sido suspendida. Contacta a soporte si crees que es un error.");
-        await supabase.auth.signOut();
-        updateUI(null, null);
+        updateUI(user, profile); // Mostrar la UI base igual
+
+        // Abrir el modal de apelación (el baneado ve solo eso)
+        if (typeof window.mostrarModalApelacion === "function") {
+            await window.mostrarModalApelacion(user.id);
+        }
         return;
     }
 

@@ -1,4 +1,5 @@
 import { startIntro } from "./loader.js";
+import "./apelaciones.js";
 import "./password.js";
 import "./username.js";
 import "./solicitudes.js";

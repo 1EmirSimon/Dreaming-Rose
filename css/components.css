@@ -883,3 +883,101 @@ select:focus {
     flex: 1;
     min-width: 100px;
 }
+
+/* =========================================================
+   SUB-PESTAÑAS DEL PANEL (Admins / Usuarios / Baneados)
+========================================================= */
+.admin-subtabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.admin-subtabs::-webkit-scrollbar {
+    display: none;
+}
+
+.admin-subtab {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    color: #888;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.admin-subtab:hover {
+    color: #fff;
+    border-color: rgba(255, 77, 109, 0.3);
+}
+
+.admin-subtab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+/* =========================================================
+   BADGES POR ROL
+========================================================= */
+.badge-usuario {
+    color: #aaa;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.badge-creador {
+    color: #00fff7;
+    border-color: rgba(0, 255, 247, 0.3);
+}
+
+.badge-moderador {
+    color: #ffb800;
+    border-color: rgba(255, 184, 0, 0.3);
+}
+
+.badge-root {
+    color: #ff4d6d;
+    border-color: rgba(255, 77, 109, 0.4);
+    background: rgba(255, 77, 109, 0.08);
+}
+
+.badge-banned {
+    color: #ff4d6d;
+    border-color: rgba(255, 77, 109, 0.5);
+    background: rgba(255, 77, 109, 0.15);
+    font-weight: 800;
+}
+
+/* =========================================================
+   FILAS Y TARJETAS CON COLORES POR ROL
+========================================================= */
+
+/* Staff (mod/root) - borde dorado/rosa sutil */
+.admin-user-row.admin-user-staff,
+.admin-user-card.admin-user-staff {
+    border-left: 3px solid var(--accent);
+}
+
+/* Baneados - tinte rojo */
+.admin-user-row.admin-user-banned,
+.admin-user-card.admin-user-banned {
+    background: rgba(255, 77, 109, 0.05);
+    border-left: 3px solid #ff4d6d;
+}
+
+/* =========================================================
+   MODAL DE APELACIÓN
+========================================================= */
+#apelacionModal .modal-content {
+    border: 1px solid rgba(255, 77, 109, 0.4);
+    box-shadow: 0 0 30px rgba(255, 77, 109, 0.2);
+}
