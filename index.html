@@ -343,41 +343,27 @@
 <div id="adminModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 800px; width: 90%;">
         <h2>PANEL DE ADMINISTRACIÓN</h2>
-<p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Gestión de Roles y Usuarios de Dreaming Rose</p>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Gestión de Roles y Usuarios de Dreaming Rose</p>
 
-<!-- Pestañas -->
-<div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-    <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
-    <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span></button>
-</div>
-
-<!-- Tab Usuarios -->
-<div id="tabContentUsuarios" style="max-height: 350px; overflow-y: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border); color: var(--neon);">
-                        <th style="padding: 10px;">Usuario</th>
-                        <th style="padding: 10px;">Email</th>
-                        <th style="padding: 10px;">Rol</th>
-                        <th style="padding: 10px;">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="adminUsersList">
-                    <!-- Carga dinámica mediante js/admin.js -->
-                </tbody>
-            </table>
+        <!-- Pestañas -->
+        <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
+            <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
+                Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
+            </button>
         </div>
 
-    </table>
-</div>
+        <!-- Tab Usuarios -->
+        <div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
+            <div id="adminUsersList"></div>
+        </div>
 
-    <!-- Tab Solicitudes -->
-    <div id="tabContentSolicitudes" style="max-height: 350px; overflow-y: auto; display: none;">
-        <div id="listaSolicitudes"></div>
-    </div>
+        <!-- Tab Solicitudes -->
+        <div id="tabContentSolicitudes" style="max-height: 400px; overflow-y: auto; display: none;">
+            <div id="listaSolicitudes"></div>
+        </div>
 
-    <button onclick="closeAdminModal()" class="btn-close" style="margin-top: 20px;">CERRAR</button>
-
+        <button onclick="closeAdminModal()" class="btn-close" style="margin-top: 20px;">CERRAR</button>
     </div>
 </div>
 

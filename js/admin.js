@@ -36,6 +36,7 @@ export async function openAdminModal() {
             modal.classList.add("active");
             document.body.style.overflow = "hidden";
             await loadUsersList(currentAdminRole);
+            await cargarSolicitudes();
         }
     } catch (err) {
         console.error("Error abriendo el panel de admin:", err);
@@ -51,11 +52,12 @@ export function closeAdminModal() {
     }
 }
 
+// Carga los usuarios. En desktop se ve como tabla, en mobile como tarjetas.
 async function loadUsersList(currentRole) {
-    const tbody = document.getElementById("adminUsersList");
-    if (!tbody) return;
+    const contenedor = document.getElementById("adminUsersList");
+    if (!contenedor) return;
 
-    tbody.innerHTML = "<tr><td colspan='4'>Cargando usuarios...</td></tr>";
+    contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando usuarios...</p>";
 
     const isRoot = currentRole === 'root';
 
@@ -66,22 +68,20 @@ async function loadUsersList(currentRole) {
 
     if (error) {
         console.error("Error al obtener usuarios:", error);
-        tbody.innerHTML = "<tr><td colspan='4'>Error al cargar la lista de usuarios.</td></tr>";
+        contenedor.innerHTML = "<p style='color:#ff4d6d; text-align:center;'>Error al cargar la lista.</p>";
         return;
     }
 
-    tbody.innerHTML = "";
+    // ¿Estamos en mobile?
+    const esMobile = window.innerWidth <= 700;
+
+    contenedor.innerHTML = "";
 
     usuarios.forEach(userItem => {
-        const tr = document.createElement("tr");
-        const currentRole = (userItem.role || 'usuario').toLowerCase();
+        const currentUserRole = (userItem.role || 'usuario').toLowerCase();
 
-        // Reglas para bloquear la edición del rol:
-        //   - No puedo cambiar mi propio rol
-        //   - Un root no puede degradar a otro root
-        //   - Un moderador no puede tocar a un root
         const esMiFila = userItem.id === currentAdminId;
-        const usuarioEsRoot = currentRole === 'root';
+        const usuarioEsRoot = currentUserRole === 'root';
 
         let puedeEditar = true;
         let motivoBloqueo = "";
@@ -97,28 +97,48 @@ async function loadUsersList(currentRole) {
             motivoBloqueo = "No se puede degradar a otro root";
         }
 
-                tr.innerHTML = `
-            <td><strong>@${escapeHTML(userItem.username) || 'sin_nombre'}</strong></td>
-            <td>${escapeHTML(userItem.email) || 'N/A'}</td>
-            <td><span class="badge-role">${currentRole.toUpperCase()}</span></td>
-            <td>
-                ${
-                    puedeEditar
-                        ? `
-                            <select class="role-select" onchange="changeUserRole('${userItem.id}', this.value)">
-                                <option value="usuario" ${currentRole === 'usuario' ? 'selected' : ''}>Usuario</option>
-                                <option value="creador" ${currentRole === 'creador' ? 'selected' : ''}>Creador</option>
-                                <option value="moderador" ${currentRole === 'moderador' ? 'selected' : ''}>Moderador</option>
-                                ${isRoot ? `<option value="root" ${currentRole === 'root' ? 'selected' : ''}>Root</option>` : ''}
-                                <option value="banned" ${currentRole === 'banned' ? 'selected' : ''}>⛔ Banear</option>
-                            </select>
-                        `
-                        : `<span style="color: #666; font-size: 0.75rem;">${motivoBloqueo}</span>`
-                }
-            </td>
+        const selectHTML = `
+            <select class="role-select" onchange="changeUserRole('${userItem.id}', this.value)">
+                <option value="usuario" ${currentUserRole === 'usuario' ? 'selected' : ''}>Usuario</option>
+                <option value="creador" ${currentUserRole === 'creador' ? 'selected' : ''}>Creador</option>
+                <option value="moderador" ${currentUserRole === 'moderador' ? 'selected' : ''}>Moderador</option>
+                ${isRoot ? `<option value="root" ${currentUserRole === 'root' ? 'selected' : ''}>Root</option>` : ''}
+                <option value="banned" ${currentUserRole === 'banned' ? 'selected' : ''}>⛔ Banear</option>
+            </select>
         `;
 
-        tbody.appendChild(tr);
+        const accionHTML = puedeEditar
+            ? selectHTML
+            : `<span class="admin-blocked-msg">${motivoBloqueo}</span>`;
+
+        const username = escapeHTML(userItem.username) || 'sin_nombre';
+        const email = escapeHTML(userItem.email) || 'N/A';
+
+        if (esMobile) {
+            // En mobile: tarjeta
+            const card = document.createElement("div");
+            card.className = "admin-user-card";
+            card.innerHTML = `
+                <div class="admin-user-card-header">
+                    <strong>@${username}</strong>
+                    <span class="badge-role">${currentUserRole.toUpperCase()}</span>
+                </div>
+                <div class="admin-user-card-email">${email}</div>
+                <div class="admin-user-card-action">${accionHTML}</div>
+            `;
+            contenedor.appendChild(card);
+        } else {
+            // En desktop: fila tipo tabla
+            const row = document.createElement("div");
+            row.className = "admin-user-row";
+            row.innerHTML = `
+                <div class="admin-cell admin-cell-user"><strong>@${username}</strong></div>
+                <div class="admin-cell admin-cell-email">${email}</div>
+                <div class="admin-cell admin-cell-role"><span class="badge-role">${currentUserRole.toUpperCase()}</span></div>
+                <div class="admin-cell admin-cell-action">${accionHTML}</div>
+            `;
+            contenedor.appendChild(row);
+        }
     });
 }
 
@@ -138,6 +158,10 @@ export async function changeUserRole(userId, newRole) {
         alert("⚠️ No se pudo cambiar el rol. Verifica las políticas RLS en Supabase.");
     }
 }
+
+// ============================================================
+// PESTAÑAS DEL PANEL
+// ============================================================
 
 window.mostrarTabAdmin = function(tab) {
     const tabUsuarios = document.getElementById("tabContentUsuarios");
@@ -163,7 +187,7 @@ async function cargarSolicitudes() {
     const contenedor = document.getElementById("listaSolicitudes");
     if (!contenedor) return;
 
-    contenedor.innerHTML = "<p style='color:#888;'>Cargando solicitudes...</p>";
+    contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando solicitudes...</p>";
 
     const { data: solicitudes, error } = await supabase
         .from('solicitudes_creador')
@@ -173,11 +197,10 @@ async function cargarSolicitudes() {
 
     if (error) {
         console.error("Error al cargar solicitudes:", error);
-        contenedor.innerHTML = "<p style='color:#ff4d6d;'>Error al cargar solicitudes.</p>";
+        contenedor.innerHTML = "<p style='color:#ff4d6d; text-align:center;'>Error al cargar solicitudes.</p>";
         return;
     }
 
-    // Actualizar el badge
     const badge = document.getElementById("badgeSolicitudes");
     if (badge) {
         if (solicitudes && solicitudes.length > 0) {
@@ -194,18 +217,18 @@ async function cargarSolicitudes() {
     }
 
     contenedor.innerHTML = solicitudes.map(s => `
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div class="solicitud-card">
+            <div class="solicitud-header">
                 <div>
-                    <strong>@${s.usuarios?.username || 'sin_nombre'}</strong>
-                    <div style="font-size: 0.75rem; color: #888;">${s.usuarios?.email || 'N/A'}</div>
+                    <strong>@${escapeHTML(s.usuarios?.username) || 'sin_nombre'}</strong>
+                    <div class="solicitud-email">${escapeHTML(s.usuarios?.email) || 'N/A'}</div>
                 </div>
-                <span style="font-size: 0.7rem; color: #888;">${new Date(s.created_at).toLocaleDateString('es-AR')}</span>
+                <span class="solicitud-fecha">${new Date(s.created_at).toLocaleDateString('es-AR')}</span>
             </div>
-            <p style="font-size: 0.85rem; color: #ccc; margin-bottom: 12px;">"${s.mensaje}"</p>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="resolverSolicitud(${s.id}, 'aprobado')" class="btn-primary" style="padding: 6px 12px; font-size: 0.7rem;">✅ Aprobar</button>
-                <button onclick="resolverSolicitud(${s.id}, 'rechazado')" class="btn-outline" style="padding: 6px 12px; font-size: 0.7rem;">❌ Rechazar</button>
+            <p class="solicitud-mensaje">"${escapeHTML(s.mensaje)}"</p>
+            <div class="solicitud-acciones">
+                <button onclick="resolverSolicitud(${s.id}, 'aprobado')" class="btn-primary solicitud-btn">✅ Aprobar</button>
+                <button onclick="resolverSolicitud(${s.id}, 'rechazado')" class="btn-outline solicitud-btn">❌ Rechazar</button>
             </div>
         </div>
     `).join("");
@@ -218,7 +241,6 @@ window.resolverSolicitud = async function(solicitudId, nuevoEstado) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // 1. Actualizar la solicitud
     const { data: solicitud, error: errorSolicitud } = await supabase
         .from('solicitudes_creador')
         .update({
@@ -236,7 +258,6 @@ window.resolverSolicitud = async function(solicitudId, nuevoEstado) {
         return;
     }
 
-    // 2. Si se aprobó, actualizar el rol del usuario
     if (nuevoEstado === 'aprobado' && solicitud?.user_id) {
         const { error: errorRol } = await supabase
             .from('usuarios')
@@ -254,10 +275,21 @@ window.resolverSolicitud = async function(solicitudId, nuevoEstado) {
     await cargarSolicitudes();
 };
 
-// Exponer en window
-window.openSolicitudCreador = window.openSolicitudCreador || function() {};
-window.closeSolicitudCreador = window.closeSolicitudCreador || function() {};
+// ============================================================
+// RE-RENDER AL ROTAR / CAMBIAR TAMAÑO
+// ============================================================
+let resizeTimeout;
+window.addEventListener("resize", () => {
+    const modal = document.getElementById("adminModal");
+    if (!modal || !modal.classList.contains("active")) return;
+
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (currentAdminRole) loadUsersList(currentAdminRole);
+    }, 250);
+});
 
 window.openAdminModal = openAdminModal;
 window.closeAdminModal = closeAdminModal;
 window.changeUserRole = changeUserRole;
+window.cargarSolicitudes = cargarSolicitudes;

@@ -340,7 +340,7 @@ async function loadRecentComments() {
 
     const { data: comentarios } = await supabase
         .from('comentarios_juegos')
-        .select('*')
+        .select('*, usuarios(username)')
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -351,11 +351,13 @@ async function loadRecentComments() {
 
     container.innerHTML = "";
     comentarios.forEach(c => {
+        const nombreMostrar = c.usuarios?.username || c.username || "Usuario eliminado";
+
         const div = document.createElement("div");
         div.className = "recent-comment-card";
-                div.innerHTML = `
+        div.innerHTML = `
             <div class="comment-user-header">
-                <strong style="font-size: 0.85rem; color: var(--neon);">${escapeHTML(c.username)}:</strong>
+                <strong style="font-size: 0.85rem; color: var(--neon);">${escapeHTML(nombreMostrar)}:</strong>
             </div>
             <div class="comment-text">${escapeHTML(c.comentario)}</div>
         `;
@@ -371,7 +373,7 @@ async function loadGameComments(juegoId) {
 
     const { data: comentarios } = await supabase
         .from('comentarios_juegos')
-        .select('*')
+        .select('*, usuarios(username)')
         .eq('juego_id', juegoId)
         .order('created_at', { ascending: true });
 
@@ -381,11 +383,12 @@ async function loadGameComments(juegoId) {
         return;
     }
 
-        container.innerHTML = comentarios.map(c => {
+    container.innerHTML = comentarios.map(c => {
         const esNuevo = !knownCommentIds.has(c.id);
+        const nombreMostrar = c.usuarios?.username || c.username || "Usuario eliminado";
         return `
         <div class="comment-card ${esNuevo ? 'comment-enter' : ''}" style="margin-bottom: 8px;">
-            <strong style="color: var(--neon);">${escapeHTML(c.username)}:</strong> 
+            <strong style="color: var(--neon);">${escapeHTML(nombreMostrar)}:</strong> 
             <span style="color: #ccc;">${escapeHTML(c.comentario)}</span>
         </div>
     `;

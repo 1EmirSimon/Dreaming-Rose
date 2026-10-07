@@ -682,3 +682,204 @@ select:focus {
     padding: 10px 24px;
     font-size: 0.75rem;
 }
+
+
+/* =========================================================
+   PANEL DE ADMIN — responsive
+========================================================= */
+
+#adminUsersList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ---------- DESKTOP: grilla tipo tabla ---------- */
+.admin-user-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.6fr 0.9fr 1.3fr;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    transition: background 0.2s ease;
+}
+
+.admin-user-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-cell-email {
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+/* ---------- Estilos compartidos ---------- */
+.badge-role {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--neon);
+    white-space: nowrap;
+}
+
+.role-select {
+    background: #1a1a24;
+    color: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.2s ease;
+}
+
+.role-select:hover,
+.role-select:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+.admin-blocked-msg {
+    color: #666;
+    font-size: 0.72rem;
+    font-style: italic;
+}
+
+/* =========================================================
+   MOBILE: cada usuario es una tarjeta
+========================================================= */
+@media (max-width: 700px) {
+
+    .admin-user-row {
+        display: none;
+    }
+
+    .admin-user-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: border-color 0.2s ease;
+    }
+
+    .admin-user-card:hover {
+        border-color: rgba(255, 77, 109, 0.3);
+    }
+
+    .admin-user-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: #fff;
+    }
+
+    .admin-user-card-header strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .admin-user-card-email {
+        color: #888;
+        font-size: 0.75rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .admin-user-card-action {
+        margin-top: 4px;
+    }
+
+    .admin-user-card .role-select {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+
+    .admin-user-card .admin-blocked-msg {
+        display: block;
+        padding: 8px;
+        background: rgba(255, 77, 109, 0.05);
+        border-radius: 6px;
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   SOLICITUDES — tarjetas responsive (mobile y desktop)
+========================================================= */
+
+.solicitud-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.solicitud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.solicitud-header strong {
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.solicitud-email {
+    color: #888;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.solicitud-fecha {
+    color: #666;
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+.solicitud-mensaje {
+    color: #ccc;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0 0 12px 0;
+    font-style: italic;
+}
+
+.solicitud-acciones {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.solicitud-btn {
+    padding: 8px 14px;
+    font-size: 0.7rem;
+    flex: 1;
+    min-width: 100px;
+}
