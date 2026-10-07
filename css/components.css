@@ -106,26 +106,21 @@
 
 }
 
+
+
 .card-media,
 .game-card img {
-
     width: 100%;
     height: 220px;
-
     overflow: hidden;
-
 }
 
-.card-media img,
-.game-card img {
-
+/* Solo aplica a las tarjetas de proyecto (NO al modal) */
+.card-media img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-
     transition: 0.7s ease;
-
 }
 
 .project-card:hover img,
