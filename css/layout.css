@@ -337,3 +337,808 @@ button {
     }
 
 }
+
+/* ============================================================
+   RESPONSIVE GLOBAL — Mobile First mejorado
+   ============================================================
+   Cubre todas las secciones del sitio en mobile:
+   - Hero, Navbar
+   - Hub de comunidad (tarjetas de juegos)
+   - Ranking + comentarios
+   - Modal de juego (detalles)
+   - Modales generales (auth, admin, etc.)
+   - Botones, footer, loader
+   ============================================================ */
+
+
+/* ============================================================
+   1. HERO + NAVBAR
+============================================================ */
+
+@media (max-width: 900px) {
+
+    /* Hero más compacto */
+    .hero {
+        min-height: auto;
+        padding: 110px 0 60px;
+    }
+
+    .hero-content {
+        padding: 0 20px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: clamp(2.4rem, 11vw, 4rem);
+        line-height: 0.95;
+        margin-bottom: 18px;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin: 0 auto 28px;
+        max-width: 90%;
+    }
+
+    .tagline {
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+        margin-bottom: 12px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        max-width: 280px;
+        margin: 0 auto;
+    }
+
+    .hero-actions .btn-main,
+    .hero-actions .btn-outline {
+        width: 100%;
+        text-align: center;
+        padding: 13px 20px;
+        font-size: 0.75rem;
+    }
+
+    /* Navbar un poco más chica */
+    .navbar {
+        height: 68px;
+    }
+
+    .nav-container {
+        padding: 0 18px;
+    }
+
+    .logo {
+        width: 42px;
+        height: 42px;
+        margin-right: 10px;
+    }
+
+    .brand {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+    }
+}
+
+@media (max-width: 500px) {
+    .hero {
+        padding: 100px 0 50px;
+    }
+
+    .hero h1 {
+        font-size: clamp(2rem, 13vw, 3.2rem);
+    }
+
+    .hero p {
+        font-size: 0.88rem;
+        margin-bottom: 22px;
+    }
+
+    .navbar {
+        height: 62px;
+    }
+
+    .nav-container {
+        padding: 0 12px;
+    }
+
+    .logo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .hamburger-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .hamburger-btn span {
+        width: 22px;
+    }
+}
+
+
+/* ============================================================
+   2. SECCIONES GENERALES
+============================================================ */
+
+@media (max-width: 900px) {
+    .section-dark,
+    .section-gradient {
+        padding: 70px 0;
+    }
+
+    .container {
+        padding: 0 20px;
+    }
+
+    .section-title {
+        margin-bottom: 24px;
+    }
+
+    .section-title h2 {
+        font-size: 1.1rem;
+        letter-spacing: 3px;
+    }
+
+    .title-line {
+        width: 45px;
+        height: 2px;
+        margin-top: 8px;
+    }
+}
+
+@media (max-width: 500px) {
+    .section-dark,
+    .section-gradient {
+        padding: 50px 0;
+    }
+
+    .container {
+        padding: 0 15px;
+    }
+
+    .section-title h2 {
+        font-size: 1rem;
+        letter-spacing: 2px;
+    }
+}
+
+
+/* ============================================================
+   3. HUB DE COMUNIDAD — Tarjetas de juegos
+============================================================ */
+
+@media (max-width: 900px) {
+    .hub-container {
+        padding: 18px 14px;
+        margin-bottom: 24px;
+        border-radius: 10px;
+    }
+
+    .hub-header h2 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+
+    /* Filtros: scroll horizontal en celu */
+    .filter-tabs-primary,
+    .filter-tabs-secondary {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    .filter-tabs-primary::-webkit-scrollbar,
+    .filter-tabs-secondary::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn,
+    .sub-tab-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding: 7px 14px;
+        font-size: 0.75rem;
+    }
+
+    .tab-slider {
+        display: none; /* el slider queda raro con scroll horizontal */
+    }
+
+    /* Grid: 2 columnas en celu */
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .game-card-hub {
+        border-radius: 8px;
+    }
+
+    .game-card-thumb {
+        height: 110px;
+        padding: 6px;
+    }
+
+    .game-card-info {
+        padding: 10px;
+    }
+
+    .game-card-info h4 {
+        font-size: 0.8rem;
+        margin-bottom: 3px;
+    }
+
+    .game-card-author {
+        font-size: 0.68rem;
+        margin-bottom: 6px;
+    }
+
+    .game-card-footer {
+        margin-top: 8px;
+    }
+
+    .like-btn-direct {
+        padding: 3px 6px;
+        font-size: 0.68rem;
+    }
+
+    .star-rating {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 400px) {
+    /* En celu muy chico, 1 columna */
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-card-thumb {
+        height: 160px;
+    }
+}
+
+
+/* ============================================================
+   4. RANKING Y COMENTARIOS
+============================================================ */
+
+@media (max-width: 900px) {
+    .ranking-layout-box {
+        padding: 18px 14px;
+        margin-bottom: 0;
+        border-radius: 10px;
+    }
+
+    .ranking-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .ranking-header h2 {
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+    }
+
+    .season-badge {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+
+    .ranking-grid-content {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    /* Top 5 */
+    .ranking-item-card {
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+    }
+
+    .ranking-item-left {
+        gap: 10px;
+    }
+
+    .rank-number {
+        width: 26px;
+        height: 26px;
+        font-size: 0.95rem;
+    }
+
+    .rank-thumb {
+        width: 38px;
+        height: 38px;
+    }
+
+    .ranking-item-left strong {
+        font-size: 0.85rem !important;
+    }
+
+    .ranking-item-left > div > div {
+        font-size: 0.68rem !important;
+    }
+
+    .rank-pts {
+        font-size: 0.85rem;
+    }
+
+    /* Comentarios recientes */
+    .ranking-right-col h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .recent-comment-card {
+        padding: 9px 11px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+    }
+
+    .comment-user-header strong {
+        font-size: 0.78rem !important;
+    }
+
+    .comment-text {
+        font-size: 0.72rem;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 500px) {
+    .ranking-layout-box {
+        padding: 15px 12px;
+    }
+
+    .ranking-item-card {
+        padding: 8px 10px;
+    }
+
+    .rank-thumb {
+        width: 34px;
+        height: 34px;
+    }
+}
+
+
+/* ============================================================
+   5. MODAL DE JUEGO (detalles)
+============================================================ */
+
+@media (max-width: 900px) {
+    .modal-content.game-detail-modal {
+        max-width: 100%;
+        width: 95%;
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .game-modal-header {
+        margin-bottom: 12px;
+    }
+
+    .game-title-container h2 {
+        font-size: 1.15rem;
+    }
+
+    .game-creator-text {
+        font-size: 0.78rem;
+    }
+
+    .game-icon {
+        font-size: 1.5rem;
+    }
+
+    /* Body del modal: apilado */
+    .game-modal-body {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 14px;
+    }
+
+    .game-modal-cover img {
+        height: 160px;
+    }
+
+    .game-description-text {
+        font-size: 0.85rem;
+    }
+
+    .verificacion-ok,
+    .verificacion-pendiente,
+    .verificacion-peligro {
+        font-size: 0.75rem;
+        padding: 8px 10px;
+    }
+
+    .btn-play-large {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+
+    /* Stats en tarjeta aparte */
+    .game-modal-stats {
+        border-left: none;
+        border-top: 1px solid #282c42;
+        padding-left: 0;
+        padding-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .game-modal-stats h3 {
+        grid-column: 1/-1;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+
+    .stat-item {
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        font-size: 0.68rem;
+    }
+
+    .stat-value {
+        font-size: 0.8rem;
+    }
+
+    /* Comentarios del modal */
+    .game-modal-comments-section {
+        margin-top: 14px;
+        padding: 14px;
+    }
+
+    .game-modal-comments-section h3 {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .comments-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .comments-list-box {
+        max-height: 220px;
+        padding-right: 4px;
+    }
+
+    .comment-card {
+        padding: 8px 10px;
+        font-size: 0.78rem;
+        gap: 6px;
+    }
+
+    .comment-input-form {
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .comment-input-form input {
+        padding: 9px 10px;
+        font-size: 0.8rem;
+    }
+
+    .comment-input-form button {
+        padding: 9px 14px;
+        font-size: 0.7rem;
+    }
+
+    .comment-login-prompt {
+        padding: 14px;
+    }
+
+    .comment-login-prompt p {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .modal-content.game-detail-modal {
+        width: 100%;
+        border-radius: 0;
+        min-height: 100vh;
+        padding: 14px;
+    }
+
+    .game-modal-cover img {
+        height: 140px;
+    }
+
+    .game-modal-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+}
+
+
+/* ============================================================
+   6. MODALES GENERALES (auth, admin, publicar, etc.)
+============================================================ */
+
+@media (max-width: 900px) {
+    .modal-overlay,
+    .game-modal-container,
+    .auth-modal,
+    .admin-modal,
+    .publish-modal {
+        padding: 20px 12px !important;
+        align-items: flex-start !important;
+    }
+
+    .modal-content,
+    .game-modal-content,
+    .auth-modal-content,
+    .admin-modal-content,
+    .publish-modal-content {
+        width: 95%;
+        padding: 20px 16px;
+        border-radius: 10px;
+        margin: 20px auto;
+    }
+
+    .modal-content h2 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+
+    .modal-content p {
+        font-size: 0.8rem;
+    }
+
+    .modal-close-icon {
+        top: 12px;
+        right: 14px;
+        font-size: 1.3rem;
+    }
+
+    /* Inputs más compactos */
+    .modal-content input[type="text"],
+    .modal-content input[type="email"],
+    .modal-content input[type="password"],
+    .modal-content input[type="url"],
+    .modal-content input[type="datetime-local"],
+    .modal-content textarea {
+        padding: 10px 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Botones */
+    .modal-content .btn-main,
+    .modal-content .btn-primary,
+    .modal-content .btn-outline,
+    .modal-content .btn-close {
+        padding: 11px 20px;
+        font-size: 0.72rem;
+        letter-spacing: 1.5px;
+    }
+
+    /* Panel admin: pestañas scrollables */
+    .modal-content > div[style*="display: flex"][style*="gap: 8px"] {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+    }
+
+    .modal-content > div[style*="display: flex"][style*="gap: 8px"]::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 500px) {
+    .modal-overlay {
+        padding: 10px 8px !important;
+    }
+
+    .modal-content {
+        width: 100%;
+        padding: 16px 14px;
+        border-radius: 8px;
+    }
+
+    .modal-content h2 {
+        font-size: 1rem;
+    }
+}
+
+
+/* ============================================================
+   7. PANEL ADMIN
+============================================================ */
+
+@media (max-width: 700px) {
+    .admin-subtabs {
+        gap: 5px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 8px;
+    }
+
+    .admin-subtabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .admin-subtab {
+        padding: 5px 10px;
+        font-size: 0.65rem;
+        flex-shrink: 0;
+    }
+
+    .admin-user-card {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .admin-user-card-header {
+        font-size: 0.85rem;
+    }
+
+    .admin-user-card-email {
+        font-size: 0.7rem;
+    }
+
+    .role-select {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+
+/* ============================================================
+   8. SOLICITUDES Y APELACIONES
+============================================================ */
+
+@media (max-width: 700px) {
+    .solicitud-card {
+        padding: 14px 12px;
+        margin-bottom: 10px;
+    }
+
+    .solicitud-header strong {
+        font-size: 0.92rem;
+    }
+
+    .solicitud-email {
+        font-size: 0.72rem;
+    }
+
+    .solicitud-mensaje {
+        font-size: 0.82rem;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .solicitud-btn {
+        padding: 10px 14px;
+        font-size: 0.75rem;
+    }
+}
+
+
+/* ============================================================
+   9. FOOTER
+============================================================ */
+
+@media (max-width: 500px) {
+    .footer {
+        padding: 26px 15px;
+    }
+
+    .footer p {
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+    }
+}
+
+
+/* ============================================================
+   10. LOADER
+============================================================ */
+
+@media (max-width: 500px) {
+    .loader-logo {
+        width: 100px;
+    }
+
+    .loader-title {
+        font-size: clamp(1.1rem, 5vw, 1.6rem);
+        letter-spacing: 3px;
+        gap: 2px;
+    }
+
+    .progress-container {
+        width: 200px;
+    }
+
+    #loading-text {
+        font-size: 0.75rem;
+    }
+}
+
+
+/* ============================================================
+   11. DETALLES FINOS
+============================================================ */
+
+@media (max-width: 900px) {
+    /* Evitar overflow horizontal */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Mejorar scroll táctil */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Los botones se "hunden" al tocar */
+    .btn-main:active,
+    .btn-primary:active,
+    .btn-outline:active,
+    .btn-close:active {
+        transform: scale(0.97);
+    }
+}
+
+
+/* ============================================================
+   12. MENÚ MOBILE — ajustes finos
+============================================================ */
+
+@media (max-width: 900px) {
+    .mobile-menu-panel {
+        width: 88%;
+        max-width: 320px;
+    }
+
+    .mobile-menu-link {
+        padding: 13px 14px;
+        font-size: 0.8rem;
+    }
+
+    .mobile-menu-icon {
+        font-size: 1rem;
+        min-width: 22px;
+    }
+
+    .mobile-menu-header {
+        padding: 0 20px 16px;
+    }
+
+    .mobile-menu-title {
+        font-size: 0.75rem;
+        letter-spacing: 4px;
+    }
+}
+
+@media (max-width: 400px) {
+    .mobile-menu-panel {
+        width: 92%;
+    }
+
+    .mobile-menu-link {
+        padding: 12px 12px;
+        font-size: 0.78rem;
+    }
+}
