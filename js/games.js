@@ -698,13 +698,54 @@ window.handlePublishGame = async function(event) {
     let finalImageUrl = "assets/images/Meteor Fighters.png";
 
     if (imageFileInput && imageFileInput.files && imageFileInput.files[0]) {
-        const file = imageFileInput.files[0];
+        let file = imageFileInput.files[0];
+
+        // --------------------------------------------
+        // COMPRIMIR LA IMAGEN ANTES DE SUBIRLA
+        // --------------------------------------------
+        // Si la imagen pesa más de 300KB, la comprimimos:
+        //   • Máximo 1920x1080 (para que se vea bien en cualquier pantalla)
+        //   • Calidad 0.82 (buen balance peso/calidad)
+        //   • Convierte a WebP si el navegador lo soporta (más liviano)
+        try {
+            if (typeof window.imageCompression === "function") {
+                const opciones = {
+                    maxSizeMB: 0.3,              // 300KB máximo
+                    maxWidthOrHeight: 1920,      // 1920px en el lado más largo
+                    useWebWorker: true,          // no traba la UI
+                    fileType: 'image/webp',      // formato más liviano
+                    initialQuality: 0.82,
+                };
+
+                const comprimida = await window.imageCompression(file, opciones);
+                const tamañoAntes = (file.size / 1024).toFixed(0);
+                const tamañoDespues = (comprimida.size / 1024).toFixed(0);
+                console.log(`🖼️ Imagen comprimida: ${tamañoAntes}KB → ${tamañoDespues}KB`);
+
+                // Reemplazar el archivo por la versión comprimida
+                file = new File([comprimida], file.name.replace(/\.[^.]+$/, '.webp'), {
+                    type: 'image/webp'
+                });
+            } else {
+                console.warn("Librería de compresión no disponible, subiendo original");
+            }
+        } catch (err) {
+            console.error("Error comprimiendo imagen:", err);
+            // Si falla, subimos la original sin comprimir
+        }
+
+        // --------------------------------------------
+        // SUBIR A SUPABASE
+        // --------------------------------------------
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
             .from('portadas')
-            .upload(fileName, file);
+            .upload(fileName, file, {
+                contentType: file.type,
+                cacheControl: '31536000'   // cachear 1 año en el navegador
+            });
 
         if (uploadError) {
             console.error("Error al subir la imagen:", uploadError);
