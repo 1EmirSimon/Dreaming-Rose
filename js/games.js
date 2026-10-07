@@ -134,26 +134,16 @@ export async function initGames() {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
 
+    // Mostrar "cargando" en los contenedores
+    const gridHub = document.getElementById("community-games");
+    if (gridHub) gridHub.innerHTML = "<p style='color:#888; text-align:center; grid-column:1/-1;'>Cargando juegos...</p>";
+    const gridProy = document.getElementById("grid-proyectos");
+    if (gridProy) gridProy.innerHTML = "<p style='color:#888;'>Cargando proyectos...</p>";
+
     await cargarPalabrasProhibidas();
-
-    try {
-        await loadGamesData();
-    } catch (err) {
-        console.error("Error cargando los juegos:", err);
-    }
-
-    try {
-        await cargarProyectosOficiales();
-    } catch (err) {
-        console.error("Error cargando proyectos oficiales:", err);
-    }
-
-    try {
-        await loadRecentComments();
-    } catch (err) {
-        console.error("Error cargando comentarios recientes:", err);
-    }
-
+    await loadGamesData();
+    await cargarProyectosOficiales();
+    await loadRecentComments();
     startScheduledGamesWatcher();
 }
 
@@ -231,22 +221,11 @@ async function loadGamesData() {
         .select('*')
         .order('created_at', { ascending: false });
 
-    const fallbackGame = {
-        id: 1,
-        title: "Meteor Fighters",
-        author: "Dreaming Rose",
-        description: "Enfréntate a criaturas prehistóricas en intensas batallas 2D.",
-        image_url: "assets/images/Meteor Fighters.png",
-        download_url: "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing",
-        likes_count: 0,
-        views_count: 1,
-        playing_count: 1
-    };
-
-    if (error || !juegos || juegos.length === 0) {
-        allGames = [fallbackGame];
+    if (error) {
+        console.error("Error cargando juegos:", error);
+        allGames = [];
     } else {
-        allGames = juegos;
+        allGames = juegos || [];
     }
 
     const now = new Date();
@@ -281,9 +260,11 @@ export async function cargarProyectosOficiales() {
     }
 
     if (!proyectos || proyectos.length === 0) {
+    if (!contenedor.innerHTML.trim() || contenedor.innerHTML.includes("Cargando")) {
         contenedor.innerHTML = "<p style='color:#888; grid-column: 1/-1;'>Todavía no hay proyectos oficiales.</p>";
-        return;
     }
+    return;
+}
 
     contenedor.innerHTML = "";
 
@@ -327,9 +308,9 @@ function renderGamesGrid(gamesList) {
     container.innerHTML = "";
 
     if (!gamesList.length) {
-        container.innerHTML = `<p style="color:#888; text-align: center; grid-column: 1/-1;">No hay juegos disponibles.</p>`;
-        return;
-    }
+    container.innerHTML = `<p style="color:#888; text-align: center; grid-column: 1/-1;">No hay juegos disponibles.</p>`;
+    return;
+}
 
     gamesList.forEach((game, index) => {
         const card = document.createElement("div");
