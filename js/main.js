@@ -1,5 +1,4 @@
 import { startIntro } from "./loader.js";
-import "./proyecto-oficial.js";
 import "./apelaciones.js";
 import "./password.js";
 import "./username.js";
@@ -11,6 +10,7 @@ import "./mobile-menu.js";
 import { waitForLaunch } from "./launch.js";
 import "./hero.js";
 import "./admin.js"; // Se importa el panel de administración
+import "./proyecto-oficial.js";
 
 
 initAuth();

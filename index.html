@@ -128,36 +128,24 @@
 
 <!-- MAIN -->
 <main>
+
+<!-- SECCIÓN PROYECTOS -->
 <section id="proyectos" class="section-dark">
     <div class="container">
-        <div class="section-title reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div class="section-title reveal with-action">
             <div>
                 <h2>NUESTROS PROYECTOS</h2>
                 <div class="title-line"></div>
             </div>
-            <!-- Botón visible solo para moderador/root -->
             <button id="btnAgregarProyectoOficial" onclick="openProyectoOficial()" class="btn-outline" style="display: none; padding: 8px 16px; font-size: 0.7rem;">
                 ＋ AGREGAR PROYECTO
             </button>
         </div>
         <div class="grid-projects" id="grid-proyectos">
-            <!-- Se carga dinámicamente -->
+            <!-- Se cargan dinámicamente desde la DB -->
         </div>
     </div>
 </section>
-                <article class="project-card reveal">
-                    <div class="card-media">
-                        <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters" class="project-cover-img">
-                    </div>
-                    <div class="card-body">
-                            <h3>Meteor Fighters</h3>
-                    <p>Fighting Game / 2D Pixel Art</p>
-                    <a href="#" class="link-arrow" onclick="event.preventDefault(); window.openGameDetails('Meteor Fighters');">VER DETALLES →</a>
-            </div>
-                </article>
-            </div>
-        </div>
-    </section>
 
 <!-- SECCIÓN COMUNIDAD ESTILO HUB CON FILTROS -->
 <section id="comunidad" class="section-dark">
@@ -254,17 +242,17 @@
 
             <!-- Centro: Descripción + Botón Jugar -->
             <div class="game-modal-center">
-    <p id="gameModalDescription" class="game-description-text">
-        Sin descripción disponible.
-    </p>
+                <p id="gameModalDescription" class="game-description-text">
+                    Sin descripción disponible.
+                </p>
 
-    <!-- Aviso de verificación -->
-    <div id="gameVerificationBadge"></div>
+                <!-- Aviso de verificación -->
+                <div id="gameVerificationBadge"></div>
 
-    <a id="gameDownloadBtn" href="#" target="_blank" class="btn-play-large">
-        JUGAR - ¡INICIA LA AVENTURA!
-    </a>
-</div>
+                <a id="gameDownloadBtn" href="#" target="_blank" class="btn-play-large">
+                    JUGAR - ¡INICIA LA AVENTURA!
+                </a>
+            </div>
 
             <!-- Derecha: Estadísticas -->
             <div class="game-modal-stats">
@@ -299,16 +287,16 @@
                     </div>
                     
                     <!-- Formulario de comentario (solo si hay sesión) -->
-<form id="commentForm" onsubmit="submitComment(event)" class="comment-input-form" style="display: none;">
-    <input type="text" id="commentInput" placeholder="Escribe un comentario..." required>
-    <button type="submit" class="btn-primary">ENVIAR</button>
-</form>
+                    <form id="commentForm" onsubmit="submitComment(event)" class="comment-input-form" style="display: none;">
+                        <input type="text" id="commentInput" placeholder="Escribe un comentario..." required>
+                        <button type="submit" class="btn-primary">ENVIAR</button>
+                    </form>
 
-<!-- Aviso de login (solo si NO hay sesión) -->
-<div id="commentLoginPrompt" class="comment-login-prompt" style="display: none;">
-    <p>🔒 Tenés que iniciar sesión para comentar.</p>
-    <button onclick="closeGameModal(); openAuthModal();" class="btn-primary">INICIAR SESIÓN</button>
-</div>
+                    <!-- Aviso de login (solo si NO hay sesión) -->
+                    <div id="commentLoginPrompt" class="comment-login-prompt" style="display: none;">
+                        <p>🔒 Tenés que iniciar sesión para comentar.</p>
+                        <button onclick="closeGameModal(); openAuthModal();" class="btn-primary">INICIAR SESIÓN</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -360,79 +348,48 @@
         <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Gestión de Roles y Usuarios de Dreaming Rose</p>
 
         <!-- Pestañas -->
-<div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-    <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
-    <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
-        Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
-    </button>
-    <button onclick="mostrarTabAdmin('apelaciones')" id="tabAdminApelaciones" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
-        Apelaciones <span id="badgeApelaciones" style="background: #ff4d6d; color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
-    </button>
-</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
+            <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
+                Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
+            </button>
+            <button onclick="mostrarTabAdmin('apelaciones')" id="tabAdminApelaciones" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
+                Apelaciones <span id="badgeApelaciones" style="background: #ff4d6d; color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
+            </button>
+        </div>
 
         <!-- Tab Usuarios -->
-<div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
-    <!-- Sub-pestañas -->
-    <div class="admin-subtabs">
-        <button onclick="filtrarUsuariosAdmin('todos', this)" class="admin-subtab active" data-filter="todos">Todos</button>
-        <button onclick="filtrarUsuariosAdmin('admins', this)" class="admin-subtab" data-filter="admins">Admins</button>
-        <button onclick="filtrarUsuariosAdmin('usuarios', this)" class="admin-subtab" data-filter="usuarios">Usuarios</button>
-        <button onclick="filtrarUsuariosAdmin('baneados', this)" class="admin-subtab" data-filter="baneados">⛔ Baneados</button>
-    </div>
+        <div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
+            <!-- Sub-pestañas -->
+            <div class="admin-subtabs">
+                <button onclick="filtrarUsuariosAdmin('todos', this)" class="admin-subtab active" data-filter="todos">Todos</button>
+                <button onclick="filtrarUsuariosAdmin('admins', this)" class="admin-subtab" data-filter="admins">Admins</button>
+                <button onclick="filtrarUsuariosAdmin('usuarios', this)" class="admin-subtab" data-filter="usuarios">Usuarios</button>
+                <button onclick="filtrarUsuariosAdmin('baneados', this)" class="admin-subtab" data-filter="baneados">⛔ Baneados</button>
+            </div>
 
-    <div id="adminUsersList"></div>
-</div>
+            <div id="adminUsersList"></div>
+        </div>
 
         <!-- Tab Solicitudes -->
         <div id="tabContentSolicitudes" style="max-height: 400px; overflow-y: auto; display: none;">
             <div id="listaSolicitudes"></div>
         </div>
 
+        <!-- Tab Apelaciones -->
+        <div id="tabContentApelaciones" style="max-height: 400px; overflow-y: auto; display: none;">
+            <div id="listaApelaciones"></div>
+        </div>
+
         <button onclick="closeAdminModal()" class="btn-close" style="margin-top: 20px;">CERRAR</button>
     </div>
-
-    <!-- Tab Apelaciones -->
-<div id="tabContentApelaciones" style="max-height: 400px; overflow-y: auto; display: none;">
-    <div id="listaApelaciones"></div>
 </div>
-</div>
-
 
 <!-- MODAL PUBLICAR JUEGO (CREADORES) -->
 <div id="publishModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
         <!-- Botón X en la esquina superior -->
         <button onclick="closePublishModal()" class="modal-close-icon">✕</button>
-
-        <!-- MODAL PUBLICAR PROYECTO OFICIAL (SOLO MOD/ROOT) -->
-<div id="proyectoOficialModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
-        <button onclick="closeProyectoOficial()" class="modal-close-icon">✕</button>
-
-        <h2>AGREGAR PROYECTO OFICIAL</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
-            Este proyecto va a aparecer en "Nuestros Proyectos" (no en el hub de la comunidad).
-        </p>
-
-        <form id="proyectoOficialForm" onsubmit="handlePublishProyectoOficial(event)" style="display: flex; flex-direction: column; gap: 12px;">
-            <input type="text" id="proyTitle" placeholder="Título del proyecto *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-            <textarea id="proyDescription" placeholder="Descripción breve *" rows="3" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
-            <input type="text" id="proyAuthor" placeholder="Estudio / equipo (ej: Dreaming Rose)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-            <input type="text" id="proyGenre" placeholder="Género / tipo (ej: Fighting Game / 2D)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-                <label style="font-size: 0.75rem; color: #888;">Portada *</label>
-                <input type="file" id="proyImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-            </div>
-
-            <input type="url" id="proyDownloadUrl" placeholder="Link de descarga (Drive) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-
-            <p id="proyectoError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
-
-            <button type="submit" class="btn-main">AGREGAR PROYECTO</button>
-        </form>
-    </div>
-</div>
         
         <h2>PUBLICAR NUEVO JUEGO</h2>
         <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">Sube tu proyecto seleccionando una portada local y tu enlace de Google Drive.</p>
@@ -482,6 +439,36 @@
             <p id="publishError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
 
             <button type="submit" class="btn-main" id="btnPublishSubmit" disabled>PUBLICAR AHORA</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL PUBLICAR PROYECTO OFICIAL (SOLO MOD/ROOT) -->
+<div id="proyectoOficialModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
+        <button onclick="closeProyectoOficial()" class="modal-close-icon">✕</button>
+
+        <h2>AGREGAR PROYECTO OFICIAL</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
+            Este proyecto va a aparecer en "Nuestros Proyectos" (no en el hub de la comunidad).
+        </p>
+
+        <form id="proyectoOficialForm" onsubmit="handlePublishProyectoOficial(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="proyTitle" placeholder="Título del proyecto *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <textarea id="proyDescription" placeholder="Descripción breve *" rows="3" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
+            <input type="text" id="proyAuthor" placeholder="Estudio / equipo (ej: Dreaming Rose)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <input type="text" id="proyGenre" placeholder="Género / tipo (ej: Fighting Game / 2D)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.75rem; color: #888;">Portada *</label>
+                <input type="file" id="proyImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            </div>
+
+            <input type="url" id="proyDownloadUrl" placeholder="Link de descarga (Drive) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="proyectoError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">AGREGAR PROYECTO</button>
         </form>
     </div>
 </div>
@@ -543,183 +530,4 @@
             Elegí tu nueva contraseña. Mínimo 8 caracteres.
         </p>
 
-        <form id="newPasswordForm" onsubmit="guardarNuevaPassword(event)" style="display: flex; flex-direction: column; gap: 12px;">
-
-            <div style="position: relative;">
-                <input type="password" id="newPasswordInput" placeholder="Nueva contraseña" required minlength="8"
-                    style="width: 100%; padding: 12px 45px 12px 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-                <button type="button" onclick="togglePasswordVisibility('newPasswordInput', this)" class="toggle-pass-btn">
-                    👁
-                </button>
-            </div>
-
-            <div style="position: relative;">
-                <input type="password" id="newPasswordConfirm" placeholder="Repetir contraseña" required minlength="8"
-                    style="width: 100%; padding: 12px 45px 12px 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-                <button type="button" onclick="togglePasswordVisibility('newPasswordConfirm', this)" class="toggle-pass-btn">
-                    👁
-                </button>
-            </div>
-
-            <p id="newPasswordError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
-
-            <button type="submit" class="btn-main">GUARDAR</button>
-        </form>
-    </div>
-</div>
-
-<!-- MODAL CAMBIO DE USUARIO -->
-<div id="usernameModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 450px; width: 90%; position: relative;">
-        <button onclick="closeUsernameModal()" class="modal-close-icon">✕</button>
-
-        <h2>CAMBIAR NOMBRE DE USUARIO</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
-            Elegí un nombre nuevo. Tiene que ser único.
-        </p>
-
-        <form id="usernameForm" onsubmit="guardarNuevoUsername(event)" style="display: flex; flex-direction: column; gap: 12px;">
-            <input type="text" id="newUsernameInput" placeholder="Nuevo nombre de usuario" required minlength="3" maxlength="20"
-                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-
-            <p id="usernameError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
-            <p id="usernameSuccess" style="color: #2ecc71; font-size: 0.8rem; display: none;"></p>
-
-            <button type="submit" class="btn-main">GUARDAR</button>
-        </form>
-    </div>
-</div>
-
-<!-- MENÚ MOBILE (DRAWER) -->
-<div id="mobileMenu" class="mobile-menu">
-    <div class="mobile-menu-backdrop" onclick="closeMobileMenu()"></div>
-    <aside class="mobile-menu-panel">
-        <div class="mobile-menu-header">
-            <span class="mobile-menu-title">MENÚ</span>
-            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Cerrar">✕</button>
-        </div>
-
-        <!-- Sección navegación (siempre visible) -->
-        <nav class="mobile-menu-section">
-            <a href="#proyectos" class="mobile-menu-link" onclick="closeMobileMenu()">
-                <span class="mobile-menu-icon">🎮</span>
-                <span>PROYECTOS</span>
-            </a>
-            <a href="#comunidad" class="mobile-menu-link" onclick="closeMobileMenu()">
-                <span class="mobile-menu-icon">🌐</span>
-                <span>COMUNIDAD</span>
-            </a>
-            <a href="#ranking" class="mobile-menu-link" onclick="closeMobileMenu()">
-                <span class="mobile-menu-icon">🏆</span>
-                <span>RANKING</span>
-            </a>
-        </nav>
-
-        <!-- Sección cuenta (solo si hay sesión) -->
-        <div class="mobile-menu-section" id="mobileMenuUserSection" style="display: none;">
-            <div class="mobile-menu-divider">MI CUENTA</div>
-
-            <button id="mobileBtnPublish" class="mobile-menu-link" onclick="closeMobileMenu(); openUpload();" style="display: none;">
-                <span class="mobile-menu-icon">📤</span>
-                <span>PUBLICAR JUEGO</span>
-            </button>
-
-            <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
-                <span class="mobile-menu-icon">🛡️</span>
-                <span>PANEL ADMIN</span>
-            </button>
-
-            <button id="mobileBtnSolicitar" class="mobile-menu-link" onclick="closeMobileMenu(); openSolicitudCreador();" style="display: none;">
-                <span class="mobile-menu-icon">⭐</span>
-                <span>SER CREADOR</span>
-            </button>
-
-            <button class="mobile-menu-link" onclick="closeMobileMenu(); openUsernameModal();">
-                <span class="mobile-menu-icon">👤</span>
-                <span>CAMBIAR USUARIO</span>
-            </button>
-
-            <button class="mobile-menu-link" onclick="closeMobileMenu(); openPasswordModal();">
-                <span class="mobile-menu-icon">🔒</span>
-                <span>CAMBIAR CONTRASEÑA</span>
-            </button>
-
-            <button class="mobile-menu-link mobile-menu-danger" onclick="closeMobileMenu(); logout();">
-                <span class="mobile-menu-icon">🚪</span>
-                <span>CERRAR SESIÓN</span>
-            </button>
-        </div>
-
-        <!-- Sección login (solo si NO hay sesión) -->
-        <div class="mobile-menu-section" id="mobileMenuGuestSection">
-            <button class="mobile-menu-link mobile-menu-cta" onclick="closeMobileMenu(); openAuthModal();">
-                <span class="mobile-menu-icon">🔑</span>
-                <span>INGRESAR</span>
-            </button>
-        </div>
-
-        <!-- Footer del menú -->
-        <div class="mobile-menu-footer">
-            <span>DREAMING ROSE © 2026</span>
-        </div>
-    </aside>
-</div>
-
-<!-- MODAL DE APELACIÓN (para baneados) -->
-<div id="apelacionModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
-        <h2>CUENTA SUSPENDIDA</h2>
-        <p style="color: #ff4d6d; font-size: 0.9rem; margin-bottom: 15px; font-weight: 700;">
-            🚫 Tu cuenta fue suspendida por incumplir las reglas de Dreaming Rose.
-        </p>
-
-        <!-- Estado 1: sin apelación enviada -->
-        <div id="apelacionFormContainer">
-            <p style="color: #ccc; font-size: 0.85rem; margin-bottom: 15px;">
-                Tenés <strong>una sola oportunidad</strong> para apelar. Si tu apelación es rechazada, no vas a poder volver a intentarlo.
-            </p>
-
-            <form id="apelacionForm" onsubmit="enviarApelacion(event)" style="display: flex; flex-direction: column; gap: 12px;">
-                <textarea id="apelacionMensaje" placeholder="Explicá por qué creés que tu suspensión fue un error o por qué deberíamos darte otra oportunidad..." rows="5" maxlength="1000" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
-
-                <p id="apelacionError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
-
-                <button type="submit" class="btn-main" id="btnApelacionSubmit">ENVIAR APELACIÓN</button>
-            </form>
-        </div>
-
-        <!-- Estado 2: apelación pendiente -->
-        <div id="apelacionPendiente" style="display: none;">
-            <p style="color: #ffb800; font-size: 0.9rem;">
-                ⏳ Tu apelación está pendiente de revisión. Te vamos a avisar cuando un moderador la revise.
-            </p>
-        </div>
-
-        <!-- Estado 3: apelación rechazada -->
-        <div id="apelacionRechazada" style="display: none;">
-            <p style="color: #ff4d6d; font-size: 0.9rem;">
-                ❌ Tu apelación fue rechazada. No podés volver a apelar.
-            </p>
-        </div>
-
-        <!-- Estado 4: apelación aprobada -->
-        <div id="apelacionAprobada" style="display: none;">
-            <p style="color: #2ecc71; font-size: 0.9rem;">
-                ✅ ¡Tu apelación fue aprobada! Recargá la página para volver a usar tu cuenta.
-            </p>
-            <button onclick="window.location.reload()" class="btn-main" style="margin-top: 15px;">RECARGAR</button>
-        </div>
-
-        <button onclick="cerrarApelacionYLogout()" class="btn-close" style="margin-top: 20px;">CERRAR SESIÓN</button>
-    </div>
-</div>
-
-<footer class="footer">
-    <p>© 2026 DREAMING ROSE. TODOS LOS DERECHOS RESERVADOS.</p>
-</footer>
-
-<!-- Carga de Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js"></script>
-</body>
-</html>
+        <form id="newPasswordForm" onsubmit="guardarNuevaPassword(event)" style="display: flex; flex-direction: column; gap: 12px

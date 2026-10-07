@@ -247,7 +247,7 @@ async function loadGamesData() {
     // con la grilla pública hasta que llegue su hora.
     const now = new Date();
     const gamesVisiblesAhora = allGames.filter(g => {
-    // No mostrar los que son proyectos oficiales en el hub
+    // No mostrar los oficiales en el hub
     if (g.es_proyecto_oficial) return false;
     if (!g.publish_at) return true;
     return new Date(g.publish_at) <= now;
@@ -1060,7 +1060,60 @@ window.addEventListener("keydown", function(event) {
         document.body.style.overflow = "auto"; // Restaura siempre el scroll con ESC
     }
 });
+// Carga los proyectos oficiales (los que aparecen en "Nuestros Proyectos")
+export async function cargarProyectosOficiales() {
+    const contenedor = document.getElementById("grid-proyectos");
+    if (!contenedor) return;
 
+    const { data: proyectos, error } = await supabase
+        .from('juegos')
+        .select('*')
+        .eq('es_proyecto_oficial', true)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Error cargando proyectos oficiales:", error);
+        contenedor.innerHTML = "<p style='color:#ff4d6d;'>Error al cargar los proyectos.</p>";
+        return;
+    }
+
+    if (!proyectos || proyectos.length === 0) {
+        contenedor.innerHTML = "<p style='color:#888; grid-column: 1/-1;'>Todavía no hay proyectos oficiales.</p>";
+        return;
+    }
+
+    contenedor.innerHTML = "";
+
+    proyectos.forEach(proyecto => {
+        const card = document.createElement("article");
+        card.className = "project-card reveal visible";
+        card.innerHTML = `
+            <div class="card-media">
+                <img src="${escapeHTML(proyecto.image_url) || 'assets/images/Meteor Fighters.png'}"
+                     alt="${escapeHTML(proyecto.title)}"
+                     class="project-cover-img">
+            </div>
+            <div class="card-body">
+                <h3>${escapeHTML(proyecto.title)}${proyecto.verificado ? ' <span class="verified-badge">✅</span>' : ''}</h3>
+                <p>${escapeHTML(proyecto.description) || 'Sin descripción'}</p>
+                <a href="#" class="link-arrow" data-proyecto-id="${proyecto.id}">VER DETALLES →</a>
+            </div>
+        `;
+
+        card.querySelector(".link-arrow").addEventListener("click", (e) => {
+            e.preventDefault();
+            window.openGameDetails(proyecto.id);
+        });
+
+        card.querySelector(".card-media").addEventListener("click", () => {
+            window.openGameDetails(proyecto.id);
+        });
+
+        contenedor.appendChild(card);
+    });
+}
+
+window.cargarProyectosOficiales = cargarProyectosOficiales;
 window.cargarMisLikes = cargarMisLikes;
 window.initGames = initGames;
 window.actualizarFormularioComentario = actualizarFormularioComentario;

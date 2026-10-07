@@ -2,25 +2,7 @@
 import { supabase } from "./supabase.js";
 import { escapeHTML } from "./utils.js";
 
-let proyCaptchaWidgetId = null;
-
-// Inicializar captcha del modal (opcional, si querés poner captcha acá también)
-function initProyCaptcha() {
-    if (!window.turnstile) {
-        setTimeout(initProyCaptcha, 200);
-        return;
-    }
-    const container = document.getElementById("turnstileProyecto");
-    if (container && proyCaptchaWidgetId === null) {
-        proyCaptchaWidgetId = window.turnstile.render(container, {
-            sitekey: container.dataset.sitekey,
-            theme: "dark",
-        });
-    }
-}
-
 window.openProyectoOficial = async function() {
-    // Verificar que sea mod o root
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         alert("Tenés que iniciar sesión.");
@@ -44,7 +26,6 @@ window.openProyectoOficial = async function() {
         modal.classList.add("active");
         document.body.style.overflow = "hidden";
     }
-    initProyCaptcha();
 };
 
 window.closeProyectoOficial = function() {
@@ -52,9 +33,6 @@ window.closeProyectoOficial = function() {
     if (modal) {
         modal.classList.remove("active");
         document.body.style.overflow = "auto";
-    }
-    if (window.turnstile && proyCaptchaWidgetId !== null) {
-        window.turnstile.reset(proyCaptchaWidgetId);
     }
 };
 
@@ -82,7 +60,6 @@ window.handlePublishProyectoOficial = async function(event) {
         return;
     }
 
-    // Subir la imagen
     let finalImageUrl = "assets/images/Meteor Fighters.png";
 
     if (imageFileInput && imageFileInput.files && imageFileInput.files[0]) {
@@ -123,7 +100,6 @@ window.handlePublishProyectoOficial = async function(event) {
         finalImageUrl = publicURLData.publicUrl;
     }
 
-    // Guardar en la DB
     const { error } = await supabase.from('juegos').insert([{
         title,
         description: genre ? `${genre} — ${description}` : description,
@@ -135,7 +111,7 @@ window.handlePublishProyectoOficial = async function(event) {
         playing_count: 0,
         user_id: user.id,
         es_proyecto_oficial: true,
-        verificado: true,          // Los oficiales arrancan verificados
+        verificado: true,
         verificado_at: new Date().toISOString(),
         verificado_motivo: "Proyecto oficial de Dreaming Rose"
     }]);
@@ -149,8 +125,10 @@ window.handlePublishProyectoOficial = async function(event) {
         return;
     }
 
-    alert("✅ Proyecto agregado a Nuestros Proyectos.");
+    alert("✅ Proyecto agregado.");
     document.getElementById("proyectoOficialForm")?.reset();
     window.closeProyectoOficial();
-    await window.cargarProyectosOficiales();
+    if (typeof window.cargarProyectosOficiales === "function") {
+        await window.cargarProyectosOficiales();
+    }
 };
