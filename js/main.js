@@ -32,3 +32,66 @@ if ("serviceWorker" in navigator) {
             .catch((err) => console.error("Error registrando SW:", err));
     });
 }
+
+// ============================================================
+// BOTÓN INSTALAR APP (PWA)
+// ============================================================
+
+let deferredPrompt = null;
+
+// El navegador dispara "beforeinstallprompt" cuando la PWA es instalable.
+// Guardamos el evento para dispararlo cuando el usuario toque el botón.
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Solo mostrar el botón en mobile y si la app no está ya instalada
+    const esMobile = window.innerWidth <= 900;
+    const yaInstalada = window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+
+    if (esMobile && !yaInstalada) {
+        const btn = document.getElementById('btnInstalarApp');
+        if (btn) btn.style.display = 'inline-block';
+    }
+});
+
+// Función que se llama cuando el usuario toca el botón
+window.instalarPWA = async function() {
+    if (!deferredPrompt) {
+        alert("Para instalar la app: abrí el menú del navegador y buscá 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
+        return;
+    }
+
+    // Mostrar el diálogo nativo de instalación
+    deferredPrompt.prompt();
+
+    // Esperar la respuesta del usuario
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`Instalación PWA: ${outcome}`);
+
+    // Limpiar el evento (solo se puede usar una vez)
+    deferredPrompt = null;
+
+    // Ocultar el botón (haya aceptado o no)
+    const btn = document.getElementById('btnInstalarApp');
+    if (btn) btn.style.display = 'none';
+};
+
+// Si el usuario instala la app, ocultar el botón
+window.addEventListener('appinstalled', () => {
+    console.log('✅ Dreaming Rose instalada como app');
+    const btn = document.getElementById('btnInstalarApp');
+    if (btn) btn.style.display = 'none';
+    deferredPrompt = null;
+});
+
+// Ocultar el botón si cambia a desktop
+window.addEventListener('resize', () => {
+    const btn = document.getElementById('btnInstalarApp');
+    if (!btn) return;
+
+    if (window.innerWidth > 900) {
+        btn.style.display = 'none';
+    }
+});

@@ -1159,3 +1159,60 @@ select:focus {
     flex-wrap: wrap;
     gap: 15px;
 }
+
+/* =========================================================
+   BOTÓN INSTALAR APP (solo mobile)
+========================================================= */
+
+.btn-instalar-app {
+    display: none; /* JS lo muestra */
+    background: linear-gradient(90deg, var(--accent), #ff2a5f);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: auto;
+    margin-right: 10px;
+    box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+    animation: pulseInstalar 2.5s ease-in-out infinite;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-instalar-app:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 77, 109, 0.6);
+}
+
+.btn-instalar-app:active {
+    transform: scale(0.95);
+}
+
+@keyframes pulseInstalar {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(255, 77, 109, 0.8);
+    }
+}
+
+/* Ocultar el botón en desktop (por si las dudas) */
+@media (min-width: 901px) {
+    .btn-instalar-app {
+        display: none !important;
+    }
+}
+
+/* En mobile más chico */
+@media (max-width: 500px) {
+    .btn-instalar-app {
+        padding: 6px 10px;
+        font-size: 0.6rem;
+        margin-right: 6px;
+    }
+}
