@@ -125,6 +125,26 @@ function mostrarExito(mensaje) {
     }, 3200);
 }
 
+// Función helper: separa los juegos para el hub y para el ranking.
+//   • Hub: solo juegos de la comunidad (SIN oficiales, SIN programados futuros).
+//   • Ranking: TODOS los juegos (oficiales + comunidad).
+function separarJuegos(juegos) {
+    const now = new Date();
+
+    const hub = (juegos || []).filter(g => {
+        if (g.es_proyecto_oficial) return false;
+        if (!g.publish_at) return true;
+        return new Date(g.publish_at) <= now;
+    });
+
+    const ranking = (juegos || []).filter(g => {
+        if (!g.publish_at) return true;
+        return new Date(g.publish_at) <= now;
+    });
+
+    return { hub, ranking };
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -134,16 +154,32 @@ export async function initGames() {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
 
-    // Mostrar "cargando" en los contenedores
+    // Mostrar "cargando" mientras llegan los datos
     const gridHub = document.getElementById("community-games");
-    if (gridHub) gridHub.innerHTML = "<p style='color:#888; text-align:center; grid-column:1/-1;'>Cargando juegos...</p>";
+    if (gridHub) gridHub.innerHTML = "<p style='color:#888; text-align:center; grid-column:1/-1; padding: 20px;'>Cargando juegos...</p>";
     const gridProy = document.getElementById("grid-proyectos");
-    if (gridProy) gridProy.innerHTML = "<p style='color:#888;'>Cargando proyectos...</p>";
+    if (gridProy) gridProy.innerHTML = "<p style='color:#888; padding: 10px;'>Cargando proyectos...</p>";
 
     await cargarPalabrasProhibidas();
-    await loadGamesData();
-    await cargarProyectosOficiales();
-    await loadRecentComments();
+
+    try {
+        await loadGamesData();
+    } catch (err) {
+        console.error("Error cargando los juegos:", err);
+    }
+
+    try {
+        await cargarProyectosOficiales();
+    } catch (err) {
+        console.error("Error cargando proyectos oficiales:", err);
+    }
+
+    try {
+        await loadRecentComments();
+    } catch (err) {
+        console.error("Error cargando comentarios recientes:", err);
+    }
+
     startScheduledGamesWatcher();
 }
 
@@ -185,19 +221,19 @@ function startScheduledGamesWatcher() {
 
         if (error || !juegos) return;
 
-        const now = new Date();
-        const visiblesAhora = juegos.filter(g => !g.publish_at || new Date(g.publish_at) <= now);
-        const idsVisiblesAhora = new Set(visiblesAhora.map(g => String(g.id)));
+        const { hub, ranking } = separarJuegos(juegos);
 
+        const idsVisiblesAhora = new Set(hub.map(g => String(g.id)));
         const nuevosIds = [...idsVisiblesAhora].filter(id => !knownGameIds.has(id));
+
         if (nuevosIds.length === 0) return;
 
         allGames = juegos;
-        renderGamesGrid(visiblesAhora);
-        renderRankingTop(visiblesAhora);
+        renderGamesGrid(hub);
+        renderRankingTop(ranking);
 
         nuevosIds.forEach(id => {
-            const juego = visiblesAhora.find(g => String(g.id) === id);
+            const juego = hub.find(g => String(g.id) === id);
             if (juego) mostrarAvisoNuevoJuego(juego.title);
 
             const card = document.querySelector(`[data-game-id="${id}"]`);
@@ -228,15 +264,11 @@ async function loadGamesData() {
         allGames = juegos || [];
     }
 
-    const now = new Date();
-    const gamesVisiblesAhora = allGames.filter(g => {
-        if (g.es_proyecto_oficial) return false;
-        if (!g.publish_at) return true;
-        return new Date(g.publish_at) <= now;
-    });
+    // Separar por vista (hub sin oficiales, ranking con todos)
+    const { hub, ranking } = separarJuegos(allGames);
 
-    renderGamesGrid(gamesVisiblesAhora);
-    renderRankingTop(gamesVisiblesAhora);
+    renderGamesGrid(hub);
+    renderRankingTop(ranking);
 }
 
 // ============================================================
@@ -255,16 +287,14 @@ export async function cargarProyectosOficiales() {
 
     if (error) {
         console.error("Error cargando proyectos oficiales:", error);
-        contenedor.innerHTML = "<p style='color:#ff4d6d;'>Error al cargar los proyectos.</p>";
+        contenedor.innerHTML = "<p style='color:#ff4d6d; padding: 10px;'>Error al cargar los proyectos.</p>";
         return;
     }
 
     if (!proyectos || proyectos.length === 0) {
-    if (!contenedor.innerHTML.trim() || contenedor.innerHTML.includes("Cargando")) {
-        contenedor.innerHTML = "<p style='color:#888; grid-column: 1/-1;'>Todavía no hay proyectos oficiales.</p>";
+        contenedor.innerHTML = "<p style='color:#888; grid-column: 1/-1; padding: 10px;'>Todavía no hay proyectos oficiales.</p>";
+        return;
     }
-    return;
-}
 
     contenedor.innerHTML = "";
 
@@ -308,9 +338,9 @@ function renderGamesGrid(gamesList) {
     container.innerHTML = "";
 
     if (!gamesList.length) {
-    container.innerHTML = `<p style="color:#888; text-align: center; grid-column: 1/-1;">No hay juegos disponibles.</p>`;
-    return;
-}
+        container.innerHTML = `<p style="color:#888; text-align: center; grid-column: 1/-1; padding: 20px;">No hay juegos disponibles todavía.</p>`;
+        return;
+    }
 
     gamesList.forEach((game, index) => {
         const card = document.createElement("div");
@@ -364,6 +394,11 @@ function renderRankingTop(gamesList) {
 
     const sorted = [...gamesList].sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0)).slice(0, 5);
     rankingContainer.innerHTML = "";
+
+    if (sorted.length === 0) {
+        rankingContainer.innerHTML = "<p style='color:#888; font-size: 0.85rem; padding: 10px;'>Todavía no hay juegos para el ranking.</p>";
+        return;
+    }
 
     sorted.forEach((game, index) => {
         const rankPos = index + 1;
@@ -556,7 +591,8 @@ window.handleDirectLike = async function(event, juegoId) {
         if (game) {
             game.likes_count = Math.max((game.likes_count || 0) - 1, 0);
             actualizarUIContadorLike(targetId, game.likes_count, false);
-            renderRankingTop(allGames);
+            const { ranking } = separarJuegos(allGames);
+            renderRankingTop(ranking);
         }
 
         return;
@@ -583,7 +619,8 @@ window.handleDirectLike = async function(event, juegoId) {
     if (game) {
         game.likes_count = (game.likes_count || 0) + 1;
         actualizarUIContadorLike(targetId, game.likes_count, true);
-        renderRankingTop(allGames);
+        const { ranking } = separarJuegos(allGames);
+        renderRankingTop(ranking);
     }
 
     const likeBtn = event?.currentTarget || document.querySelector(`[data-like-id="${targetId}"]`);
@@ -626,7 +663,8 @@ window.filterGames = function(type, element) {
         moveTabSlider(container, element);
     }
 
-    let filtered = [...allGames];
+    const { hub } = separarJuegos(allGames);
+    let filtered = [...hub];
     if (type === 'top') {
         filtered.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
     }
@@ -641,7 +679,8 @@ window.sortGames = function(order, element) {
         moveTabSlider(container, element);
     }
 
-    let sorted = [...allGames];
+    const { hub } = separarJuegos(allGames);
+    let sorted = [...hub];
     if (order === 'recientes') {
         sorted.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     } else if (order === 'valorados') {
