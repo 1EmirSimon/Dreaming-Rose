@@ -128,22 +128,32 @@
 
 <!-- MAIN -->
 <main>
-    <section id="proyectos" class="section-dark">
-        <div class="container">
-            <div class="section-title reveal">
+<section id="proyectos" class="section-dark">
+    <div class="container">
+        <div class="section-title reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
                 <h2>NUESTROS PROYECTOS</h2>
                 <div class="title-line"></div>
             </div>
-            <div class="grid-projects">
+            <!-- Botón visible solo para moderador/root -->
+            <button id="btnAgregarProyectoOficial" onclick="openProyectoOficial()" class="btn-outline" style="display: none; padding: 8px 16px; font-size: 0.7rem;">
+                ＋ AGREGAR PROYECTO
+            </button>
+        </div>
+        <div class="grid-projects" id="grid-proyectos">
+            <!-- Se carga dinámicamente -->
+        </div>
+    </div>
+</section>
                 <article class="project-card reveal">
                     <div class="card-media">
-                        <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters">
+                        <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters" class="project-cover-img">
                     </div>
                     <div class="card-body">
-                        <h3>Meteor Fighters</h3>
-                        <p>Fighting Game / 2D Pixel Art</p>
-                        <a href="#" class="link-arrow" onclick="event.preventDefault(); window.openGameDetails('Meteor Fighters');">VER DETALLES →</a>
-                    </div>
+                            <h3>Meteor Fighters</h3>
+                    <p>Fighting Game / 2D Pixel Art</p>
+                    <a href="#" class="link-arrow" onclick="event.preventDefault(); window.openGameDetails('Meteor Fighters');">VER DETALLES →</a>
+            </div>
                 </article>
             </div>
         </div>
@@ -393,6 +403,36 @@
     <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
         <!-- Botón X en la esquina superior -->
         <button onclick="closePublishModal()" class="modal-close-icon">✕</button>
+
+        <!-- MODAL PUBLICAR PROYECTO OFICIAL (SOLO MOD/ROOT) -->
+<div id="proyectoOficialModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
+        <button onclick="closeProyectoOficial()" class="modal-close-icon">✕</button>
+
+        <h2>AGREGAR PROYECTO OFICIAL</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
+            Este proyecto va a aparecer en "Nuestros Proyectos" (no en el hub de la comunidad).
+        </p>
+
+        <form id="proyectoOficialForm" onsubmit="handlePublishProyectoOficial(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="proyTitle" placeholder="Título del proyecto *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <textarea id="proyDescription" placeholder="Descripción breve *" rows="3" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
+            <input type="text" id="proyAuthor" placeholder="Estudio / equipo (ej: Dreaming Rose)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <input type="text" id="proyGenre" placeholder="Género / tipo (ej: Fighting Game / 2D)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.75rem; color: #888;">Portada *</label>
+                <input type="file" id="proyImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            </div>
+
+            <input type="url" id="proyDownloadUrl" placeholder="Link de descarga (Drive) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="proyectoError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">AGREGAR PROYECTO</button>
+        </form>
+    </div>
+</div>
         
         <h2>PUBLICAR NUEVO JUEGO</h2>
         <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">Sube tu proyecto seleccionando una portada local y tu enlace de Google Drive.</p>

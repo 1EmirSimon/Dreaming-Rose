@@ -67,13 +67,9 @@
 ============================ */
 
 .grid-projects {
-
     display: grid;
-    grid-template-columns:
-        repeat(auto-fit, minmax(320px, 1fr));
-
-    gap: 40px;
-
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
 }
 
 .project-card,
@@ -111,12 +107,12 @@
 .card-media,
 .game-card img {
     width: 100%;
-    height: 220px;
+    height: 160px;
     overflow: hidden;
 }
 
-/* Solo aplica a las tarjetas de proyecto (NO al modal) */
-.card-media img {
+.card-media img,
+.game-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -125,36 +121,36 @@
 
 .project-card:hover img,
 .game-card:hover img {
-
     transform: scale(1.08);
-
 }
 
+/* Imagen del proyecto destacado: mantener proporción con fondo */
+.project-cover-img {
+    object-fit: contain !important;
+    background: #0a0a10 !important;
+    padding: 10px !important;
+    transition: transform 0.4s ease !important;
+}
+
+.project-card:hover .project-cover-img {
+    transform: scale(1.05) !important;
+}   
 .card-body,
 .card-info {
-
-    padding: 25px;
-
+    padding: 16px;
 }
 
 .card-body h3,
 .card-info h3 {
-
     font-family: var(--font-heading);
-
-    font-size: 1rem;
-
-    margin-bottom: 10px;
-
+    font-size: 0.9rem;
+    margin-bottom: 8px;
 }
 
 .card-body p,
 .card-info span {
-
     color: var(--text);
-
-    font-size: 0.9rem;
-
+    font-size: 0.8rem;
 }
 
 .link-arrow {

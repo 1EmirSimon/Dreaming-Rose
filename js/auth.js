@@ -134,6 +134,12 @@ function updateUI(user, profile) {
             btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "inline-block" : "none";
         }
 
+                // Botón de "Agregar Proyecto" (solo mod/root)
+        const btnAgregarProyecto = document.getElementById("btnAgregarProyectoOficial");
+        if (btnAgregarProyecto) {
+            btnAgregarProyecto.style.display = allowedAdminRoles.includes(userRole) ? "inline-block" : "none";
+        }
+
         // Actualizar el menú mobile (solo se ve en pantallas chicas)
         if (typeof window.actualizarMenuMobile === "function") {
             window.actualizarMenuMobile(user, profile);
@@ -150,6 +156,9 @@ function updateUI(user, profile) {
         // Actualizar el menú mobile (sin sesión)
         if (typeof window.actualizarMenuMobile === "function") {
             window.actualizarMenuMobile(null, null);
+
+        const btnAgregarProyecto = document.getElementById("btnAgregarProyectoOficial");
+        if (btnAgregarProyecto) btnAgregarProyecto.style.display = "none";
         }
     }
 }
