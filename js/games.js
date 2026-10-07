@@ -209,9 +209,9 @@ export async function cargarMisLikes(userId) {
 // ============================================================
 
 function startScheduledGamesWatcher() {
-    knownGameIds = new Set(
-        Array.from(document.querySelectorAll("[data-game-id]")).map(el => el.dataset.gameId)
-    );
+    // Inicializar knownGameIds con TODOS los juegos ya conocidos,
+    // usando allGames (fuente de verdad) y no el DOM.
+    knownGameIds = new Set((allGames || []).map(g => String(g.id)));
 
     setInterval(async () => {
         const { data: juegos, error } = await supabase
@@ -223,7 +223,8 @@ function startScheduledGamesWatcher() {
 
         const { hub, ranking } = separarJuegos(juegos);
 
-        const idsVisiblesAhora = new Set(hub.map(g => String(g.id)));
+        // Comparar contra TODOS los visibles (hub + oficiales)
+        const idsVisiblesAhora = new Set(ranking.map(g => String(g.id)));
         const nuevosIds = [...idsVisiblesAhora].filter(id => !knownGameIds.has(id));
 
         if (nuevosIds.length === 0) return;
@@ -233,7 +234,7 @@ function startScheduledGamesWatcher() {
         renderRankingTop(ranking);
 
         nuevosIds.forEach(id => {
-            const juego = hub.find(g => String(g.id) === id);
+            const juego = ranking.find(g => String(g.id) === id);
             if (juego) mostrarAvisoNuevoJuego(juego.title);
 
             const card = document.querySelector(`[data-game-id="${id}"]`);
