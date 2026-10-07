@@ -1,13 +1,19 @@
 // js/games.js
 import { escapeHTML } from "./utils.js";
 import { supabase } from "./supabase.js";
-let misLikes = new Set(); // IDs de juegos que el usuario logueado ya likeó
+
+let misLikes = new Set();
 let allGames = [];
 let currentGameId = null;
 let publishWidgetId = null;
+let BAD_WORDS = ["pelotudo", "boludo", "puto", "imbecil"];
+let knownGameIds = new Set();
+let knownCommentIds = new Set();
 
-// Renderizamos el captcha de publicar "a mano" (explícito), porque hay otro
-// widget más en la página (el del login) y no queremos que se mezclen.
+// ============================================================
+// CAPTCHA DE PUBLICAR JUEGO
+// ============================================================
+
 function initPublishCaptcha() {
     if (!window.turnstile) {
         setTimeout(initPublishCaptcha, 200);
@@ -22,12 +28,10 @@ function initPublishCaptcha() {
     }
 }
 
-// Lista de palabras prohibidas. Se carga desde la DB al iniciar la web.
-// Si la DB falla, se usa esta lista como fallback mínimo.
-let BAD_WORDS = ["pelotudo", "boludo", "puto", "imbecil"];
+// ============================================================
+// PALABRAS PROHIBIDAS
+// ============================================================
 
-// Trae las palabras prohibidas desde Supabase y actualiza el array global.
-// Se llama una sola vez al inicio.
 export async function cargarPalabrasProhibidas() {
     try {
         const { data, error } = await supabase
@@ -36,7 +40,7 @@ export async function cargarPalabrasProhibidas() {
 
         if (error) {
             console.error("Error cargando palabras prohibidas:", error);
-            return; // se queda con el fallback
+            return;
         }
 
         if (data && data.length > 0) {
@@ -48,8 +52,10 @@ export async function cargarPalabrasProhibidas() {
     }
 }
 
-// Anima un número subiendo desde 0 hasta su valor real (usado en las
-// estadísticas del modal de detalles: likes, visitas, jugando ahora).
+// ============================================================
+// UTILIDADES
+// ============================================================
+
 function animateCount(el, target) {
     if (!el) return;
     const finalValue = Number(target) || 0;
@@ -58,108 +64,13 @@ function animateCount(el, target) {
 
     function tick(now) {
         const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cúbico
+        const eased = 1 - Math.pow(1 - progress, 3);
         el.textContent = Math.round(finalValue * eased);
         if (progress < 1) requestAnimationFrame(tick);
         else el.textContent = finalValue;
     }
 
     requestAnimationFrame(tick);
-}
-
-export async function initGames() {
-    document.body.style.overflow = "auto";
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
-
-    await cargarPalabrasProhibidas();
-
-    try {
-        await loadGamesData();
-    } catch (err) {
-        console.error("Error cargando los juegos:", err);
-    }
-
-    // NUEVO: cargar los proyectos oficiales
-    try {
-        await cargarProyectosOficiales();
-    } catch (err) {
-        console.error("Error cargando proyectos oficiales:", err);
-    }
-
-    try {
-        await loadRecentComments();
-    } catch (err) {
-        console.error("Error cargando comentarios recientes:", err);
-    }
-
-    startScheduledGamesWatcher();
-}
-
-// Trae todos los juegos que el usuario logueado ya likeó.
-// Se llama al iniciar sesión y al cerrar sesión (con user = null limpia el set).
-export async function cargarMisLikes(userId) {
-    misLikes = new Set();
-
-    if (!userId) return;
-
-    const { data, error } = await supabase
-        .from('likes_juegos')
-        .select('juego_id')
-        .eq('user_id', userId);
-
-    if (error) {
-        console.error("Error cargando mis likes:", error);
-        return;
-    }
-
-    (data || []).forEach(row => misLikes.add(Number(row.juego_id)));
-}
-
-// Revisa cada 30 segundos si algún juego programado ya llegó a su hora,
-// y si es así, lo mete en la grilla sin que nadie tenga que recargar.
-let knownGameIds = new Set();
-
-function startScheduledGamesWatcher() {
-    knownGameIds = new Set(
-        document.querySelectorAll("[data-game-id]")
-            ? Array.from(document.querySelectorAll("[data-game-id]")).map(el => el.dataset.gameId)
-            : []
-    );
-
-    setInterval(async () => {
-        const { data: juegos, error } = await supabase
-            .from('juegos')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error || !juegos) return;
-
-        const now = new Date();
-        const visiblesAhora = juegos.filter(g => !g.publish_at || new Date(g.publish_at) <= now);
-        const idsVisiblesAhora = new Set(visiblesAhora.map(g => String(g.id)));
-
-        const nuevosIds = [...idsVisiblesAhora].filter(id => !knownGameIds.has(id));
-
-        if (nuevosIds.length === 0) return;
-
-        allGames = juegos;
-        renderGamesGrid(visiblesAhora);
-        renderRankingTop(visiblesAhora);
-
-        nuevosIds.forEach(id => {
-            const juego = visiblesAhora.find(g => String(g.id) === id);
-            if (juego) mostrarAvisoNuevoJuego(juego.title);
-
-            const card = document.querySelector(`[data-game-id="${id}"]`);
-            if (card) {
-                card.classList.add("just-published");
-                setTimeout(() => card.classList.remove("just-published"), 4000);
-            }
-        });
-
-        knownGameIds = idsVisiblesAhora;
-    }, 30000);
 }
 
 function mostrarAvisoNuevoJuego(titulo) {
@@ -175,8 +86,6 @@ function mostrarAvisoNuevoJuego(titulo) {
     }, 5000);
 }
 
-
-// Cartel de error con el mismo estilo que el de éxito.
 function mostrarError(mensaje) {
     const aviso = document.createElement("div");
     aviso.className = "error-toast";
@@ -198,8 +107,6 @@ function mostrarError(mensaje) {
     }, 3200);
 }
 
-// Cartel de éxito con tilde animado, para reemplazar los alert() feos
-// del navegador en acciones importantes (como publicar un juego).
 function mostrarExito(mensaje) {
     const aviso = document.createElement("div");
     aviso.className = "success-toast";
@@ -218,6 +125,106 @@ function mostrarExito(mensaje) {
     }, 3200);
 }
 
+// ============================================================
+// INIT
+// ============================================================
+
+export async function initGames() {
+    document.body.style.overflow = "auto";
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
+
+    await cargarPalabrasProhibidas();
+
+    try {
+        await loadGamesData();
+    } catch (err) {
+        console.error("Error cargando los juegos:", err);
+    }
+
+    try {
+        await cargarProyectosOficiales();
+    } catch (err) {
+        console.error("Error cargando proyectos oficiales:", err);
+    }
+
+    try {
+        await loadRecentComments();
+    } catch (err) {
+        console.error("Error cargando comentarios recientes:", err);
+    }
+
+    startScheduledGamesWatcher();
+}
+
+// ============================================================
+// MIS LIKES
+// ============================================================
+
+export async function cargarMisLikes(userId) {
+    misLikes = new Set();
+    if (!userId) return;
+
+    const { data, error } = await supabase
+        .from('likes_juegos')
+        .select('juego_id')
+        .eq('user_id', userId);
+
+    if (error) {
+        console.error("Error cargando mis likes:", error);
+        return;
+    }
+
+    (data || []).forEach(row => misLikes.add(Number(row.juego_id)));
+}
+
+// ============================================================
+// WATCHER DE JUEGOS PROGRAMADOS
+// ============================================================
+
+function startScheduledGamesWatcher() {
+    knownGameIds = new Set(
+        Array.from(document.querySelectorAll("[data-game-id]")).map(el => el.dataset.gameId)
+    );
+
+    setInterval(async () => {
+        const { data: juegos, error } = await supabase
+            .from('juegos')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error || !juegos) return;
+
+        const now = new Date();
+        const visiblesAhora = juegos.filter(g => !g.publish_at || new Date(g.publish_at) <= now);
+        const idsVisiblesAhora = new Set(visiblesAhora.map(g => String(g.id)));
+
+        const nuevosIds = [...idsVisiblesAhora].filter(id => !knownGameIds.has(id));
+        if (nuevosIds.length === 0) return;
+
+        allGames = juegos;
+        renderGamesGrid(visiblesAhora);
+        renderRankingTop(visiblesAhora);
+
+        nuevosIds.forEach(id => {
+            const juego = visiblesAhora.find(g => String(g.id) === id);
+            if (juego) mostrarAvisoNuevoJuego(juego.title);
+
+            const card = document.querySelector(`[data-game-id="${id}"]`);
+            if (card) {
+                card.classList.add("just-published");
+                setTimeout(() => card.classList.remove("just-published"), 4000);
+            }
+        });
+
+        knownGameIds = idsVisiblesAhora;
+    }, 30000);
+}
+
+// ============================================================
+// CARGAR JUEGOS
+// ============================================================
+
 async function loadGamesData() {
     const { data: juegos, error } = await supabase
         .from('juegos')
@@ -228,7 +235,7 @@ async function loadGamesData() {
         id: 1,
         title: "Meteor Fighters",
         author: "Dreaming Rose",
-        description: "Enfréntate a criaturas prehistóricas en intensas batallas 2D. ¡Desata combos devastadores y domina el campo de batalla!",
+        description: "Enfréntate a criaturas prehistóricas en intensas batallas 2D.",
         image_url: "assets/images/Meteor Fighters.png",
         download_url: "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing",
         likes_count: 0,
@@ -242,21 +249,21 @@ async function loadGamesData() {
         allGames = juegos;
     }
 
-    // Un juego programado para el futuro puede seguir siendo visible para
-    // su propio creador (por la política de RLS), pero no debe mezclarse
-    // con la grilla pública hasta que llegue su hora.
     const now = new Date();
     const gamesVisiblesAhora = allGames.filter(g => {
-    // No mostrar los oficiales en el hub
-    if (g.es_proyecto_oficial) return false;
-    if (!g.publish_at) return true;
-    return new Date(g.publish_at) <= now;
-});
+        if (g.es_proyecto_oficial) return false;
+        if (!g.publish_at) return true;
+        return new Date(g.publish_at) <= now;
+    });
 
     renderGamesGrid(gamesVisiblesAhora);
     renderRankingTop(gamesVisiblesAhora);
 }
-// Carga los proyectos oficiales (los que aparecen en "Nuestros Proyectos")
+
+// ============================================================
+// PROYECTOS OFICIALES
+// ============================================================
+
 export async function cargarProyectosOficiales() {
     const contenedor = document.getElementById("grid-proyectos");
     if (!contenedor) return;
@@ -274,7 +281,7 @@ export async function cargarProyectosOficiales() {
     }
 
     if (!proyectos || proyectos.length === 0) {
-        contenedor.innerHTML = "<p style='color:#888;'>Todavía no hay proyectos oficiales.</p>";
+        contenedor.innerHTML = "<p style='color:#888; grid-column: 1/-1;'>Todavía no hay proyectos oficiales.</p>";
         return;
     }
 
@@ -309,7 +316,9 @@ export async function cargarProyectosOficiales() {
     });
 }
 
-window.cargarProyectosOficiales = cargarProyectosOficiales;
+// ============================================================
+// RENDER DE TARJETAS Y RANKING
+// ============================================================
 
 function renderGamesGrid(gamesList) {
     const container = document.getElementById("community-games");
@@ -326,16 +335,17 @@ function renderGamesGrid(gamesList) {
         const card = document.createElement("div");
         card.className = "game-card-hub card-stagger";
         card.dataset.gameId = game.id;
-        
-                card.innerHTML = `
+
+        card.innerHTML = `
             <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="game-card-thumb" data-game-id="${game.id}">
             <div class="game-card-info">
                 <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">
-    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}</h4>
+                    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}
+                </h4>
                 <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
                 <div class="game-card-footer">
                     <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
-                    ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
+                        ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
                     </button>
                     <div class="star-rating">★★★★☆</div>
                 </div>
@@ -348,14 +358,12 @@ function renderGamesGrid(gamesList) {
         addTiltEffect(card);
 
         container.appendChild(card);
-
         setTimeout(() => card.classList.add("card-visible"), 40 * Math.min(index, 12));
     });
 }
 
-// Inclinación 3D sutil siguiendo el mouse, se desactiva sola en celulares
 function addTiltEffect(card) {
-    if (window.matchMedia("(pointer: coarse)").matches) return; // sin tilt en touch
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     card.addEventListener("mousemove", (e) => {
         const rect = card.getBoundingClientRect();
@@ -380,15 +388,15 @@ function renderRankingTop(gamesList) {
         const rankPos = index + 1;
         const item = document.createElement("div");
         item.className = "ranking-item-card";
-        
-                item.innerHTML = `
+
+        item.innerHTML = `
             <div class="ranking-item-left">
                 <div class="rank-number rank-${rankPos}">${rankPos}</div>
                 <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="rank-thumb">
                 <div>
                     <strong style="color: #fff; font-size: 0.95rem;">
-    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado">✅</span>' : ''}
-</strong>
+                        ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado">✅</span>' : ''}
+                    </strong>
                     <div style="font-size: 0.75rem; color: #8a8b9e;">☑ ${escapeHTML(game.author) || 'Creador'}</div>
                 </div>
             </div>
@@ -397,6 +405,10 @@ function renderRankingTop(gamesList) {
         rankingContainer.appendChild(item);
     });
 }
+
+// ============================================================
+// COMENTARIOS
+// ============================================================
 
 async function loadRecentComments() {
     const container = document.getElementById("recent-comments-list");
@@ -429,8 +441,6 @@ async function loadRecentComments() {
     });
 }
 
-let knownCommentIds = new Set();
-
 async function loadGameComments(juegoId) {
     const container = document.getElementById("commentsContainer");
     if (!container) return;
@@ -452,7 +462,7 @@ async function loadGameComments(juegoId) {
         const nombreMostrar = c.usuarios?.username || c.username || "Usuario eliminado";
         return `
         <div class="comment-card ${esNuevo ? 'comment-enter' : ''}" style="margin-bottom: 8px;">
-            <strong style="color: var(--neon);">${escapeHTML(nombreMostrar)}:</strong> 
+            <strong style="color: var(--neon);">${escapeHTML(nombreMostrar)}:</strong>
             <span style="color: #ccc;">${escapeHTML(c.comentario)}</span>
         </div>
     `;
@@ -468,7 +478,6 @@ window.submitComment = async function(event) {
 
     if (!texto || !currentGameId) return;
 
-    // 1. Requerir sesión
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         mostrarError("Tenés que iniciar sesión para comentar.");
@@ -476,7 +485,6 @@ window.submitComment = async function(event) {
         return;
     }
 
-    // 2. Traer username desde la DB
     const { data: perfil } = await supabase
         .from('usuarios')
         .select('username')
@@ -485,14 +493,12 @@ window.submitComment = async function(event) {
 
     const username = perfil?.username || user.email?.split("@")[0] || "Jugador";
 
-    // 3. Chequear palabras prohibidas
     const containsBadWord = BAD_WORDS.some(word => texto.toLowerCase().includes(word));
     if (containsBadWord) {
         mostrarError("Por favor mantené un lenguaje respetuoso. Este tipo de mensajes generan una advertencia en tu cuenta.");
         return;
     }
 
-    // 4. Insertar
     const { error } = await supabase.from('comentarios_juegos').insert([{
         juego_id: currentGameId,
         user_id: user.id,
@@ -531,13 +537,16 @@ window.submitComment = async function(event) {
     await loadRecentComments();
 };
 
+// ============================================================
+// LIKES
+// ============================================================
+
 window.handleDirectLike = async function(event, juegoId) {
     if (event) event.stopPropagation();
 
     const targetId = Number(juegoId || currentGameId);
     if (!targetId) return;
 
-    // 1. Requerir sesión
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         alert("⚠️ Tenés que iniciar sesión para dar like.");
@@ -548,7 +557,6 @@ window.handleDirectLike = async function(event, juegoId) {
     const yaLiked = misLikes.has(targetId);
 
     if (yaLiked) {
-        // ============ QUITAR LIKE ============
         const { error } = await supabase
             .from('likes_juegos')
             .delete()
@@ -573,14 +581,12 @@ window.handleDirectLike = async function(event, juegoId) {
         return;
     }
 
-    // ============ DAR LIKE ============
     const { error } = await supabase
         .from('likes_juegos')
         .insert([{ user_id: user.id, juego_id: targetId }]);
 
     if (error) {
         if (error.code === '23505') {
-            // Ya existía en la DB (raro si misLikes está sincronizado, pero por las dudas)
             misLikes.add(targetId);
             alert("⚠️ Ya le habías dado like a este juego.");
             return;
@@ -599,7 +605,6 @@ window.handleDirectLike = async function(event, juegoId) {
         renderRankingTop(allGames);
     }
 
-    // Animación del "+1"
     const likeBtn = event?.currentTarget || document.querySelector(`[data-like-id="${targetId}"]`);
     if (likeBtn) {
         likeBtn.classList.add("like-pop");
@@ -613,7 +618,6 @@ window.handleDirectLike = async function(event, juegoId) {
     }
 };
 
-// Helper para actualizar el contador y el estado visual del botón
 function actualizarUIContadorLike(targetId, nuevoValor, likeado) {
     const cardCount = document.getElementById(`like-count-${targetId}`);
     if (cardCount) cardCount.textContent = nuevoValor;
@@ -623,12 +627,15 @@ function actualizarUIContadorLike(targetId, nuevoValor, likeado) {
         modalLikes.textContent = nuevoValor;
     }
 
-    // Pintamos el botón de la tarjeta según el estado
     const btn = document.querySelector(`[data-like-id="${targetId}"]`);
     if (btn) {
         btn.classList.toggle("liked", likeado);
     }
 }
+
+// ============================================================
+// FILTROS Y ORDENAMIENTO
+// ============================================================
 
 window.filterGames = function(type, element) {
     if (element) {
@@ -669,13 +676,16 @@ function moveTabSlider(container, activeBtn) {
     slider.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
 }
 
-// Posiciona los subrayados en su lugar inicial apenas carga la página
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('.filter-tabs-primary, .filter-tabs-secondary').forEach(container => {
         const active = container.querySelector('.active');
         if (active) moveTabSlider(container, active);
     });
 });
+
+// ============================================================
+// PUBLICAR JUEGO
+// ============================================================
 
 window.handlePublishGame = async function(event) {
     event.preventDefault();
@@ -692,8 +702,6 @@ window.handlePublishGame = async function(event) {
 
     if (errorMsg) errorMsg.style.display = "none";
 
-
-        // Validar que la fecha programada sea futura
     if (scheduleInput) {
         const fechaElegida = new Date(scheduleInput);
         const ahora = new Date();
@@ -705,6 +713,7 @@ window.handlePublishGame = async function(event) {
             return;
         }
     }
+
     if (!acceptedTerms) {
         if (errorMsg) {
             errorMsg.textContent = "⚠️ Tenés que aceptar las reglas y los términos y condiciones para publicar.";
@@ -761,20 +770,13 @@ window.handlePublishGame = async function(event) {
     if (imageFileInput && imageFileInput.files && imageFileInput.files[0]) {
         let file = imageFileInput.files[0];
 
-        // --------------------------------------------
-        // COMPRIMIR LA IMAGEN ANTES DE SUBIRLA
-        // --------------------------------------------
-        // Si la imagen pesa más de 300KB, la comprimimos:
-        //   • Máximo 1920x1080 (para que se vea bien en cualquier pantalla)
-        //   • Calidad 0.82 (buen balance peso/calidad)
-        //   • Convierte a WebP si el navegador lo soporta (más liviano)
         try {
             if (typeof window.imageCompression === "function") {
                 const opciones = {
-                    maxSizeMB: 0.3,              // 300KB máximo
-                    maxWidthOrHeight: 1920,      // 1920px en el lado más largo
-                    useWebWorker: true,          // no traba la UI
-                    fileType: 'image/webp',      // formato más liviano
+                    maxSizeMB: 0.3,
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true,
+                    fileType: 'image/webp',
                     initialQuality: 0.82,
                 };
 
@@ -783,7 +785,6 @@ window.handlePublishGame = async function(event) {
                 const tamañoDespues = (comprimida.size / 1024).toFixed(0);
                 console.log(`🖼️ Imagen comprimida: ${tamañoAntes}KB → ${tamañoDespues}KB`);
 
-                // Reemplazar el archivo por la versión comprimida
                 file = new File([comprimida], file.name.replace(/\.[^.]+$/, '.webp'), {
                     type: 'image/webp'
                 });
@@ -792,12 +793,8 @@ window.handlePublishGame = async function(event) {
             }
         } catch (err) {
             console.error("Error comprimiendo imagen:", err);
-            // Si falla, subimos la original sin comprimir
         }
 
-        // --------------------------------------------
-        // SUBIR A SUPABASE
-        // --------------------------------------------
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
 
@@ -805,7 +802,7 @@ window.handlePublishGame = async function(event) {
             .from('portadas')
             .upload(fileName, file, {
                 contentType: file.type,
-                cacheControl: '31536000'   // cachear 1 año en el navegador
+                cacheControl: '31536000'
             });
 
         if (uploadError) {
@@ -855,6 +852,10 @@ window.handlePublishGame = async function(event) {
     await loadGamesData();
 };
 
+// ============================================================
+// MODAL DE DETALLES DEL JUEGO
+// ============================================================
+
 window.openGameDetails = async function(gameInput) {
     let game = null;
 
@@ -884,19 +885,13 @@ window.openGameDetails = async function(gameInput) {
 
     currentGameId = game.id;
 
-    // Registrar la visita (modelo YouTube):
-    //   • Cada apertura del modal cuenta 1 vista.
-    //   • Anónimos también cuentan (user_id = null).
-    //   • Se excluye al creador del juego (no se cuenta su propia visita).
     if (typeof game.id === 'number') {
         const { data: { user } } = await supabase.auth.getUser();
         const soyElCreador = user && game.user_id && user.id === game.user_id;
 
         if (!soyElCreador) {
-            // Actualización local (para reflejar el cambio al toque)
             game.views_count = (game.views_count || 0) + 1;
 
-            // Insertar la visita (el trigger actualiza views_count en la DB)
             const { error: errorVisita } = await supabase
                 .from('visitas_juegos')
                 .insert([{
@@ -906,7 +901,6 @@ window.openGameDetails = async function(gameInput) {
 
             if (errorVisita) {
                 console.error("Error registrando visita:", errorVisita);
-                // Si falla, no rompemos la UI: solo logueamos
             }
         }
     }
@@ -915,31 +909,30 @@ window.openGameDetails = async function(gameInput) {
     if (document.getElementById("gameModalAuthor")) document.getElementById("gameModalAuthor").textContent = `Creador: ${game.author || 'Dreaming Rose'}`;
     if (document.getElementById("gameModalImg")) document.getElementById("gameModalImg").src = game.image_url || 'assets/images/Meteor Fighters.png';
     if (document.getElementById("gameModalDescription")) document.getElementById("gameModalDescription").textContent = game.description || "Sin descripción disponible.";
-    // Mostrar el badge de verificación
-const verificacionBadge = document.getElementById("gameVerificationBadge");
-if (verificacionBadge) {
-    if (game.verificado) {
-        verificacionBadge.innerHTML = `
-            <div class="verificacion-ok">
-                ✅ Verificado por Google Safe Browsing
-            </div>
-        `;
-    } else if (game.verificado_at) {
-        // Ya fue analizado pero dio positivo
-        verificacionBadge.innerHTML = `
-            <div class="verificacion-peligro">
-                ⚠️ Este juego fue marcado como sospechoso. Descarágalo bajo tu propio riesgo.
-            </div>
-        `;
-    } else {
-        // Todavía no fue analizado
-        verificacionBadge.innerHTML = `
-            <div class="verificacion-pendiente">
-                ⏳ Este juego aún no fue verificado. Descargalo bajo tu propio riesgo.
-            </div>
-        `;
+
+    const verificacionBadge = document.getElementById("gameVerificationBadge");
+    if (verificacionBadge) {
+        if (game.verificado) {
+            verificacionBadge.innerHTML = `
+                <div class="verificacion-ok">
+                    ✅ Verificado por Google Safe Browsing
+                </div>
+            `;
+        } else if (game.verificado_at) {
+            verificacionBadge.innerHTML = `
+                <div class="verificacion-peligro">
+                    ⚠️ Este juego fue marcado como sospechoso. Descarágalo bajo tu propio riesgo.
+                </div>
+            `;
+        } else {
+            verificacionBadge.innerHTML = `
+                <div class="verificacion-pendiente">
+                    ⏳ Este juego aún no fue verificado. Descargalo bajo tu propio riesgo.
+                </div>
+            `;
+        }
     }
-}
+
     animateCount(document.getElementById("statLikes"), game.likes_count || 0);
     animateCount(document.getElementById("statVisits"), game.views_count || 1);
     animateCount(document.getElementById("statPlaying"), game.playing_count || 1);
@@ -951,14 +944,12 @@ if (verificacionBadge) {
             : "Sin fecha";
     }
 
-    // --- MANEJO DE DESCARGA BLINDADO (SIN CONGELAR) ---
     const playBtn = document.getElementById("gameDownloadBtn");
     if (playBtn) {
-                const urlFinal = game.download_url || "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing";
-        
-        playBtn.style.display = "inline-flex"; 
-        
-        // Reemplazamos la función onclick directamente para aislar el evento y evitar recargas o bloqueos
+        const urlFinal = game.download_url || "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing";
+
+        playBtn.style.display = "inline-flex";
+
         playBtn.onclick = function(e) {
             if (e) {
                 e.preventDefault();
@@ -970,8 +961,6 @@ if (verificacionBadge) {
     }
 
     await loadGameComments(game.id);
-
-    // Mostrar/ocultar el formulario de comentario según la sesión
     await actualizarFormularioComentario();
 
     const modal = document.getElementById("gameModal");
@@ -981,7 +970,6 @@ if (verificacionBadge) {
     }
 };
 
-// Muestra el form si hay sesión, o el aviso de login si no.
 async function actualizarFormularioComentario() {
     const form = document.getElementById("commentForm");
     const prompt = document.getElementById("commentLoginPrompt");
@@ -998,6 +986,10 @@ async function actualizarFormularioComentario() {
     }
 }
 
+// ============================================================
+// ABRIR / CERRAR MODALES
+// ============================================================
+
 window.openUpload = function() {
     const modal = document.getElementById("publishModal");
     if (modal) {
@@ -1011,7 +1003,7 @@ window.closeGameModal = function() {
     const modal = document.getElementById("gameModal");
     if (modal) {
         modal.classList.remove("active");
-        document.body.style.overflow = "auto"; // Restaura siempre el scroll
+        document.body.style.overflow = "auto";
     }
 };
 
@@ -1019,13 +1011,15 @@ window.closePublishModal = function() {
     const modal = document.getElementById("publishModal");
     if (modal) {
         modal.classList.remove("active");
-        document.body.style.overflow = "auto"; // Restaura siempre el scroll
+        document.body.style.overflow = "auto";
     }
     if (window.turnstile && publishWidgetId !== null) window.turnstile.reset(publishWidgetId);
 };
 
-// El botón de publicar arranca deshabilitado y solo se habilita
-// cuando se tilda la casilla de términos y condiciones.
+// ============================================================
+// LISTENERS GLOBALES
+// ============================================================
+
 document.addEventListener("DOMContentLoaded", () => {
     const termsCheckbox = document.getElementById("pubAcceptTerms");
     const submitBtn = document.getElementById("btnPublishSubmit");
@@ -1042,11 +1036,13 @@ window.addEventListener("click", function(event) {
     const publishModal = document.getElementById("publishModal");
     const authModal = document.getElementById("authModal");
     const adminModal = document.getElementById("adminModal");
+    const proyectoModal = document.getElementById("proyectoOficialModal");
 
     if (event.target === gameModal) window.closeGameModal();
     if (event.target === publishModal) window.closePublishModal();
     if (event.target === authModal) { authModal.classList.remove("active"); document.body.style.overflow = "auto"; }
     if (event.target === adminModal) { adminModal.classList.remove("active"); document.body.style.overflow = "auto"; }
+    if (event.target === proyectoModal) { proyectoModal.classList.remove("active"); document.body.style.overflow = "auto"; }
 });
 
 window.addEventListener("keydown", function(event) {
@@ -1057,61 +1053,15 @@ window.addEventListener("keydown", function(event) {
         if (authModal) authModal.classList.remove("active");
         const adminModal = document.getElementById("adminModal");
         if (adminModal) adminModal.classList.remove("active");
-        document.body.style.overflow = "auto"; // Restaura siempre el scroll con ESC
+        const proyectoModal = document.getElementById("proyectoOficialModal");
+        if (proyectoModal) proyectoModal.classList.remove("active");
+        document.body.style.overflow = "auto";
     }
 });
-// Carga los proyectos oficiales (los que aparecen en "Nuestros Proyectos")
-export async function cargarProyectosOficiales() {
-    const contenedor = document.getElementById("grid-proyectos");
-    if (!contenedor) return;
 
-    const { data: proyectos, error } = await supabase
-        .from('juegos')
-        .select('*')
-        .eq('es_proyecto_oficial', true)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error("Error cargando proyectos oficiales:", error);
-        contenedor.innerHTML = "<p style='color:#ff4d6d;'>Error al cargar los proyectos.</p>";
-        return;
-    }
-
-    if (!proyectos || proyectos.length === 0) {
-        contenedor.innerHTML = "<p style='color:#888; grid-column: 1/-1;'>Todavía no hay proyectos oficiales.</p>";
-        return;
-    }
-
-    contenedor.innerHTML = "";
-
-    proyectos.forEach(proyecto => {
-        const card = document.createElement("article");
-        card.className = "project-card reveal visible";
-        card.innerHTML = `
-            <div class="card-media">
-                <img src="${escapeHTML(proyecto.image_url) || 'assets/images/Meteor Fighters.png'}"
-                     alt="${escapeHTML(proyecto.title)}"
-                     class="project-cover-img">
-            </div>
-            <div class="card-body">
-                <h3>${escapeHTML(proyecto.title)}${proyecto.verificado ? ' <span class="verified-badge">✅</span>' : ''}</h3>
-                <p>${escapeHTML(proyecto.description) || 'Sin descripción'}</p>
-                <a href="#" class="link-arrow" data-proyecto-id="${proyecto.id}">VER DETALLES →</a>
-            </div>
-        `;
-
-        card.querySelector(".link-arrow").addEventListener("click", (e) => {
-            e.preventDefault();
-            window.openGameDetails(proyecto.id);
-        });
-
-        card.querySelector(".card-media").addEventListener("click", () => {
-            window.openGameDetails(proyecto.id);
-        });
-
-        contenedor.appendChild(card);
-    });
-}
+// ============================================================
+// EXPOSICIÓN AL WINDOW
+// ============================================================
 
 window.cargarProyectosOficiales = cargarProyectosOficiales;
 window.cargarMisLikes = cargarMisLikes;
