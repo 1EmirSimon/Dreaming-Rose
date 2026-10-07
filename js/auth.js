@@ -56,6 +56,13 @@ async function checkUserSession() {
 async function handleProfile(user) {
     if (!user) {
         updateUI(null, null);
+        // Cerrar el modal de apelación si estaba abierto (por si el usuario
+        // se deslogueó desde la pantalla de baneo)
+        const apelacionModal = document.getElementById("apelacionModal");
+        if (apelacionModal) {
+            apelacionModal.classList.remove("active");
+            document.body.style.overflow = "auto";
+        }
         return;
     }
 

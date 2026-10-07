@@ -91,3 +91,17 @@ window.enviarApelacion = async function(event) {
 };
 
 window.mostrarModalApelacion = mostrarModalApelacion;
+
+// Cierra el modal de apelación y desloguea al usuario.
+// Se llama desde el botón "CERRAR SESIÓN" del modal.
+window.cerrarApelacionYLogout = async function() {
+    const modal = document.getElementById("apelacionModal");
+    if (modal) {
+        modal.classList.remove("active");
+        document.body.style.overflow = "auto";
+    }
+    // Pequeña espera para que la animación termine antes de desloguear
+    setTimeout(async () => {
+        await supabase.auth.signOut();
+    }, 200);
+};
