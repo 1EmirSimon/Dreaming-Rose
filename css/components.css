@@ -68,8 +68,9 @@
 
 .grid-projects {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
     gap: 20px;
+    justify-content: flex-start;
 }
 
 .project-card,
@@ -90,28 +91,34 @@
 
 }
 
-.project-card:hover,
-.game-card:hover {
+.project-card:hover .card-media img {
+    transform: scale(1.05);
+}
 
-    transform: translateY(-10px);
-
-    border-color: var(--accent);
-
-    box-shadow:
-        0 20px 40px rgba(0,0,0,0.4);
-
+.game-card:hover img {
+    transform: scale(1.08);
 }
 
 
 
-.card-media,
-.game-card img {
+.card-media {
     width: 100%;
     height: 160px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a10;
 }
 
-.card-media img,
+.card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    transition: transform 0.4s ease;
+}
+
 .game-card img {
     width: 100%;
     height: 100%;
@@ -132,39 +139,43 @@
     transition: transform 0.4s ease !important;
 }
 
-.project-card:hover .project-cover-img {
-    transform: scale(1.05) !important;
-}   
+.project-card:hover .card-media img {
+    transform: scale(1.05);
+}
+
+.game-card:hover img {
+    transform: scale(1.08);
+}  
 .card-body,
 .card-info {
-    padding: 16px;
+    padding: 14px;
 }
 
 .card-body h3,
 .card-info h3 {
     font-family: var(--font-heading);
-    font-size: 0.9rem;
-    margin-bottom: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
 }
 
 .card-body p,
 .card-info span {
     color: var(--text);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
 }
 
 .link-arrow {
-
     display: inline-block;
-
-    margin-top: 20px;
-
+    margin-top: 12px;
     color: var(--neon);
-
-    font-size: 0.8rem;
-
+    font-size: 0.7rem;
     font-weight: 800;
+    letter-spacing: 1px;
+    transition: color 0.2s ease;
+}
 
+.link-arrow:hover {
+    color: var(--accent);
 }
 
 /* ===================
@@ -1100,4 +1111,33 @@ select:focus {
         min-width: unset;
         flex: none;
     }
+}
+
+/* =========================================================
+   SECCIÓN PROYECTOS — título más compacto
+========================================================= */
+
+.section-title {
+    margin-bottom: 30px;
+}
+
+.section-title h2 {
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+}
+
+.title-line {
+    width: 50px;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 10px;
+}
+
+/* Header con botón de agregar (para mod/root) */
+.section-title.with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
