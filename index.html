@@ -530,4 +530,182 @@
             Elegí tu nueva contraseña. Mínimo 8 caracteres.
         </p>
 
-        <form id="newPasswordForm" onsubmit="guardarNuevaPassword(event)" style="display: flex; flex-direction: column; gap: 12px
+        <form id="newPasswordForm" onsubmit="guardarNuevaPassword(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="position: relative;">
+                <input type="password" id="newPasswordInput" placeholder="Nueva contraseña" required minlength="8"
+                    style="width: 100%; padding: 12px 45px 12px 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+                <button type="button" onclick="togglePasswordVisibility('newPasswordInput', this)" class="toggle-pass-btn">
+                    👁
+                </button>
+            </div>
+
+            <div style="position: relative;">
+                <input type="password" id="newPasswordConfirm" placeholder="Repetir contraseña" required minlength="8"
+                    style="width: 100%; padding: 12px 45px 12px 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+                <button type="button" onclick="togglePasswordVisibility('newPasswordConfirm', this)" class="toggle-pass-btn">
+                    👁
+                </button>
+            </div>
+
+            <p id="newPasswordError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">GUARDAR</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL CAMBIO DE USUARIO -->
+<div id="usernameModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; width: 90%; position: relative;">
+        <button onclick="closeUsernameModal()" class="modal-close-icon">✕</button>
+
+        <h2>CAMBIAR NOMBRE DE USUARIO</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">
+            Elegí un nombre nuevo. Tiene que ser único.
+        </p>
+
+        <form id="usernameForm" onsubmit="guardarNuevoUsername(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="newUsernameInput" placeholder="Nuevo nombre de usuario" required minlength="3" maxlength="20"
+                style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <p id="usernameError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+            <p id="usernameSuccess" style="color: #2ecc71; font-size: 0.8rem; display: none;"></p>
+
+            <button type="submit" class="btn-main">GUARDAR</button>
+        </form>
+    </div>
+</div>
+
+<!-- MENÚ MOBILE (DRAWER) -->
+<div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-backdrop" onclick="closeMobileMenu()"></div>
+    <aside class="mobile-menu-panel">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-title">MENÚ</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Cerrar">✕</button>
+        </div>
+
+        <!-- Sección navegación (siempre visible) -->
+        <nav class="mobile-menu-section">
+            <a href="#proyectos" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🎮</span>
+                <span>PROYECTOS</span>
+            </a>
+            <a href="#comunidad" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🌐</span>
+                <span>COMUNIDAD</span>
+            </a>
+            <a href="#ranking" class="mobile-menu-link" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🏆</span>
+                <span>RANKING</span>
+            </a>
+        </nav>
+
+        <!-- Sección cuenta (solo si hay sesión) -->
+        <div class="mobile-menu-section" id="mobileMenuUserSection" style="display: none;">
+            <div class="mobile-menu-divider">MI CUENTA</div>
+
+            <button id="mobileBtnPublish" class="mobile-menu-link" onclick="closeMobileMenu(); openUpload();" style="display: none;">
+                <span class="mobile-menu-icon">📤</span>
+                <span>PUBLICAR JUEGO</span>
+            </button>
+
+            <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
+                <span class="mobile-menu-icon">🛡️</span>
+                <span>PANEL ADMIN</span>
+            </button>
+
+            <button id="mobileBtnSolicitar" class="mobile-menu-link" onclick="closeMobileMenu(); openSolicitudCreador();" style="display: none;">
+                <span class="mobile-menu-icon">⭐</span>
+                <span>SER CREADOR</span>
+            </button>
+
+            <button class="mobile-menu-link" onclick="closeMobileMenu(); openUsernameModal();">
+                <span class="mobile-menu-icon">👤</span>
+                <span>CAMBIAR USUARIO</span>
+            </button>
+
+            <button class="mobile-menu-link" onclick="closeMobileMenu(); openPasswordModal();">
+                <span class="mobile-menu-icon">🔒</span>
+                <span>CAMBIAR CONTRASEÑA</span>
+            </button>
+
+            <button class="mobile-menu-link mobile-menu-danger" onclick="closeMobileMenu(); logout();">
+                <span class="mobile-menu-icon">🚪</span>
+                <span>CERRAR SESIÓN</span>
+            </button>
+        </div>
+
+        <!-- Sección login (solo si NO hay sesión) -->
+        <div class="mobile-menu-section" id="mobileMenuGuestSection">
+            <button class="mobile-menu-link mobile-menu-cta" onclick="closeMobileMenu(); openAuthModal();">
+                <span class="mobile-menu-icon">🔑</span>
+                <span>INGRESAR</span>
+            </button>
+        </div>
+
+        <!-- Footer del menú -->
+        <div class="mobile-menu-footer">
+            <span>DREAMING ROSE © 2026</span>
+        </div>
+    </aside>
+</div>
+
+<!-- MODAL DE APELACIÓN (para baneados) -->
+<div id="apelacionModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; width: 90%; position: relative;">
+        <h2>CUENTA SUSPENDIDA</h2>
+        <p style="color: #ff4d6d; font-size: 0.9rem; margin-bottom: 15px; font-weight: 700;">
+            🚫 Tu cuenta fue suspendida por incumplir las reglas de Dreaming Rose.
+        </p>
+
+        <!-- Estado 1: sin apelación enviada -->
+        <div id="apelacionFormContainer">
+            <p style="color: #ccc; font-size: 0.85rem; margin-bottom: 15px;">
+                Tenés <strong>una sola oportunidad</strong> para apelar. Si tu apelación es rechazada, no vas a poder volver a intentarlo.
+            </p>
+
+            <form id="apelacionForm" onsubmit="enviarApelacion(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <textarea id="apelacionMensaje" placeholder="Explicá por qué creés que tu suspensión fue un error o por qué deberíamos darte otra oportunidad..." rows="5" maxlength="1000" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
+
+                <p id="apelacionError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
+
+                <button type="submit" class="btn-main" id="btnApelacionSubmit">ENVIAR APELACIÓN</button>
+            </form>
+        </div>
+
+        <!-- Estado 2: apelación pendiente -->
+        <div id="apelacionPendiente" style="display: none;">
+            <p style="color: #ffb800; font-size: 0.9rem;">
+                ⏳ Tu apelación está pendiente de revisión. Te vamos a avisar cuando un moderador la revise.
+            </p>
+        </div>
+
+        <!-- Estado 3: apelación rechazada -->
+        <div id="apelacionRechazada" style="display: none;">
+            <p style="color: #ff4d6d; font-size: 0.9rem;">
+                ❌ Tu apelación fue rechazada. No podés volver a apelar.
+            </p>
+        </div>
+
+        <!-- Estado 4: apelación aprobada -->
+        <div id="apelacionAprobada" style="display: none;">
+            <p style="color: #2ecc71; font-size: 0.9rem;">
+                ✅ ¡Tu apelación fue aprobada! Recargá la página para volver a usar tu cuenta.
+            </p>
+            <button onclick="window.location.reload()" class="btn-main" style="margin-top: 15px;">RECARGAR</button>
+        </div>
+
+        <button onclick="cerrarApelacionYLogout()" class="btn-close" style="margin-top: 20px;">CERRAR SESIÓN</button>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>© 2026 DREAMING ROSE. TODOS LOS DERECHOS RESERVADOS.</p>
+</footer>
+
+<!-- Carga de Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
