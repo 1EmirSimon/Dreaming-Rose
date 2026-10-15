@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080a12">
+  <meta name="theme-color" content="#08080c">
   <title>Moderación de juegos | Dreaming Rose</title>
   <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
@@ -47,21 +47,64 @@
     .moderation-buttons{display:flex;gap:8px;flex-wrap:wrap}
     .moderation-footnote{color:#707990;font-size:.76rem;margin-top:22px}
     @media(max-width:680px){.moderation-page{padding-top:88px}.moderation-wrap{width:calc(100% - 22px)}.moderation-stats{gap:8px}.moderation-stat{padding:12px}.moderation-stat strong{font-size:1.4rem}.moderation-stat span{font-size:.7rem}.moderation-game{grid-template-columns:1fr}.moderation-cover{height:190px;min-height:0}.moderation-game-body{padding:14px}.moderation-top{align-items:flex-start}.moderation-brand img{width:40px;height:40px}}
+
+    /* Encabezado unificado y responsive */
+    .moderation-app-header{position:relative;z-index:5;background:rgba(7,7,12,.96);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}
+    .moderation-app-header-inner{width:min(1240px,calc(100% - 36px));min-height:76px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .moderation-app-brand{display:flex;align-items:center;gap:12px;min-width:0;color:#f5f5fa;text-decoration:none}
+    .moderation-app-logo{width:44px;height:44px;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 8px rgba(255,77,109,.18))}
+    .moderation-app-brand span,.moderation-app-brand strong,.moderation-app-brand small{display:block;min-width:0}
+    .moderation-app-brand strong{font:700 .76rem/1.5 Syncopate,Inter,sans-serif;letter-spacing:2px;white-space:nowrap}
+    .moderation-app-brand small{font-size:.62rem;letter-spacing:2px;color:#ff7894;margin-top:2px}
+    .moderation-return{white-space:nowrap;text-decoration:none;text-transform:none;letter-spacing:0}
+    .moderation-page{padding-top:34px}
+    .moderation-top{padding:4px 0 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .moderation-brand img{display:none}
+    .moderation-eyebrow{letter-spacing:2px}
+    .moderation-toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,230px)}
+    .moderation-search,.moderation-filter{width:100%;min-width:0;box-sizing:border-box}
+    .moderation-game{box-shadow:0 12px 30px rgba(0,0,0,.12)}
+    .moderation-buttons .moderation-button{min-height:42px}
+    @media(max-width:680px){
+      .moderation-app-header-inner{width:calc(100% - 24px);min-height:66px;gap:10px}
+      .moderation-app-logo{width:38px;height:38px}
+      .moderation-app-brand{gap:9px}
+      .moderation-app-brand strong{font-size:.61rem;letter-spacing:1px}
+      .moderation-app-brand small{font-size:.52rem;letter-spacing:1px}
+      .moderation-return{padding:9px 10px;font-size:.65rem}
+      .moderation-page{padding:24px 0 40px}
+      .moderation-wrap{width:calc(100% - 24px)}
+      .moderation-top{gap:14px;margin-bottom:18px;padding-bottom:16px}
+      .moderation-top h1{font-size:1.45rem}
+      .moderation-subtitle{font-size:.82rem;line-height:1.5}
+      .moderation-actions{width:100%}
+      .moderation-toolbar{grid-template-columns:1fr;gap:8px;margin:14px 0}
+      .moderation-search,.moderation-filter{min-height:46px}
+      .moderation-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:16px}
+      .moderation-stat{padding:11px 8px;border-radius:10px}
+      .moderation-stat strong{font-size:1.35rem}
+      .moderation-stat span{font-size:.62rem;line-height:1.3;display:block}
+      .moderation-game{grid-template-columns:1fr;border-radius:12px}
+      .moderation-cover{height:180px;min-height:0;max-height:220px}
+      .moderation-game-body{padding:13px}
+      .moderation-game-head{gap:8px}
+      .moderation-game h2{font-size:1.08rem}
+      .moderation-meta{font-size:.72rem;gap:8px 12px}
+      .moderation-description{font-size:.88rem;line-height:1.55}
+      .moderation-buttons{display:grid;grid-template-columns:1fr;gap:8px}
+      .moderation-buttons .moderation-button{width:100%;min-height:44px}
+    }
+    @media(max-width:360px){.moderation-app-brand small{display:none}.moderation-return{font-size:.6rem}.moderation-stat span{font-size:.57rem}}
   </style>
 </head>
 <body>
-<header class="navbar">
-  <div class="nav-container">
-    <a class="nav-left" href="index.html" aria-label="Volver a Dreaming Rose" style="text-decoration:none;color:inherit">
-      <img src="assets/Icons/rosaaa MArlo icono.png" alt="" class="logo">
-      <span class="brand">DREAMING ROSE</span>
+<header class="moderation-app-header">
+  <div class="moderation-app-header-inner">
+    <a class="moderation-app-brand" href="index.html" aria-label="Dreaming Rose, volver al hub">
+      <img src="assets/Icons/rosaaa MArlo icono.png" alt="" class="moderation-app-logo">
+      <span><strong>DREAMING ROSE</strong><small>STUDIO / ADMINISTRACIÓN</small></span>
     </a>
-    <div class="nav-right">
-      <a href="index.html#proyectos">PROYECTOS</a>
-      <a href="index.html#comunidad">COMUNIDAD</a>
-      <a href="index.html#ranking">RANKING</a>
-      <a href="index.html" class="moderation-button">VOLVER AL HUB</a>
-    </div>
+    <a href="index.html" class="moderation-button moderation-return">← Volver al hub</a>
   </div>
 </header>
 <main class="moderation-page">
@@ -69,11 +112,11 @@
     <div class="moderation-top">
       <div class="moderation-brand">
         <img src="assets/Icons/rosaaa MArlo icono.png" alt="Dreaming Rose">
-        <div><div class="moderation-eyebrow">STUDIO / ADMINISTRACIÓN</div><h1>Moderación de juegos</h1><p class="moderation-subtitle">Revisá publicaciones antes de que aparezcan en el hub.</p></div>
+        <div><div class="moderation-eyebrow">REVISIÓN DE PUBLICACIONES</div><h1>Moderación de juegos</h1><p class="moderation-subtitle">Revisá publicaciones antes de que aparezcan en el hub.</p></div>
       </div>
       <div class="moderation-actions">
         <button class="moderation-button" id="refreshBtn" type="button">↻ ACTUALIZAR</button>
-        <a class="moderation-button" href="index.html">← VOLVER AL HUB</a>
+        
       </div>
     </div>
     <div id="notice" class="moderation-notice" role="status">Verificando sesión y permisos…</div>
