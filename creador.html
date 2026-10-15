@@ -15,8 +15,8 @@
   <main class="creator-shell">
     <header class="creator-header">
       <a class="creator-brand" href="./index.html" aria-label="Volver a Dreaming Rose">
-        <span class="creator-mark">✿</span>
-        <span><strong>DREAMING ROSE</strong><small>CREATOR STUDIO</small></span>
+        <img class="creator-logo" src="assets/Icons/rosaaa MArlo icono.png" alt="Rosa de Dreaming Rose">
+        <span class="creator-brand-copy"><strong>DREAMING ROSE</strong><small>CREATOR STUDIO</small></span>
       </a>
       <div class="creator-header-actions">
         <span id="creatorIdentity" class="creator-identity">Verificando sesión…</span>
@@ -27,12 +27,18 @@
     <section class="creator-intro">
       <p class="creator-eyebrow">TU ESPACIO DE TRABAJO</p>
       <h1>CREATOR <span>DASHBOARD</span></h1>
-      <p>Un espacio ordenado para el catálogo oficial, tus publicaciones y —para root— los envíos de la comunidad.</p>
+      <p>Un centro de control para el catálogo oficial, tus publicaciones y la actividad de la comunidad.</p>
+      <nav class="creator-shortcuts" aria-label="Secciones del dashboard">
+        <a href="#creatorOverview"><span>01</span> Resumen</a>
+        <a href="#creatorCatalog"><span>02</span> Catálogo y publicaciones</a>
+        <a href="./moderacion.html"><span>03</span> Moderación ↗</a>
+      </nav>
     </section>
 
     <div id="creatorNotice" class="creator-notice" role="status">Verificando cuenta y permisos…</div>
 
     <section id="creatorDashboard" hidden>
+      <div id="creatorOverview"></div>
       <div class="creator-section-heading">
         <div><h2>Resumen</h2><p>Datos asociados a tu cuenta.</p></div>
         <button id="creatorRefresh" class="creator-button" type="button">↻ Actualizar datos</button>
@@ -45,7 +51,7 @@
         <article class="creator-metric"><span>Publicaciones aprobadas</span><strong id="metricApproved">0</strong><small>Juegos aprobados por moderación</small></article>
       </div>
 
-      <div class="creator-section-heading creator-games-heading">
+      <div id="creatorCatalog" class="creator-section-heading creator-games-heading">
         <div><h2>Tus juegos</h2><p>El detalle y las métricas se actualizan desde Supabase.</p></div>
         <label class="creator-search-wrap"><span class="sr-only">Buscar juegos</span><input id="creatorSearch" type="search" placeholder="Buscar un juego…"></label>
       </div>

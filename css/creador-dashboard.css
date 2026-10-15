@@ -71,3 +71,30 @@
 .creator-games-list{display:grid;gap:13px}
 .creator-game-id{font-size:.68rem;letter-spacing:.7px;color:#969bb0;margin:0 0 6px}
 @media(max-width:620px){.creator-group-heading{align-items:flex-start}.creator-group-heading h3{font-size:.95rem}.creator-group-heading p{line-height:1.45}}
+
+/* Identidad visual y jerarquía del dashboard */
+.creator-header{padding:4px 0 22px}
+.creator-brand{gap:13px;text-decoration:none;min-width:0}
+.creator-logo{display:block;width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,77,109,.2))}
+.creator-brand-copy{display:block;min-width:0}
+.creator-brand strong{font-size:.76rem;letter-spacing:3px;white-space:nowrap}
+.creator-brand small{margin-top:2px;font-size:.62rem;letter-spacing:3.5px}
+.creator-intro{padding:44px 0 26px}
+.creator-intro h1{font-size:clamp(1.8rem,4.5vw,3.2rem);letter-spacing:-1.5px}
+.creator-shortcuts{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+.creator-shortcuts a{display:inline-flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:rgba(18,18,29,.78);color:#e7e8f0;text-decoration:none;font-size:.78rem;font-weight:700;transition:border-color .18s,transform .18s}
+.creator-shortcuts a:hover{border-color:rgba(255,77,109,.65);transform:translateY(-1px)}
+.creator-shortcuts a span{color:#ff6685;font-size:.68rem;letter-spacing:1px}
+#creatorOverview{scroll-margin-top:20px}
+#creatorCatalog{scroll-margin-top:20px}
+.creator-metric{position:relative;min-height:136px}
+.creator-metric:before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:3px;background:linear-gradient(#ff4d6d,rgba(255,77,109,.08))}
+.creator-section-heading h2{margin:0;font-size:1.32rem}
+.creator-game-group{padding:18px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(10,10,17,.42)}
+.creator-group-heading{margin-bottom:15px}
+.creator-group-heading h3{font-size:1.02rem;font-weight:800}
+.creator-game-card{grid-template-columns:190px minmax(0,1fr);border-radius:12px}
+.creator-game-cover{min-height:200px;max-height:240px}
+.creator-game-content{padding:17px 19px}
+.creator-game-stats>div{background:rgba(255,255,255,.035)}
+@media(max-width:700px){.creator-header{align-items:flex-start}.creator-logo{width:43px;height:43px}.creator-brand strong{font-size:.6rem;letter-spacing:1.5px}.creator-brand small{font-size:.54rem;letter-spacing:2px}.creator-shortcuts{display:grid;grid-template-columns:1fr}.creator-shortcuts a{width:100%}.creator-game-group{padding:12px}.creator-game-card{grid-template-columns:1fr}.creator-game-cover{height:190px;min-height:0;max-height:220px}}

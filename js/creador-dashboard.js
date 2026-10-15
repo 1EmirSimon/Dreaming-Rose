@@ -107,7 +107,7 @@ function renderGames() {
   const sections = [];
   const addSection = (title, subtitle, games, key) => {
     if (!games.length) return;
-    sections.push(`<section class="creator-game-group"><div class="creator-group-heading"><div><h3>${title}</h3><p>${subtitle}</p></div><span>${games.length}</span></div><div class="creator-games-list">${games.map(gameCard).join("")}</div></section>`);
+    sections.push(`<section id="creatorGroup-${key}" class="creator-game-group"><div class="creator-group-heading"><div><h3>${title}</h3><p>${subtitle}</p></div><span>${games.length}</span></div><div class="creator-games-list">${games.map(gameCard).join("")}</div></section>`);
   };
   addSection("Juegos oficiales de Dreaming Rose", "Catálogo oficial, incluso si no tiene un usuario creador asociado.", official, "official");
   addSection(currentRole === "root" ? "Publicaciones de tu cuenta" : "Tus publicaciones", "Juegos enviados desde el botón Publicar.", own, "own");
