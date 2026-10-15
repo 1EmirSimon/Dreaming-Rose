@@ -70,17 +70,13 @@
         </div>
 
         <nav class="nav-right">
-            <a href="#proyectos">PROYECTOS</a>
+            <a href="juegos.html">PROYECTOS</a>
             <a href="#comunidad">COMUNIDAD</a>
             <a href="#ranking">RANKING</a>
 
             <button id="btnPublish" onclick="openUpload()" class="btn-primary" style="display: none;">
                 PUBLICAR
             </button>
-
-            <a id="btnCreatorDashboard" href="./creador.html" class="btn-outline" style="display: none; border-color: var(--accent); color: var(--accent);">
-                MI DASHBOARD
-            </a>
 
             <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline" style="display: none; border-color: var(--neon); color: var(--neon);">
                 PANEL ADMIN
@@ -374,12 +370,6 @@
             </button>
         </div>
 
-            <button type="button" id="tabAdminModeracion" class="tab-btn admin-moderation-link"
-                onclick="window.location.href='moderacion.html'"
-                style="padding: 6px 14px; font-size: 0.75rem; border: 1px solid rgba(0,255,247,.35); color: var(--neon);">
-                Moderar juegos ↗
-            </button>
-
         <!-- Tab Usuarios -->
         <div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
             <!-- Sub-pestañas -->
@@ -414,20 +404,30 @@
         <button onclick="closePublishModal()" class="modal-close-icon">✕</button>
         
         <h2>PUBLICAR NUEVO JUEGO</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">Sube tu proyecto seleccionando una portada local y tu enlace de Google Drive.</p>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px;">Publicá tu juego descargable con su categoría y un enlace de Google Drive o MediaFire.</p>
 
         <form id="publishForm" onsubmit="handlePublishGame(event)" style="display: flex; flex-direction: column; gap: 12px;">
             <!-- Tus campos actuales del formulario -->
             <input type="text" id="pubTitle" placeholder="Título del juego *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
             <textarea id="pubDescription" placeholder="Descripción breve *" rows="3" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff; resize: vertical;"></textarea>
             <input type="text" id="pubAuthor" placeholder="Nombre del creador / Estudio" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+
+            <label for="pubCategory" style="font-size: 0.8rem; color: #ddd;">Categoría principal *</label>
+            <select id="pubCategory" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+                <option value="">Elegí una categoría</option>
+                <option>Acción y lucha</option><option>Aventura y RPG</option><option>Plataformas</option><option>Carreras</option><option>Estrategia</option><option>Puzzle y lógica</option><option>Terror</option><option>Simulación</option><option>Deportes</option><option>Casual</option><option>Otro</option>
+            </select>
+            <label for="pubPlatform" style="font-size: 0.8rem; color: #ddd;">Plataforma *</label>
+            <select id="pubPlatform" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+                <option value="">Elegí una plataforma</option><option>PC</option><option>Móvil</option><option>Linux</option><option>Mac</option><option>Otra</option>
+            </select>
             
             <div style="display: flex; flex-direction: column; gap: 4px;">
                 <label style="font-size: 0.75rem; color: #888;">Portada del juego (Imagen desde tus archivos) *</label>
                 <input type="file" id="pubImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
             </div>
             
-            <input type="url" id="pubDownloadUrl" placeholder="Enlace obligatorio de Google Drive (https://drive.google.com/...) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <input type="url" id="pubDownloadUrl" placeholder="Enlace de descarga de Google Drive o MediaFire *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
 
             <div class="publish-schedule">
                 <label for="pubScheduleDate">🕒 Programar publicación (opcional)</label>
@@ -631,11 +631,6 @@
                 <span class="mobile-menu-icon">📤</span>
                 <span>PUBLICAR JUEGO</span>
             </button>
-
-            <a id="mobileBtnCreatorDashboard" class="mobile-menu-link" href="./creador.html" style="display: none;">
-                <span class="mobile-menu-icon">📊</span>
-                <span>MI DASHBOARD</span>
-            </a>
 
             <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
                 <span class="mobile-menu-icon">🛡️</span>

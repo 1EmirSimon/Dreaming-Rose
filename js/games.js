@@ -355,6 +355,7 @@ function renderGamesGrid(gamesList) {
                     ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}
                 </h4>
                 <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
+                <div class="game-card-category">${escapeHTML(game.categoria || 'Sin categoría')} · ${escapeHTML(game.plataforma || 'PC')}</div>
                 <div class="game-card-footer">
                     <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
                         ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
@@ -717,6 +718,8 @@ window.handlePublishGame = async function(event) {
     const author = document.getElementById("pubAuthor")?.value.trim() || "Creador Anónimo";
     const imageFileInput = document.getElementById("pubImageFile");
     const downloadUrl = document.getElementById("pubDownloadUrl")?.value.trim();
+    const category = document.getElementById("pubCategory")?.value.trim();
+    const platform = document.getElementById("pubPlatform")?.value.trim();
     const scheduleInput = document.getElementById("pubScheduleDate")?.value;
     const acceptedTerms = document.getElementById("pubAcceptTerms")?.checked;
     const errorMsg = document.getElementById("publishError");
@@ -769,38 +772,22 @@ window.handlePublishGame = async function(event) {
         return;
     }
 
-    
-    // Aceptar únicamente enlaces HTTPS de Google Drive o MediaFire.
-    let downloadURL;
-
-    try {
-        downloadURL = new URL(downloadUrl);
-    } catch {
+    let parsedDownloadUrl;
+    try { parsedDownloadUrl = new URL(downloadUrl); } catch (_) { parsedDownloadUrl = null; }
+    const validDownloadHost = parsedDownloadUrl && parsedDownloadUrl.protocol === "https:" &&
+        (parsedDownloadUrl.hostname === "drive.google.com" || parsedDownloadUrl.hostname.endsWith(".drive.google.com") ||
+         parsedDownloadUrl.hostname === "mediafire.com" || parsedDownloadUrl.hostname.endsWith(".mediafire.com"));
+    if (!validDownloadHost) {
         if (errorMsg) {
-            errorMsg.textContent =
-                "⚠️ Introducí un enlace válido de Google Drive o MediaFire.";
+            errorMsg.textContent = "⚠️ Usá un enlace HTTPS válido de Google Drive o MediaFire.";
             errorMsg.style.display = "block";
         }
         return;
     }
-
-    const hostname = downloadURL.hostname.toLowerCase();
-
-    const isHttps = downloadURL.protocol === "https:";
-    const isGoogleDrive = hostname === "drive.google.com";
-    const isMediaFire =
-        hostname === "mediafire.com" ||
-        hostname.endsWith(".mediafire.com");
-
-    if (!isHttps || (!isGoogleDrive && !isMediaFire)) {
-        if (errorMsg) {
-            errorMsg.textContent =
-                "⚠️ El enlace debe ser de Google Drive o MediaFire y comenzar con https://.";
-            errorMsg.style.display = "block";
-        }
+    if (!category || !platform) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Elegí una categoría y una plataforma."; errorMsg.style.display = "block"; }
         return;
     }
-
 
     const duplicate = allGames.find(g => g.title?.toLowerCase() === title.toLowerCase());
     if (duplicate) {
@@ -873,6 +860,8 @@ window.handlePublishGame = async function(event) {
         author: author,
         image_url: finalImageUrl,
         download_url: downloadUrl,
+        categoria: category,
+        plataforma: platform,
         likes_count: 0,
         views_count: 0,
         playing_count: 0,

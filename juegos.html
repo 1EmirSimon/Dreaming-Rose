@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09090d"><title>Catálogo de juegos | Dreaming Rose</title>
+<link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
+<link rel="stylesheet" href="css/catalogo.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head><body>
+<header class="catalog-header"><a class="brand" href="index.html"><img src="assets/Icons/rosaaa MArlo icono.png" alt=""><span>DREAMING ROSE</span></a><nav><a href="index.html">Inicio</a><a class="active" href="juegos.html">Juegos</a><a href="index.html#comunidad">Comunidad</a></nav><a class="publish" href="index.html" id="publishLink">Volver al hub</a></header>
+<main class="wrap"><section class="intro"><p class="eyebrow">CATÁLOGO DE LA COMUNIDAD</p><h1>Encontrá tu próximo juego.</h1><p>Juegos independientes descargables, organizados por género. Las descargas se alojan en Google Drive o MediaFire.</p><div class="searchrow"><input id="searchGames" type="search" placeholder="Buscar por nombre o creador…" aria-label="Buscar juegos"><select id="platformFilter" aria-label="Filtrar por plataforma"><option value="">Todas las plataformas</option><option>PC</option><option>Móvil</option><option>Linux</option><option>Mac</option><option>Otra</option></select></div></section>
+<div id="catalogStatus" class="status">Cargando juegos…</div><section id="categoryNav" class="category-nav" aria-label="Categorías"></section><section id="catalogSections" class="catalog-sections"></section></main>
+<footer><span>🌹 DREAMING ROSE</span><span>Juegos independientes · Descargas externas</span></footer>
+<script type="module" src="js/catalogo.js"></script>
+</body></html>
