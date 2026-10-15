@@ -769,13 +769,38 @@ window.handlePublishGame = async function(event) {
         return;
     }
 
-    if (!downloadUrl || !downloadUrl.toLowerCase().includes("drive.google.com")) {
+    
+    // Aceptar únicamente enlaces HTTPS de Google Drive o MediaFire.
+    let downloadURL;
+
+    try {
+        downloadURL = new URL(downloadUrl);
+    } catch {
         if (errorMsg) {
-            errorMsg.textContent = "⚠️ El enlace debe ser obligatoriamente de Google Drive (https://drive.google.com/...)";
+            errorMsg.textContent =
+                "⚠️ Introducí un enlace válido de Google Drive o MediaFire.";
             errorMsg.style.display = "block";
         }
         return;
     }
+
+    const hostname = downloadURL.hostname.toLowerCase();
+
+    const isHttps = downloadURL.protocol === "https:";
+    const isGoogleDrive = hostname === "drive.google.com";
+    const isMediaFire =
+        hostname === "mediafire.com" ||
+        hostname.endsWith(".mediafire.com");
+
+    if (!isHttps || (!isGoogleDrive && !isMediaFire)) {
+        if (errorMsg) {
+            errorMsg.textContent =
+                "⚠️ El enlace debe ser de Google Drive o MediaFire y comenzar con https://.";
+            errorMsg.style.display = "block";
+        }
+        return;
+    }
+
 
     const duplicate = allGames.find(g => g.title?.toLowerCase() === title.toLowerCase());
     if (duplicate) {
