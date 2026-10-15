@@ -602,3 +602,234 @@ body {
 body.modal-open {
     overflow: hidden !important;
 }
+
+/* ============================================================
+   DREAMING ROSE — AJUSTE DE ESPACIOS Y JERARQUÍA VISUAL
+   Overrides seguros: se agregan al final para respetar la base.
+============================================================ */
+
+/* Navegación de escritorio: aprovechar el ancho sin amontonar controles */
+@media (min-width: 901px) {
+    .navbar {
+        height: 76px;
+        background: linear-gradient(
+            180deg,
+            rgba(5, 5, 8, 0.97) 0%,
+            rgba(5, 5, 8, 0.86) 78%,
+            rgba(5, 5, 8, 0.58) 100%
+        );
+        border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+    }
+
+    .nav-container {
+        width: 100%;
+        max-width: 1680px;
+        padding-inline: clamp(22px, 3.5vw, 64px);
+        gap: clamp(18px, 2vw, 36px);
+    }
+
+    .nav-left {
+        flex: 0 0 auto;
+        min-width: max-content;
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+        margin-right: 12px;
+    }
+
+    .brand {
+        font-size: 0.82rem;
+        letter-spacing: 3.5px;
+        line-height: 1.65;
+    }
+
+    .nav-right {
+        flex: 1 1 auto;
+        min-width: 0;
+        justify-content: flex-end;
+        gap: clamp(10px, 1.35vw, 24px);
+    }
+
+    .nav-right > a {
+        margin-right: 0;
+        white-space: nowrap;
+        font-size: 0.7rem;
+        letter-spacing: 1.6px;
+    }
+
+    .nav-right button {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 10px 16px;
+        font-size: 0.68rem;
+        letter-spacing: 1.3px;
+        border-radius: 7px;
+    }
+
+    #userInfo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        margin-left: 2px;
+    }
+
+    #userBadge {
+        display: inline-block;
+        max-width: 132px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.75rem;
+        line-height: 1.35;
+    }
+}
+
+/* Portada: texto con ancho controlado y mejor lectura sobre el arte */
+.hero-content {
+    max-width: 1120px;
+    padding-left: clamp(28px, 8.5vw, 150px);
+    padding-right: clamp(24px, 5vw, 80px);
+}
+
+.hero-overlay {
+    background: linear-gradient(
+        90deg,
+        rgba(5, 5, 8, 0.98) 0%,
+        rgba(5, 5, 8, 0.88) 28%,
+        rgba(5, 5, 8, 0.48) 58%,
+        rgba(5, 5, 8, 0.12) 100%
+    );
+}
+
+.hero h1 {
+    max-width: 850px;
+    font-size: clamp(3.3rem, 6.2vw, 6.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+
+.hero p {
+    max-width: 580px;
+    line-height: 1.65;
+}
+
+.hero-actions {
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* Secciones: menos huecos vacíos, ancho de lectura consistente */
+.container {
+    max-width: 1320px;
+    padding-inline: clamp(18px, 3vw, 40px);
+}
+
+.section-dark,
+.section-gradient {
+    padding-block: clamp(68px, 7vw, 104px);
+}
+
+.section-title {
+    margin-bottom: clamp(28px, 3.5vw, 44px);
+}
+
+/* Tarjetas: grilla adaptable al espacio real */
+.games-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+    gap: clamp(12px, 1.5vw, 20px);
+}
+
+.game-card-hub {
+    min-width: 0;
+}
+
+/* Ajustes para pantallas medianas: que el encabezado no se comprima */
+@media (min-width: 901px) and (max-width: 1250px) {
+    .nav-container {
+        padding-inline: 20px;
+        gap: 14px;
+    }
+
+    .brand {
+        font-size: 0.72rem;
+        letter-spacing: 2.4px;
+    }
+
+    .logo {
+        width: 42px;
+        height: 42px;
+        margin-right: 8px;
+    }
+
+    .nav-right {
+        gap: 10px;
+    }
+
+    .nav-right > a {
+        font-size: 0.63rem;
+        letter-spacing: 1px;
+    }
+
+    .nav-right button {
+        padding: 9px 11px;
+        font-size: 0.62rem;
+        letter-spacing: 0.8px;
+    }
+
+    #userBadge {
+        max-width: 100px;
+        font-size: 0.68rem;
+    }
+}
+
+/* Mobile: mantener controles dentro del ancho disponible */
+@media (max-width: 900px) {
+    .navbar {
+        background: rgba(5, 5, 8, 0.96);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-container {
+        gap: 10px;
+    }
+
+    .hero-overlay {
+        background: linear-gradient(
+            180deg,
+            rgba(5, 5, 8, 0.72) 0%,
+            rgba(5, 5, 8, 0.88) 45%,
+            rgba(5, 5, 8, 0.97) 100%
+        );
+    }
+
+    .hero-content {
+        max-width: 760px;
+        padding-inline: 20px;
+    }
+
+    .hero h1 {
+        letter-spacing: -0.025em;
+        overflow-wrap: anywhere;
+    }
+
+    .section-dark,
+    .section-gradient {
+        padding-block: 64px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-img,
+    .reveal,
+    .card-stagger,
+    .game-card-hub,
+    .project-card {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
