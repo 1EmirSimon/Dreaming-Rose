@@ -78,6 +78,10 @@
                 PUBLICAR
             </button>
 
+            <a id="btnCreatorDashboard" href="./creador.html" class="btn-outline" style="display: none; border-color: var(--accent); color: var(--accent);">
+                MI DASHBOARD
+            </a>
+
             <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline" style="display: none; border-color: var(--neon); color: var(--neon);">
                 PANEL ADMIN
             </button>
@@ -368,11 +372,6 @@
             <button onclick="mostrarTabAdmin('apelaciones')" id="tabAdminApelaciones" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
                 Apelaciones <span id="badgeApelaciones" style="background: #ff4d6d; color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
             </button>
-            <button type="button" id="tabAdminModeracion" class="tab-btn admin-moderation-link"
-                onclick="window.location.href='moderacion.html'"
-                style="padding: 6px 14px; font-size: 0.75rem; border: 1px solid rgba(0,255,247,.35); color: var(--neon);">
-                Moderar juegos ↗
-            </button>
         </div>
 
         <!-- Tab Usuarios -->
@@ -626,6 +625,11 @@
                 <span class="mobile-menu-icon">📤</span>
                 <span>PUBLICAR JUEGO</span>
             </button>
+
+            <a id="mobileBtnCreatorDashboard" class="mobile-menu-link" href="./creador.html" style="display: none;">
+                <span class="mobile-menu-icon">📊</span>
+                <span>MI DASHBOARD</span>
+            </a>
 
             <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
                 <span class="mobile-menu-icon">🛡️</span>

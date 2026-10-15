@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080c">
+  <title>Dashboard de creador | Dreaming Rose</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/creador-dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="creator-dashboard-page">
+  <main class="creator-shell">
+    <header class="creator-header">
+      <a class="creator-brand" href="./index.html" aria-label="Volver a Dreaming Rose">
+        <span class="creator-mark">✿</span>
+        <span><strong>DREAMING ROSE</strong><small>CREATOR STUDIO</small></span>
+      </a>
+      <div class="creator-header-actions">
+        <span id="creatorIdentity" class="creator-identity">Verificando sesión…</span>
+        <a class="creator-button creator-button-quiet" href="./index.html">← Volver al hub</a>
+      </div>
+    </header>
+
+    <section class="creator-intro">
+      <p class="creator-eyebrow">TU ESPACIO DE TRABAJO</p>
+      <h1>CREATOR <span>DASHBOARD</span></h1>
+      <p>Revisá el rendimiento de tus juegos y el estado de tus publicaciones.</p>
+    </section>
+
+    <div id="creatorNotice" class="creator-notice" role="status">Verificando cuenta y permisos…</div>
+
+    <section id="creatorDashboard" hidden>
+      <div class="creator-section-heading">
+        <div><h2>Resumen</h2><p>Datos asociados a tu cuenta.</p></div>
+        <button id="creatorRefresh" class="creator-button" type="button">↻ Actualizar datos</button>
+      </div>
+
+      <div class="creator-metrics">
+        <article class="creator-metric"><span>Juegos propios</span><strong id="metricGames">0</strong><small>Publicaciones asociadas a tu cuenta</small></article>
+        <article class="creator-metric"><span>Likes acumulados</span><strong id="metricLikes">0</strong><small>Suma del contador de likes de tus juegos</small></article>
+        <article class="creator-metric"><span>Visitas registradas</span><strong id="metricVisits">—</strong><small id="visitsHelp">Se obtiene del registro de visitas si las políticas lo permiten</small></article>
+        <article class="creator-metric"><span>Publicaciones aprobadas</span><strong id="metricApproved">0</strong><small>Juegos aprobados por moderación</small></article>
+      </div>
+
+      <div class="creator-section-heading creator-games-heading">
+        <div><h2>Tus juegos</h2><p>El detalle y las métricas se actualizan desde Supabase.</p></div>
+        <label class="creator-search-wrap"><span class="sr-only">Buscar juegos</span><input id="creatorSearch" type="search" placeholder="Buscar un juego…"></label>
+      </div>
+
+      <div id="creatorGames" class="creator-games">
+        <div class="creator-empty">Cargando tus juegos…</div>
+      </div>
+      <p class="creator-footnote">Las visitas se muestran como no disponibles si la base de datos no permite consultarlas. No se estiman ni se inventan métricas.</p>
+    </section>
+  </main>
+  <script type="module" src="./js/creador-dashboard.js"></script>
+</body>
+</html>
