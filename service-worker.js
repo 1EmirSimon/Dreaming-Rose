@@ -1,11 +1,22 @@
 // Service Worker de Dreaming Rose
 // Cachea archivos estáticos para que la web cargue rápido.
 
-const CACHE_NAME = 'dreaming-rose-v1';
+const CACHE_NAME = 'dreaming-rose-v3';
 
 const ARCHIVOS_CACHE = [
     './',
     './index.html',
+    './juegos.html',
+    './creador.html',
+    './moderacion.html',
+    './perfil.html',
+    './css/catalogo.css',
+    './css/creador-dashboard.css',
+    './css/perfil.css',
+    './js/catalogo.js',
+    './js/creador-dashboard.js',
+    './js/moderacion.js',
+    './js/perfil.js',
     './css/style.css',
     './css/layout.css',
     './css/components.css',

@@ -51,6 +51,8 @@ export function actualizarMenuMobile(user, profile) {
         guestSection.style.display = "none";
 
         const rol = (profile.role || 'usuario').toLowerCase();
+        const btnDashboard = document.getElementById("mobileBtnCreatorDashboard");
+        if (btnDashboard) btnDashboard.style.display = ['creador', 'moderador', 'root'].includes(rol) ? "flex" : "none";
 
         // Publicar: creador, moderador, root
         if (btnPublish) {
@@ -70,6 +72,8 @@ export function actualizarMenuMobile(user, profile) {
         // No hay sesión
         section.style.display = "none";
         guestSection.style.display = "flex";
+        const btnDashboard = document.getElementById("mobileBtnCreatorDashboard");
+        if (btnDashboard) btnDashboard.style.display = "none";
     }
 }
 

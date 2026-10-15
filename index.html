@@ -20,6 +20,11 @@
     <!-- LIBRERÍA DE SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+<style>
+.account-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:6px 10px;font-size:.65rem;white-space:nowrap}
+@media(max-width:1100px){#userBadge{display:none!important}#userInfo{gap:6px!important}}
+@media(max-width:900px){.nav-right #userInfo{display:none!important}}
+</style>
 </head>
 <body>
 
@@ -88,17 +93,13 @@
                 </button>
 
                 <div id="userInfo" style="display: none; align-items: center; gap: 10px;">
+                    <a id="btnProfile" href="perfil.html" class="btn-outline account-link" aria-label="Mi perfil">PERFIL</a>
+                    <a id="btnCreatorDashboard" href="creador.html" class="btn-outline account-link" style="display:none;" aria-label="Mi dashboard">MI DASHBOARD</a>
                     <span id="userBadge" style="font-size: 0.75rem; font-weight: 800; color: var(--neon);">
                         @usuario
                     </span>
                     <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" class="btn-outline" style="display: none; padding: 6px 10px; font-size: 0.65rem; border-color: var(--neon); color: var(--neon);">
                         SER CREADOR
-                    </button>
-                    <button onclick="openUsernameModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
-                        USUARIO
-                    </button>
-                    <button onclick="openPasswordModal()" class="btn-outline" style="padding: 6px 10px; font-size: 0.65rem;">
-                        CONTRASEÑA
                     </button>
                     <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
                         SALIR
@@ -609,7 +610,7 @@
 
         <!-- Sección navegación (siempre visible) -->
         <nav class="mobile-menu-section">
-            <a href="#proyectos" class="mobile-menu-link" onclick="closeMobileMenu()">
+            <a href="juegos.html" class="mobile-menu-link" onclick="closeMobileMenu()">
                 <span class="mobile-menu-icon">🎮</span>
                 <span>PROYECTOS</span>
             </a>
@@ -627,6 +628,13 @@
         <div class="mobile-menu-section" id="mobileMenuUserSection" style="display: none;">
             <div class="mobile-menu-divider">MI CUENTA</div>
 
+            <a class="mobile-menu-link" href="perfil.html" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">👤</span><span>MI PERFIL</span>
+            </a>
+            <a id="mobileBtnCreatorDashboard" class="mobile-menu-link" href="creador.html" style="display:none;" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">📊</span><span>MI DASHBOARD</span>
+            </a>
+
             <button id="mobileBtnPublish" class="mobile-menu-link" onclick="closeMobileMenu(); openUpload();" style="display: none;">
                 <span class="mobile-menu-icon">📤</span>
                 <span>PUBLICAR JUEGO</span>
@@ -640,16 +648,6 @@
             <button id="mobileBtnSolicitar" class="mobile-menu-link" onclick="closeMobileMenu(); openSolicitudCreador();" style="display: none;">
                 <span class="mobile-menu-icon">⭐</span>
                 <span>SER CREADOR</span>
-            </button>
-
-            <button class="mobile-menu-link" onclick="closeMobileMenu(); openUsernameModal();">
-                <span class="mobile-menu-icon">👤</span>
-                <span>CAMBIAR USUARIO</span>
-            </button>
-
-            <button class="mobile-menu-link" onclick="closeMobileMenu(); openPasswordModal();">
-                <span class="mobile-menu-icon">🔒</span>
-                <span>CAMBIAR CONTRASEÑA</span>
             </button>
 
             <button class="mobile-menu-link mobile-menu-danger" onclick="closeMobileMenu(); logout();">

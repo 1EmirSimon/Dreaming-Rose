@@ -77,6 +77,7 @@ function gameCard(g) {
         <span class="creator-status ${status.cls}">${escapeHTML(status.text)}</span>
       </div>
       <p class="creator-game-description">${escapeHTML(g.description || "Sin descripción.")}</p>
+      <p class="creator-game-id">${escapeHTML(g.categoria || "Sin categoría")} · ${escapeHTML(g.plataforma || "PC")}</p>
       ${reason}
       <div class="creator-game-stats">
         <div><span>Likes</span><strong>♥ ${fmt(g.likes_count)}</strong></div>
@@ -91,7 +92,7 @@ function gameCard(g) {
 function renderGames() {
   const term = $("creatorSearch").value.trim().toLocaleLowerCase("es-AR");
   const filtered = myGames.filter(g =>
-    [g.title, g.description, g.author].filter(Boolean).join(" ").toLocaleLowerCase("es-AR").includes(term)
+    [g.title, g.description, g.author, g.categoria, g.plataforma].filter(Boolean).join(" ").toLocaleLowerCase("es-AR").includes(term)
   );
   const container = $("creatorGames");
   if (!filtered.length) {
@@ -121,7 +122,7 @@ async function loadDashboard(user) {
   try {
     let gamesQuery = supabase
       .from("juegos")
-      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision")
+      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma")
       .order("es_proyecto_oficial", { ascending: false })
       .order("created_at", { ascending: false });
 

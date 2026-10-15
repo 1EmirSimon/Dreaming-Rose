@@ -95,3 +95,10 @@ window.addEventListener('resize', () => {
         btn.style.display = 'none';
     }
 });
+// Permite volver desde perfil.html y abrir el modal de cuenta solicitado.
+window.addEventListener("load", () => {
+    const action = new URLSearchParams(window.location.search).get("accion");
+    if (action === "usuario") window.setTimeout(() => window.openUsernameModal?.(), 300);
+    if (action === "contrasena") window.setTimeout(() => window.openPasswordModal?.(), 300);
+    if (action) window.history.replaceState({}, "", window.location.pathname + window.location.hash);
+});

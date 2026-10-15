@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#08080c">
+  <title>Mi perfil | Dreaming Rose</title><link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
+  <link rel="stylesheet" href="css/perfil.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="profile-header"><a class="brand" href="index.html"><img src="assets/Icons/rosaaa MArlo icono.png" alt=""><span>DREAMING ROSE</span></a><a class="back-link" href="index.html">← Volver al hub</a></header>
+<main class="profile-shell">
+  <section class="profile-hero"><div class="avatar" aria-hidden="true">🌹</div><div class="profile-main"><p class="eyebrow">MI CUENTA</p><h1 id="profileName">Cargando perfil…</h1><p id="profileMeta" class="muted">Verificando sesión</p></div><a class="edit-profile" href="index.html?accion=usuario">Cambiar usuario</a></section>
+  <div id="profileNotice" class="notice" role="status">Cargando tu cuenta…</div>
+  <section class="profile-grid">
+    <article class="panel"><div class="panel-heading"><div><p class="eyebrow">TU ESPACIO</p><h2>Juegos favoritos</h2></div><a href="juegos.html">Explorar juegos ↗</a></div><div id="favoriteGames" class="favorite-list"><p class="muted">Cargando favoritos…</p></div></article>
+    <aside class="panel account-panel"><p class="eyebrow">CONFIGURACIÓN</p><h2>Cuenta y seguridad</h2><a class="setting-link" href="index.html?accion=usuario"><span>👤</span><span><strong>Cambiar nombre de usuario</strong><small>Actualizá cómo aparecés en Dreaming Rose.</small></span><b>›</b></a><a class="setting-link" href="index.html?accion=contrasena"><span>🔒</span><span><strong>Cambiar contraseña</strong><small>Recibí el enlace seguro por correo.</small></span><b>›</b></a><a class="setting-link" href="creador.html" id="profileDashboardLink" hidden><span>📊</span><span><strong>Mi dashboard</strong><small>Administrá tus publicaciones.</small></span><b>›</b></a><a class="setting-link" href="moderacion.html" id="profileModerationLink" hidden><span>🛡️</span><span><strong>Moderación</strong><small>Revisá publicaciones de la comunidad.</small></span><b>›</b></a><button id="profileLogout" class="logout-button" type="button">Cerrar sesión</button></aside>
+  </section>
+  <section class="panel downloads-panel"><p class="eyebrow">BIBLIOTECA</p><h2>Historial de descargas</h2><p class="muted">Todavía no registramos las descargas completadas. Por ahora podés guardar juegos en favoritos y acceder a sus enlaces desde el catálogo. Más adelante podemos registrar los clics de descarga, aunque Drive y MediaFire no nos confirman si el archivo terminó de descargarse.</p><a class="primary-link" href="juegos.html">Explorar catálogo</a></section>
+</main><footer>DREAMING ROSE · TU CUENTA</footer><script type="module" src="js/perfil.js"></script>
+</body></html>
