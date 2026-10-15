@@ -104,6 +104,7 @@ function updateUI(user, profile) {
     const userBadge = document.getElementById("userBadge");
     const btnPublish = document.getElementById("btnPublish");
     const btnAdminPanel = document.getElementById("btnAdminPanel");
+    const btnCreatorDashboard = document.getElementById("btnCreatorDashboard");
     const btnSolicitar = document.getElementById("btnSolicitarCreador");
 
     if (user && profile) {
@@ -119,6 +120,17 @@ function updateUI(user, profile) {
         const allowedPublishRoles = ['creador', 'moderador', 'root'];
         if (btnPublish) {
             btnPublish.style.display = allowedPublishRoles.includes(userRole) ? "inline-block" : "none";
+        }
+        if (btnCreatorDashboard) {
+            btnCreatorDashboard.style.display = allowedPublishRoles.includes(userRole) ? "inline-block" : "none";
+        }
+        const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
+        if (mobileCreatorDashboard) {
+            mobileCreatorDashboard.style.display = allowedPublishRoles.includes(userRole) ? "flex" : "none";
+        }
+        const mobileAdmin = document.getElementById("mobileBtnAdmin");
+        if (mobileAdmin) {
+            mobileAdmin.style.display = ['moderador', 'root'].includes(userRole) ? "flex" : "none";
         }
 
         // El botón de "Ser Creador" solo lo ve un usuario común
@@ -150,7 +162,12 @@ function updateUI(user, profile) {
         if (btnLogin) btnLogin.style.display = "inline-block";
         if (userInfo) userInfo.style.display = "none";
         if (btnPublish) btnPublish.style.display = "none";
+        if (btnCreatorDashboard) btnCreatorDashboard.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
+        const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
+        if (mobileCreatorDashboard) mobileCreatorDashboard.style.display = "none";
+        const mobileAdmin = document.getElementById("mobileBtnAdmin");
+        if (mobileAdmin) mobileAdmin.style.display = "none";
         if (btnSolicitar) btnSolicitar.style.display = "none";
 
         // Actualizar el menú mobile (sin sesión)
