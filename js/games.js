@@ -10,6 +10,50 @@ let BAD_WORDS = ["pelotudo", "boludo", "puto", "imbecil"];
 let knownGameIds = new Set();
 let knownCommentIds = new Set();
 
+// Previsualización y límites de imágenes del formulario de publicación.
+document.addEventListener("DOMContentLoaded", () => {
+    const coverInput = document.getElementById("pubImageFile");
+    const coverPreview = document.getElementById("pubCoverPreview");
+    const shotsInput = document.getElementById("pubScreenshots");
+    const shotsPreview = document.getElementById("pubScreenshotsPreview");
+    const showPreview = (file, img) => {
+        if (img.dataset.objectUrl) URL.revokeObjectURL(img.dataset.objectUrl);
+        const url = URL.createObjectURL(file);
+        img.dataset.objectUrl = url;
+        img.src = url;
+        img.hidden = false;
+    };
+    coverInput?.addEventListener("change", () => {
+        const file = coverInput.files?.[0];
+        if (!file) { if (coverPreview) coverPreview.hidden = true; return; }
+        if (!file.type.startsWith("image/") || file.size > 15 * 1024 * 1024) {
+            coverInput.value = "";
+            alert("Elegí una imagen válida de hasta 15 MB. Se comprimirá antes de subirla.");
+            return;
+        }
+        if (coverPreview) showPreview(file, coverPreview);
+    });
+    shotsInput?.addEventListener("change", () => {
+        if (shotsInput.files.length > 4) {
+            shotsInput.value = "";
+            shotsPreview.innerHTML = "<small>Elegí hasta 4 capturas.</small>";
+            return;
+        }
+        if (Array.from(shotsInput.files).some(file => !file.type.startsWith("image/") || file.size > 15 * 1024 * 1024)) {
+            shotsInput.value = "";
+            shotsPreview.innerHTML = "<small>Cada captura debe ser una imagen de hasta 15 MB.</small>";
+            return;
+        }
+        shotsPreview.innerHTML = "";
+        Array.from(shotsInput.files).forEach(file => {
+            const img = document.createElement("img");
+            img.alt = "Vista previa de captura";
+            showPreview(file, img);
+            shotsPreview.appendChild(img);
+        });
+    });
+});
+
 // ============================================================
 // CAPTCHA DE PUBLICAR JUEGO
 // ============================================================
@@ -720,6 +764,11 @@ window.handlePublishGame = async function(event) {
     const downloadUrl = document.getElementById("pubDownloadUrl")?.value.trim();
     const category = document.getElementById("pubCategory")?.value.trim();
     const platform = document.getElementById("pubPlatform")?.value.trim();
+    const ageRating = document.getElementById("pubAgeRating")?.value.trim();
+    const tagsRaw = document.getElementById("pubTags")?.value || "";
+    const tags = [...new Set(tagsRaw.split(",").map(tag => tag.trim().replace(/^#/, "").slice(0, 24)).filter(Boolean))].slice(0, 3);
+    const screenshotsInput = document.getElementById("pubScreenshots");
+    const screenshotFiles = Array.from(screenshotsInput?.files || []);
     const scheduleInput = document.getElementById("pubScheduleDate")?.value;
     const acceptedTerms = document.getElementById("pubAcceptTerms")?.checked;
     const errorMsg = document.getElementById("publishError");
@@ -784,8 +833,25 @@ window.handlePublishGame = async function(event) {
         }
         return;
     }
-    if (!category || !platform) {
-        if (errorMsg) { errorMsg.textContent = "⚠️ Elegí una categoría y una plataforma."; errorMsg.style.display = "block"; }
+    if (!category || !platform || !ageRating) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Elegí una categoría, plataforma y público recomendado."; errorMsg.style.display = "block"; }
+        return;
+    }
+    if (!imageFileInput?.files?.[0]) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ La portada es obligatoria."; errorMsg.style.display = "block"; }
+        return;
+    }
+    if (screenshotFiles.length > 4) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Podés agregar como máximo 4 capturas."; errorMsg.style.display = "block"; }
+        return;
+    }
+    const rawTagsCount = tagsRaw.split(",").map(tag => tag.trim()).filter(Boolean).length;
+    if (rawTagsCount > 3) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Podés usar como máximo 3 etiquetas."; errorMsg.style.display = "block"; }
+        return;
+    }
+    if ([...(imageFileInput.files || []), ...screenshotFiles].some(file => !file.type.startsWith("image/"))) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Solo se permiten archivos de imagen."; errorMsg.style.display = "block"; }
         return;
     }
 
@@ -798,67 +864,57 @@ window.handlePublishGame = async function(event) {
         return;
     }
 
-    let finalImageUrl = "assets/images/Meteor Fighters.png";
-
-    if (imageFileInput && imageFileInput.files && imageFileInput.files[0]) {
-        let file = imageFileInput.files[0];
-
-        try {
-            if (typeof window.imageCompression === "function") {
-                const opciones = {
-                    maxSizeMB: 0.3,
-                    maxWidthOrHeight: 1920,
-                    useWebWorker: true,
-                    fileType: 'image/webp',
-                    initialQuality: 0.82,
-                };
-
-                const comprimida = await window.imageCompression(file, opciones);
-                const tamañoAntes = (file.size / 1024).toFixed(0);
-                const tamañoDespues = (comprimida.size / 1024).toFixed(0);
-                console.log(`🖼️ Imagen comprimida: ${tamañoAntes}KB → ${tamañoDespues}KB`);
-
-                file = new File([comprimida], file.name.replace(/\.[^.]+$/, '.webp'), {
-                    type: 'image/webp'
-                });
-            } else {
-                console.warn("Librería de compresión no disponible, subiendo original");
-            }
-        } catch (err) {
-            console.error("Error comprimiendo imagen:", err);
-        }
-
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-            .from('portadas')
-            .upload(fileName, file, {
-                contentType: file.type,
-                cacheControl: '31536000'
+    const uploadedPaths = [];
+    const uploadedPublicUrls = [];
+    const compressAndUpload = async (originalFile, label) => {
+        if (originalFile.size > 15 * 1024 * 1024) throw new Error(`${label}: el archivo supera los 15 MB.`);
+        let file = originalFile;
+        if (typeof window.imageCompression === "function") {
+            file = await window.imageCompression(originalFile, {
+                maxSizeMB: 0.22,
+                maxWidthOrHeight: 1600,
+                useWebWorker: true,
+                fileType: "image/webp",
+                initialQuality: 0.76
             });
-
-        if (uploadError) {
-            console.error("Error al subir la imagen:", uploadError);
-            if (errorMsg) {
-                errorMsg.textContent = "Error al subir la portada: " + uploadError.message;
-                errorMsg.style.display = "block";
-            }
-            return;
+        } else {
+            throw new Error("No se pudo cargar el optimizador de imágenes. Recargá la página e intentá de nuevo.");
         }
+        const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.webp`;
+        const { error: uploadError } = await supabase.storage.from("portadas").upload(fileName, file, {
+            contentType: "image/webp",
+            cacheControl: "31536000",
+            upsert: false
+        });
+        if (uploadError) throw new Error(`No se pudo subir ${label.toLowerCase()}: ${uploadError.message}`);
+        uploadedPaths.push(fileName);
+        const { data } = supabase.storage.from("portadas").getPublicUrl(fileName);
+        uploadedPublicUrls.push(data.publicUrl);
+        return data.publicUrl;
+    };
 
-        const { data: publicURLData } = supabase.storage
-            .from('portadas')
-            .getPublicUrl(fileName);
-
-        finalImageUrl = publicURLData.publicUrl;
+    let finalImageUrl;
+    let screenshotUrls = [];
+    try {
+        finalImageUrl = await compressAndUpload(imageFileInput.files[0], "La portada");
+        for (let i = 0; i < screenshotFiles.length; i++) {
+            screenshotUrls.push(await compressAndUpload(screenshotFiles[i], `Captura ${i + 1}`));
+        }
+    } catch (uploadErr) {
+        console.error("Error optimizando/subiendo imágenes:", uploadErr);
+        if (uploadedPaths.length) await supabase.storage.from("portadas").remove(uploadedPaths);
+        if (errorMsg) { errorMsg.textContent = `⚠️ ${uploadErr.message}`; errorMsg.style.display = "block"; }
+        return;
     }
 
     const newGame = {
-        title: title,
-        description: description,
-        author: author,
+        title,
+        description,
+        author,
         image_url: finalImageUrl,
+        screenshots: screenshotUrls,
+        clasificacion_edad: ageRating,
+        etiquetas: tags,
         download_url: downloadUrl,
         categoria: category,
         plataforma: platform,
@@ -873,8 +929,9 @@ window.handlePublishGame = async function(event) {
 
     if (error) {
         console.error("Error publicando juego:", error);
+        if (uploadedPaths.length) await supabase.storage.from("portadas").remove(uploadedPaths);
         if (errorMsg) {
-            errorMsg.textContent = "Error al publicar: " + error.message;
+            errorMsg.textContent = "Error al publicar: " + error.message + ". Si menciona una columna inexistente, aplicá el SQL de actualización incluido en el paquete.";
             errorMsg.style.display = "block";
         }
         return;

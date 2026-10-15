@@ -1,0 +1,22 @@
+/* Formulario de publicación: optimizado para escritorio y móvil */
+#publishModal .modal-content { max-height: 90dvh; overflow-y: auto; }
+#publishForm > input:not([type="file"]), #publishForm > textarea, #publishForm > select,
+#publishForm .publish-image-field input, #publishForm #pubDownloadUrl, #publishForm #pubTags {
+  box-sizing: border-box; width: 100%; padding: 11px 12px; border: 1px solid #343440; border-radius: 9px;
+  background: #15151d; color: #f7f7fb; font: inherit;
+}
+#publishForm label { color: #dedee7; font-size: .88rem; font-weight: 600; }
+#publishForm small { color: #9999aa; line-height: 1.45; font-size: .76rem; }
+.publish-image-field { display: flex; flex-direction: column; gap: 7px; padding: 12px; border: 1px solid #30303b; border-radius: 12px; background: #101016; }
+.publish-image-field input[type="file"] { max-width: 100%; font-size: .82rem; }
+#pubCoverPreview { width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; background: #08080c; }
+.publish-screenshots-preview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.publish-screenshots-preview img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 7px; border: 1px solid #353541; }
+.footer-support { margin-top: 10px; }
+.footer-support a { display: inline-block; margin-left: 5px; color: #ff4168; font-weight: 700; text-decoration: none; }
+.footer-support a:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  #publishModal .modal-content { width: calc(100% - 24px) !important; max-width: none !important; padding: 18px 14px; }
+  .publish-screenshots-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #publishForm input, #publishForm textarea, #publishForm select { font-size: 16px; }
+}

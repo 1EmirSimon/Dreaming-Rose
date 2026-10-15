@@ -14,6 +14,7 @@
 
     <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/publish-optimized.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     
@@ -423,12 +424,30 @@
                 <option value="">Elegí una plataforma</option><option>PC</option><option>Móvil</option><option>Linux</option><option>Mac</option><option>Otra</option>
             </select>
             
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-                <label style="font-size: 0.75rem; color: #888;">Portada del juego (Imagen desde tus archivos) *</label>
-                <input type="file" id="pubImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <div class="publish-image-field">
+                <label for="pubImageFile">Portada del juego *</label>
+                <input type="file" id="pubImageFile" accept="image/jpeg,image/png,image/webp,image/avif" required>
+                <small>Obligatoria. Se comprime antes de subirla para ahorrar almacenamiento.</small>
+                <img id="pubCoverPreview" alt="Vista previa de la portada" hidden>
             </div>
-            
-            <input type="url" id="pubDownloadUrl" placeholder="Enlace de descarga de Google Drive o MediaFire *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <div class="publish-image-field">
+                <label for="pubScreenshots">Capturas de pantalla (opcional, hasta 4)</label>
+                <input type="file" id="pubScreenshots" accept="image/jpeg,image/png,image/webp,image/avif" multiple>
+                <small>Máximo 4 capturas. Se optimizan automáticamente; evitá imágenes enormes.</small>
+                <div id="pubScreenshotsPreview" class="publish-screenshots-preview" aria-live="polite"></div>
+            </div>
+            <label for="pubAgeRating">Público recomendado *</label>
+            <select id="pubAgeRating" required>
+                <option value="">Elegí el público recomendado</option>
+                <option value="Menores de 13">Menores de 13</option>
+                <option value="13+">13 años o más</option>
+                <option value="16+">16 años o más</option>
+                <option value="18+">18 años o más</option>
+            </select>
+            <label for="pubTags">Etiquetas (opcional, máximo 3)</label>
+            <input type="text" id="pubTags" maxlength="100" placeholder="Ej.: pixel art, un jugador, difícil">
+            <small>Separá las etiquetas con comas. Máximo 3, sin repetir.</small>
+            <input type="url" id="pubDownloadUrl" placeholder="Enlace de descarga de Google Drive o MediaFire *" required>
 
             <div class="publish-schedule">
                 <label for="pubScheduleDate">🕒 Programar publicación (opcional)</label>
@@ -722,6 +741,7 @@
 
 <footer class="footer">
     <p>© 2026 DREAMING ROSE. TODOS LOS DERECHOS RESERVADOS.</p>
+    <p class="footer-support">¿Te gusta Dreaming Rose? <a href="mailto:dreamingrosesupport@gmail.com?subject=Quiero%20apoyar%20Dreaming%20Rose" aria-label="Contactar para apoyar Dreaming Rose">Apoyá el proyecto</a></p>
 </footer>
 
 <!-- Carga de Scripts -->
