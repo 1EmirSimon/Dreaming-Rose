@@ -4,6 +4,8 @@ const $ = (id) => document.getElementById(id);
 let myGames = [];
 let visitCounts = new Map();
 let visitsAvailable = true;
+let currentUserId = null;
+let currentRole = "usuario";
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, ch => ({
@@ -34,16 +36,56 @@ function statusLabel(game) {
   return { text: pair[0], cls: pair[1] };
 }
 
+function isOfficial(game) {
+  return game.es_proyecto_oficial === true;
+}
+
 function renderSummary() {
+  const likes = myGames.reduce((sum, g) => sum + (Number(g.likes_count) || 0), 0);
+  const approved = myGames.filter(g => g.estado_moderacion === "aprobado").length;
+  const visits = myGames.reduce((sum, g) => sum + (visitCounts.get(Number(g.id)) || 0), 0);
   $("metricGames").textContent = fmt(myGames.length);
-  $("metricLikes").textContent = fmt(myGames.reduce((sum, g) => sum + (Number(g.likes_count) || 0), 0));
-  $("metricApproved").textContent = fmt(myGames.filter(g => g.estado_moderacion === "aprobado").length);
-  $("metricVisits").textContent = visitsAvailable
-    ? fmt(myGames.reduce((sum, g) => sum + (visitCounts.get(Number(g.id)) || 0), 0))
-    : "N/D";
+  $("metricLikes").textContent = fmt(likes);
+  $("metricApproved").textContent = fmt(approved);
+  $("metricVisits").textContent = visitsAvailable ? fmt(visits) : "N/D";
   $("visitsHelp").textContent = visitsAvailable
-    ? "Registros encontrados en visitas_juegos"
+    ? (currentRole === "root" ? "Visitas de los juegos visibles para root" : "Registros encontrados en visitas_juegos")
     : "No disponible: la consulta está bloqueada o falló";
+  $("gamesMetricHelp").textContent = currentRole === "root"
+    ? "Juegos oficiales y publicaciones de la comunidad"
+    : "Publicaciones asociadas a tu cuenta";
+}
+
+function gameCard(g) {
+  const status = statusLabel(g);
+  const image = g.image_url
+    ? `<img class="creator-game-cover" src="${escapeHTML(g.image_url)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+    : `<div class="creator-game-cover creator-no-cover">✿</div>`;
+  const visits = visitsAvailable ? fmt(visitCounts.get(Number(g.id)) || 0) : "N/D";
+  const published = g.created_at ? new Date(g.created_at).toLocaleDateString("es-AR") : "Sin fecha";
+  const reason = g.motivo_revision ? `<p class="creator-reason"><strong>Motivo de revisión:</strong> ${escapeHTML(g.motivo_revision)}</p>` : "";
+  const download = g.download_url
+    ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
+    : `<span class="creator-muted">Sin enlace de descarga</span>`;
+  const ownership = isOfficial(g) ? "Proyecto oficial Dreaming Rose" : (g.user_id === currentUserId ? "Tu publicación" : `Comunidad · ${escapeHTML(g.author || "Creador")}`);
+
+  return `<article class="creator-game-card">
+    ${image}
+    <div class="creator-game-content">
+      <div class="creator-game-topline">
+        <div><p class="creator-game-id">JUEGO #${Number(g.id)} · ${escapeHTML(published)}</p><h3>${escapeHTML(g.title || "Juego sin título")}</h3></div>
+        <span class="creator-status ${status.cls}">${escapeHTML(status.text)}</span>
+      </div>
+      <p class="creator-game-description">${escapeHTML(g.description || "Sin descripción.")}</p>
+      ${reason}
+      <div class="creator-game-stats">
+        <div><span>Likes</span><strong>♥ ${fmt(g.likes_count)}</strong></div>
+        <div><span>Visitas</span><strong>${visits}</strong></div>
+        <div><span>Vistas contador</span><strong>${fmt(g.views_count)}</strong></div>
+      </div>
+      <div class="creator-game-footer">${download}<span class="creator-muted">${ownership}</span></div>
+    </div>
+  </article>`;
 }
 
 function renderGames() {
@@ -52,53 +94,41 @@ function renderGames() {
     [g.title, g.description, g.author].filter(Boolean).join(" ").toLocaleLowerCase("es-AR").includes(term)
   );
   const container = $("creatorGames");
-
   if (!filtered.length) {
-    container.innerHTML = `<div class="creator-empty">${myGames.length ? "No hay juegos que coincidan con la búsqueda." : "Todavía no tenés juegos asociados a esta cuenta."}</div>`;
+    container.innerHTML = `<div class="creator-empty">${myGames.length ? "No hay juegos que coincidan con la búsqueda." : (currentRole === "root" ? "No se encontraron juegos visibles. Revisá la consulta y las políticas de lectura." : "Todavía no tenés juegos asociados a esta cuenta.")}</div>`;
     return;
   }
 
-  container.innerHTML = filtered.map(g => {
-    const status = statusLabel(g);
-    const image = g.image_url
-      ? `<img class="creator-game-cover" src="${escapeHTML(g.image_url)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
-      : `<div class="creator-game-cover creator-no-cover">✿</div>`;
-    const visits = visitsAvailable ? fmt(visitCounts.get(Number(g.id)) || 0) : "N/D";
-    const published = g.created_at ? new Date(g.created_at).toLocaleDateString("es-AR") : "Sin fecha";
-    const reason = g.motivo_revision ? `<p class="creator-reason"><strong>Motivo de revisión:</strong> ${escapeHTML(g.motivo_revision)}</p>` : "";
-    const download = g.download_url
-      ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
-      : `<span class="creator-muted">Sin enlace de descarga</span>`;
-
-    return `<article class="creator-game-card">
-      ${image}
-      <div class="creator-game-content">
-        <div class="creator-game-topline">
-          <div><p class="creator-game-id">JUEGO #${Number(g.id)} · CREADO ${escapeHTML(published)}</p><h3>${escapeHTML(g.title || "Juego sin título")}</h3></div>
-          <span class="creator-status ${status.cls}">${escapeHTML(status.text)}</span>
-        </div>
-        <p class="creator-game-description">${escapeHTML(g.description || "Sin descripción.")}</p>
-        ${reason}
-        <div class="creator-game-stats">
-          <div><span>Likes</span><strong>♥ ${fmt(g.likes_count)}</strong></div>
-          <div><span>Visitas</span><strong>${visits}</strong></div>
-          <div><span>Vistas contador</span><strong>${fmt(g.views_count)}</strong></div>
-        </div>
-        <div class="creator-game-footer">${download}<span class="creator-muted">${g.es_proyecto_oficial ? "Proyecto oficial" : "Juego de comunidad"}</span></div>
-      </div>
-    </article>`;
-  }).join("");
+  const official = filtered.filter(isOfficial);
+  const own = filtered.filter(g => !isOfficial(g) && g.user_id === currentUserId);
+  const community = currentRole === "root"
+    ? filtered.filter(g => !isOfficial(g) && g.user_id !== currentUserId)
+    : [];
+  const sections = [];
+  const addSection = (title, subtitle, games, key) => {
+    if (!games.length) return;
+    sections.push(`<section class="creator-game-group"><div class="creator-group-heading"><div><h3>${title}</h3><p>${subtitle}</p></div><span>${games.length}</span></div><div class="creator-games-list">${games.map(gameCard).join("")}</div></section>`);
+  };
+  addSection("Juegos oficiales de Dreaming Rose", "Catálogo oficial, incluso si no tiene un usuario creador asociado.", official, "official");
+  addSection(currentRole === "root" ? "Publicaciones de tu cuenta" : "Tus publicaciones", "Juegos enviados desde el botón Publicar.", own, "own");
+  if (currentRole === "root") addSection("Publicaciones de la comunidad", "Visión general de los juegos enviados por otros usuarios.", community, "community");
+  container.innerHTML = sections.join("") || `<div class="creator-empty">No hay juegos para mostrar.</div>`;
 }
 
 async function loadDashboard(user) {
   $("creatorRefresh").disabled = true;
   setNotice("Actualizando datos del dashboard…");
   try {
-    const { data, error } = await supabase
+    let gamesQuery = supabase
       .from("juegos")
       .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision")
-      .eq("user_id", user.id)
+      .order("es_proyecto_oficial", { ascending: false })
       .order("created_at", { ascending: false });
+
+    // Root is the site owner: load official Dreaming Rose games (including user_id NULL)
+    // plus all community submissions. Other roles only see their own submissions.
+    if (currentRole !== "root") gamesQuery = gamesQuery.eq("user_id", user.id);
+    const { data, error } = await gamesQuery;
 
     if (error) throw error;
     myGames = data || [];
@@ -125,7 +155,9 @@ async function loadDashboard(user) {
 
     renderSummary();
     renderGames();
-    setNotice(`Datos actualizados. ${myGames.length} juego(s) asociado(s) a tu cuenta.`, "success");
+    setNotice(currentRole === "root"
+      ? `Datos actualizados. ${myGames.length} juego(s) visibles: catálogo oficial y publicaciones de la comunidad.`
+      : `Datos actualizados. ${myGames.length} juego(s) asociado(s) a tu cuenta.`, "success");
   } catch (error) {
     console.error("Error del dashboard de creador:", error);
     setNotice(`No se pudieron cargar tus juegos: ${error.message || "error desconocido"}. Verificá las políticas RLS de juegos.`, "error");
@@ -152,6 +184,8 @@ async function init() {
 
     if (profileError || !profile) throw profileError || new Error("No se encontró el perfil.");
     const role = String(profile.role || "usuario").toLowerCase();
+    currentUserId = user.id;
+    currentRole = role;
     if (!["creador", "moderador", "root"].includes(role)) {
       setNotice("Tu cuenta todavía no tiene rol de creador. Podés solicitarlo desde la página principal.", "error");
       $("creatorIdentity").textContent = `@${profile.username || "usuario"}`;
