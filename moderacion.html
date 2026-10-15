@@ -4,60 +4,94 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080a12">
-  <title>Moderación | Dreaming Rose</title>
+  <title>Moderación de juegos | Dreaming Rose</title>
+  <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{color-scheme:dark;--bg:#080a12;--panel:#111522;--panel2:#171c2b;--line:#282f43;--text:#f4f5fb;--muted:#9aa3b8;--pink:#ff4d8d;--cyan:#67e8f9;--green:#4ade80;--red:#fb7185}
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#15152a 0,#080a12 55%);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
-    a{color:var(--cyan)}button,input,textarea,select{font:inherit}button{cursor:pointer}
-    .wrap{width:min(1180px,calc(100% - 32px));margin:auto;padding:28px 0 60px}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:28px;flex-wrap:wrap}
-    .brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border:1px solid #69405d;border-radius:14px;display:grid;place-items:center;background:#211426;color:var(--pink);font-size:23px}
-    h1{font-size:clamp(1.5rem,3vw,2.2rem);margin:0;letter-spacing:-.04em}.sub{color:var(--muted);margin:4px 0 0}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:11px;font-weight:650}.btn:hover{border-color:#6b7796}.btn-primary{background:linear-gradient(135deg,#ff4d8d,#c026d3);border:0;color:white}.btn-danger{border-color:#743447;color:#ff9bad}.btn:disabled{opacity:.5;cursor:wait}
-    .notice{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#101422;color:var(--muted);margin-bottom:18px}.notice.error{border-color:#71394a;color:#ffc0ca}.notice.success{border-color:#285f4a;color:#a7f3d0}
-    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}.stat{padding:18px;border:1px solid var(--line);border-radius:15px;background:#101421}.stat strong{display:block;font-size:1.8rem;letter-spacing:-.04em}.stat span{color:var(--muted);font-size:.9rem}
-    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0}.search{flex:1;min-width:200px;background:#0e1220;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
-    .list{display:grid;gap:14px}.game{border:1px solid var(--line);background:linear-gradient(145deg,#121726,#0e111c);border-radius:17px;overflow:hidden;display:grid;grid-template-columns:190px minmax(0,1fr)}
-    .cover{width:100%;height:100%;min-height:200px;object-fit:cover;background:#1a2030}.game-body{padding:18px;min-width:0}.game-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.game h2{font-size:1.25rem;margin:0 0 7px;overflow-wrap:anywhere}.badge{display:inline-flex;border:1px solid #5b466a;color:#e9b7ff;border-radius:99px;padding:3px 9px;font-size:.75rem;white-space:nowrap}.meta{color:var(--muted);font-size:.86rem;display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 12px}.desc{white-space:pre-wrap;overflow-wrap:anywhere;color:#d5d9e5;margin:10px 0}.links{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.links a{overflow-wrap:anywhere}.reason{display:block;width:100%;min-height:76px;resize:vertical;background:#0a0e19;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;margin:12px 0}.actions{display:flex;gap:9px;flex-wrap:wrap}.empty{padding:35px 20px;text-align:center;color:var(--muted);border:1px dashed #3b435a;border-radius:15px}.footer{color:#737d94;font-size:.8rem;margin-top:24px}
-    @media(max-width:680px){.wrap{width:min(100% - 22px,1180px);padding-top:18px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:1.4rem}.game{grid-template-columns:1fr}.cover{height:190px;min-height:0}.game-body{padding:14px}.game-head{flex-direction:column}.top{align-items:flex-start}}
+    .moderation-page{min-height:100vh;padding:110px 0 60px;background:radial-gradient(ellipse at top right,rgba(0,255,247,.06),transparent 35%),radial-gradient(ellipse at top left,rgba(255,77,109,.09),transparent 32%),var(--bg,#050508)}
+    .moderation-wrap{width:min(1240px,calc(100% - 36px));margin:0 auto}
+    .moderation-top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:28px}
+    .moderation-brand{display:flex;align-items:center;gap:14px}
+    .moderation-brand img{width:48px;height:48px;object-fit:contain}
+    .moderation-eyebrow{font-size:.7rem;letter-spacing:3px;color:var(--neon,#00fff7);font-weight:800}
+    .moderation-top h1{font-family:var(--font-heading,Inter,sans-serif);font-size:clamp(1.4rem,3vw,2.1rem);letter-spacing:1px;line-height:1.2;margin:4px 0}
+    .moderation-subtitle{color:#9ba3b8;font-size:.9rem}
+    .moderation-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .moderation-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:8px;border:1px solid #30364b;background:#141724;color:#fff;font:700 .72rem Inter,sans-serif;letter-spacing:1px;cursor:pointer}
+    .moderation-button.primary{background:var(--accent,#ff4d6d);border-color:var(--accent,#ff4d6d)}
+    .moderation-button.reject{border-color:#783344;color:#ff9aaa}
+    .moderation-button:disabled{opacity:.55;cursor:wait}
+    .moderation-notice{padding:13px 15px;border:1px solid #2b3042;border-radius:10px;background:#101320;color:#b8bfd0;margin-bottom:18px;overflow-wrap:anywhere}
+    .moderation-notice.error{border-color:#783344;color:#ffc0ca}.moderation-notice.success{border-color:#285f4a;color:#a7f3d0}
+    .moderation-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:22px}
+    .moderation-stat{padding:17px;border:1px solid #282d40;border-radius:12px;background:rgba(17,21,34,.88)}
+    .moderation-stat strong{display:block;font-size:1.8rem;line-height:1.2}.moderation-stat span{font-size:.8rem;color:#9ba3b8}
+    .moderation-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+    .moderation-search,.moderation-filter{min-height:44px;background:#0e1220;color:#fff;border:1px solid #30364b;border-radius:9px;padding:10px 12px}
+    .moderation-search{flex:1;min-width:210px}.moderation-filter{min-width:170px}
+    .moderation-list{display:grid;gap:14px}
+    .moderation-empty{padding:34px 18px;text-align:center;color:#9ba3b8;border:1px dashed #3b435a;border-radius:12px;background:rgba(16,20,32,.55)}
+    .moderation-game{display:grid;grid-template-columns:190px minmax(0,1fr);overflow:hidden;border:1px solid #282d40;border-radius:14px;background:linear-gradient(145deg,#121726,#0d101b)}
+    .moderation-cover{width:100%;height:100%;min-height:210px;object-fit:cover;background:#181d2b}
+    .moderation-game-body{padding:18px;min-width:0}
+    .moderation-game-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .moderation-game h2{font-size:1.2rem;line-height:1.3;overflow-wrap:anywhere;margin:0 0 8px}
+    .moderation-badge{display:inline-flex;border:1px solid #4a5068;border-radius:99px;padding:3px 9px;font-size:.68rem;color:#d5d9e5}
+    .moderation-badge.pending{border-color:#7a6330;color:#f6d88a}.moderation-badge.approved{border-color:#285f4a;color:#a7f3d0}.moderation-badge.rejected{border-color:#783344;color:#ffb4c0}
+    .moderation-meta{display:flex;gap:10px 16px;flex-wrap:wrap;color:#9ba3b8;font-size:.78rem;margin:10px 0}
+    .moderation-description{color:#d5d9e5;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
+    .moderation-reason{display:block;width:100%;min-height:70px;resize:vertical;background:#090d17;color:#fff;border:1px solid #30364b;border-radius:8px;padding:10px;margin:12px 0}
+    .moderation-links{margin:10px 0;overflow-wrap:anywhere}.moderation-links a{color:var(--neon,#00fff7)}
+    .moderation-buttons{display:flex;gap:8px;flex-wrap:wrap}
+    .moderation-footnote{color:#707990;font-size:.76rem;margin-top:22px}
+    @media(max-width:680px){.moderation-page{padding-top:88px}.moderation-wrap{width:calc(100% - 22px)}.moderation-stats{gap:8px}.moderation-stat{padding:12px}.moderation-stat strong{font-size:1.4rem}.moderation-stat span{font-size:.7rem}.moderation-game{grid-template-columns:1fr}.moderation-cover{height:190px;min-height:0}.moderation-game-body{padding:14px}.moderation-top{align-items:flex-start}.moderation-brand img{width:40px;height:40px}}
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <header class="top">
-      <div class="brand">
-        <div class="mark" aria-hidden="true">✿</div>
-        <div><h1>Panel de moderación</h1><p class="sub">Dreaming Rose · Revisión de publicaciones</p></div>
+<header class="navbar">
+  <div class="nav-container">
+    <a class="nav-left" href="index.html" aria-label="Volver a Dreaming Rose" style="text-decoration:none;color:inherit">
+      <img src="assets/Icons/rosaaa MArlo icono.png" alt="" class="logo">
+      <span class="brand">DREAMING ROSE</span>
+    </a>
+    <div class="nav-right">
+      <a href="index.html#proyectos">PROYECTOS</a>
+      <a href="index.html#comunidad">COMUNIDAD</a>
+      <a href="index.html#ranking">RANKING</a>
+      <a href="index.html" class="moderation-button">VOLVER AL HUB</a>
+    </div>
+  </div>
+</header>
+<main class="moderation-page">
+  <div class="moderation-wrap">
+    <div class="moderation-top">
+      <div class="moderation-brand">
+        <img src="assets/Icons/rosaaa MArlo icono.png" alt="Dreaming Rose">
+        <div><div class="moderation-eyebrow">STUDIO / ADMINISTRACIÓN</div><h1>Moderación de juegos</h1><p class="moderation-subtitle">Revisá publicaciones antes de que aparezcan en el hub.</p></div>
       </div>
-      <div class="top-actions">
-        <button class="btn" id="refreshBtn" type="button">↻ Actualizar</button>
-        <a class="btn" href="./index.html">← Volver a la web</a>
+      <div class="moderation-actions">
+        <button class="moderation-button" id="refreshBtn" type="button">↻ ACTUALIZAR</button>
+        <a class="moderation-button" href="index.html">← VOLVER AL HUB</a>
       </div>
-    </header>
-
-    <div id="notice" class="notice" role="status">Verificando sesión y permisos…</div>
-
-    <section class="stats" aria-label="Resumen">
-      <div class="stat"><strong id="pendingCount">—</strong><span>Juegos pendientes</span></div>
-      <div class="stat"><strong id="approvedCount">—</strong><span>Aprobados (consulta visible)</span></div>
-      <div class="stat"><strong id="rejectedCount">—</strong><span>Rechazados (consulta visible)</span></div>
+    </div>
+    <div id="notice" class="moderation-notice" role="status">Verificando sesión y permisos…</div>
+    <section class="moderation-stats" aria-label="Resumen de publicaciones">
+      <div class="moderation-stat"><strong id="pendingCount">—</strong><span>PENDIENTES</span></div>
+      <div class="moderation-stat"><strong id="approvedCount">—</strong><span>APROBADOS VISIBLES</span></div>
+      <div class="moderation-stat"><strong id="rejectedCount">—</strong><span>RECHAZADOS VISIBLES</span></div>
     </section>
-
-    <div class="toolbar">
-      <input class="search" id="searchInput" type="search" placeholder="Buscar por título, creador o descripción…" aria-label="Buscar juegos">
-      <select class="btn" id="statusFilter" aria-label="Filtrar por estado">
-        <option value="pendiente">Pendientes</option>
-        <option value="aprobado">Aprobados</option>
-        <option value="rechazado">Rechazados</option>
-        <option value="todos">Todos los estados</option>
+    <div class="moderation-toolbar">
+      <input class="moderation-search" id="searchInput" type="search" placeholder="Buscar título, autor o descripción…" aria-label="Buscar juegos">
+      <select class="moderation-filter" id="statusFilter" aria-label="Filtrar estado">
+        <option value="pendiente">Pendientes</option><option value="aprobado">Aprobados</option><option value="rechazado">Rechazados</option><option value="todos">Todos los estados</option>
       </select>
     </div>
-
-    <section id="gamesList" class="list" aria-live="polite">
-      <div class="empty">Cargando publicaciones…</div>
-    </section>
-    <p class="footer">Los cambios se validan en Supabase. No se incluye ninguna clave privada en estos archivos.</p>
-  </main>
-  <script type="module" src="./js/moderacion.js"></script>
+    <section id="gamesList" class="moderation-list" aria-live="polite"><div class="moderation-empty">Cargando publicaciones…</div></section>
+    <p class="moderation-footnote">Los permisos reales se validan en Supabase. Esta interfaz no contiene claves privadas.</p>
+  </div>
+</main>
+<script type="module" src="js/moderacion.js"></script>
 </body>
 </html>
