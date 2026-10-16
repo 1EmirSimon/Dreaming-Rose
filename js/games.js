@@ -917,6 +917,7 @@ window.handlePublishGame = async function(event) {
         etiquetas: tags,
         download_url: downloadUrl,
         categoria: category,
+        categoria_confirmada: true,
         plataforma: platform,
         likes_count: 0,
         views_count: 0,

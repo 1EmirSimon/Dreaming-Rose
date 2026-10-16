@@ -64,6 +64,8 @@ function gameCard(g) {
   const visits = visitsAvailable ? fmt(visitCounts.get(Number(g.id)) || 0) : "N/D";
   const published = g.created_at ? new Date(g.created_at).toLocaleDateString("es-AR") : "Sin fecha";
   const reason = g.motivo_revision ? `<p class="creator-reason"><strong>Motivo de revisión:</strong> ${escapeHTML(g.motivo_revision)}</p>` : "";
+  const missingMeta = g.categoria_confirmada !== true || !g.categoria || !g.clasificacion_edad || g.clasificacion_edad === "Pendiente de clasificación";
+  const metadataNotice = missingMeta ? `<p class="creator-reason" role="status"><strong>Falta completar la ficha:</strong> este juego necesita categoría y/o clasificación por edad para quedar correctamente organizado en el catálogo.</p>` : "";
   const download = g.download_url
     ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
     : `<span class="creator-muted">Sin enlace de descarga</span>`;
@@ -79,6 +81,7 @@ function gameCard(g) {
       <p class="creator-game-description">${escapeHTML(g.description || "Sin descripción.")}</p>
       <p class="creator-game-id">${escapeHTML(g.categoria || "Sin categoría")} · ${escapeHTML(g.plataforma || "PC")}</p>
       ${reason}
+      ${metadataNotice}
       <div class="creator-game-stats">
         <div><span>Likes</span><strong>♥ ${fmt(g.likes_count)}</strong></div>
         <div><span>Visitas</span><strong>${visits}</strong></div>
@@ -122,7 +125,7 @@ async function loadDashboard(user) {
   try {
     let gamesQuery = supabase
       .from("juegos")
-      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma")
+      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma,clasificacion_edad,categoria_confirmada")
       .order("es_proyecto_oficial", { ascending: false })
       .order("created_at", { ascending: false });
 

@@ -336,6 +336,11 @@
 
         <form id="authForm" onsubmit="handleAuth(event)" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
             <input type="text" id="authUsername" placeholder="Nombre de usuario" style="display: none; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <div id="authBirthDateWrap" style="display:none; text-align:left;">
+                <label for="authBirthDate" style="display:block; margin:0 0 6px; color:#ddd; font-size:.85rem;">Fecha de nacimiento *</label>
+                <input type="date" id="authBirthDate" autocomplete="bday" min="1900-01-01" style="width:100%; padding:12px; box-sizing:border-box; border-radius:6px; border:1px solid var(--border); background:#1a1a24; color:#fff;">
+                <small style="display:block; margin-top:6px; color:#999; line-height:1.45;">Usamos día, mes y año para clasificar tu cuenta. La fecha no se muestra en tu perfil público. Al cumplir 13 años, el grupo se actualiza automáticamente.</small>
+            </div>
             <input type="email" id="authEmail" placeholder="Correo electrónico" required style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
             <input type="password" id="authPassword" placeholder="Contraseña" required style="padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
 

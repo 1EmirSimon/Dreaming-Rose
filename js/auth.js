@@ -15,6 +15,8 @@ let authWidgetId = null;    // ID que nos da Cloudflare para ESTE widget de capt
 
 // Se llama una sola vez, al arrancar la página.
 export function initAuth() {
+    const birthDateInput = document.getElementById("authBirthDate");
+    if (birthDateInput) birthDateInput.max = new Date().toISOString().slice(0, 10);
     checkUserSession();  // ¿ya había una sesión abierta de antes?
     initAuthCaptcha();   // preparar el captcha del login
 }
@@ -50,6 +52,31 @@ async function checkUserSession() {
     });
 }
 
+// Valida una fecha real y calcula el grupo según la edad exacta.
+// La transición a 13+ ocurre el día del cumpleaños número 13.
+function validarFechaNacimiento(value) {
+    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value || "")) return false;
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.getUTCFullYear() === year &&
+        date.getUTCMonth() === month - 1 &&
+        date.getUTCDate() === day &&
+        date <= new Date(new Date().toISOString().slice(0, 10) + "T00:00:00.000Z") &&
+        year >= 1900;
+}
+
+function calcularGrupoPorFecha(value, today = new Date()) {
+    if (!validarFechaNacimiento(value)) return "sin_clasificar";
+    const [year, month, day] = value.split("-").map(Number);
+    const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    let age = now.getFullYear() - year;
+    const birthdayNotReached =
+        now.getMonth() + 1 < month ||
+        (now.getMonth() + 1 === month && now.getDate() < day);
+    if (birthdayNotReached) age--;
+    return age < 13 ? "menor_13" : "13_mas";
+}
+
 // A partir de un usuario logueado, busca su perfil (username y rol)
 // en la tabla "usuarios" y actualiza la pantalla. Si el usuario está
 // baneado, lo desconecta automáticamente ahí mismo.
@@ -66,14 +93,74 @@ async function handleProfile(user) {
         return;
     }
 
-    const { data: profile, error } = await supabase
+    // Consultar el perfil antes de pedir datos adicionales. El inicio de sesión
+    // no se bloquea si una cuenta antigua todavía no tiene año de nacimiento.
+    let userForProfile = user;
+    let { data: profile, error } = await supabase
         .from('usuarios')
-        .select('username, role')
+        .select('username, role, birth_date, birth_year, age_group')
         .eq('id', user.id)
         .single();
 
     if (error) {
         console.error("Error consultando el perfil:", error);
+    }
+
+    // Completar la fecha de nacimiento solo si falta. En Google OAuth se pregunta
+    // después de volver a Dreaming Rose, sin alterar el flujo de cuentas existentes.
+    let birthDate = profile?.birth_date || user.user_metadata?.birth_date || null;
+    if (!validarFechaNacimiento(birthDate)) {
+        const promptKey = `dr_birth_date_prompted_${user.id}`;
+        let alreadyPrompted = false;
+        try { alreadyPrompted = sessionStorage.getItem(promptKey) === "1"; } catch {}
+        if (!alreadyPrompted) {
+            try { sessionStorage.setItem(promptKey, "1"); } catch {}
+            const dateText = window.prompt(
+                "Para clasificar tu cuenta, ingresá tu fecha de nacimiento completa (AAAA-MM-DD). Si la completás más tarde, tu cuenta quedará sin clasificar hasta entonces."
+            );
+            if (dateText !== null && dateText.trim() !== "") {
+                if (!validarFechaNacimiento(dateText.trim())) {
+                    alert("La fecha no es válida. Usá el formato AAAA-MM-DD y una fecha real.");
+                } else {
+                    birthDate = dateText.trim();
+                    const ageGroup = calcularGrupoPorFecha(birthDate);
+                    const { data: updated, error: updateError } = await supabase.auth.updateUser({
+                        data: { birth_date: birthDate, birth_year: Number(birthDate.slice(0, 4)), age_group: ageGroup }
+                    });
+                    if (updateError) {
+                        console.error("No se pudo guardar la fecha de nacimiento:", updateError);
+                        alert("No pudimos guardar tu fecha de nacimiento. Tu cuenta seguirá sin clasificar por ahora.");
+                    } else if (updated?.user) {
+                        userForProfile = updated.user;
+                        const result = await supabase
+                            .from('usuarios')
+                            .select('username, role, birth_date, birth_year, age_group')
+                            .eq('id', user.id)
+                            .single();
+                        if (!result.error) profile = result.data;
+                    }
+                }
+            }
+        }
+    }
+
+    // Recalcular la clasificación exacta al iniciar/cargar sesión. La base de datos
+    // también ejecuta una actualización diaria para que el cambio ocurra en el cumpleaños.
+    birthDate = profile?.birth_date || userForProfile.user_metadata?.birth_date || birthDate;
+    if (validarFechaNacimiento(birthDate)) {
+        const expectedGroup = calcularGrupoPorFecha(birthDate);
+        if (profile?.age_group !== expectedGroup || profile?.birth_date !== birthDate) {
+            const { error: syncError } = await supabase.auth.updateUser({
+                data: { birth_date: birthDate, birth_year: Number(birthDate.slice(0, 4)), age_group: expectedGroup }
+            });
+            if (syncError) console.warn("No se pudo sincronizar la clasificación por edad:", syncError);
+            const synced = await supabase
+                .from('usuarios')
+                .select('username, role, birth_date, birth_year, age_group')
+                .eq('id', user.id)
+                .single();
+            if (!synced.error) profile = synced.data;
+        }
     }
 
     // Chequeo de baneo: si su rol es "banned", lo sacamos de la sesión
@@ -114,7 +201,8 @@ function updateUI(user, profile) {
 
         const userRole = (profile.role || 'usuario').toLowerCase();
         const roleTag = userRole !== 'usuario' ? ` [${userRole.toUpperCase()}]` : '';
-        if (userBadge) userBadge.textContent = `@${profile.username || 'usuario'}${roleTag}`;
+        const ageTag = profile.age_group === 'menor_13' ? ' [GRUPO PROTEGIDO]' : profile.age_group === '13_mas' ? ' [13+]' : profile.age_group === 'sin_clasificar' ? ' [SIN CLASIFICAR]' : '';
+        if (userBadge) userBadge.textContent = `@${profile.username || 'usuario'}${roleTag}${ageTag}`;
 
         // El botón de "Publicar Juego" solo lo ven creador/moderador/root
         const allowedPublishRoles = ['creador', 'moderador', 'root'];
@@ -188,10 +276,9 @@ function updateUI(user, profile) {
 // con Google; cuando el usuario vuelve, onAuthStateChange (más arriba)
 // detecta la sesión nueva solo.
 export async function signInWithGoogle() {
-    // Importante: usamos origin + pathname (no solo origin) porque en
-    // GitHub Pages el sitio vive dentro de una carpeta.
+    // No pedir el año antes de OAuth: así las cuentas existentes pueden entrar
+    // sin un prompt innecesario. Si falta el dato, handleProfile lo solicita al volver.
     const currentPath = window.location.origin + window.location.pathname;
-
     const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: currentPath }
@@ -222,6 +309,8 @@ export function toggleAuthMode(e) {
 
     const title = document.getElementById("authTitle");
     const usernameInput = document.getElementById("authUsername");
+    const birthDateWrap = document.getElementById("authBirthDateWrap");
+    const birthDateInput = document.getElementById("authBirthDate");
     const submitBtn = document.getElementById("btnAuthSubmit");
     const toggleText = document.getElementById("authToggleText");
     const toggleLink = document.getElementById("authToggleLink");
@@ -235,6 +324,8 @@ export function toggleAuthMode(e) {
             usernameInput.style.display = "block";
             usernameInput.required = true;
         }
+        if (birthDateWrap) birthDateWrap.style.display = "block";
+        if (birthDateInput) birthDateInput.required = true;
         if (submitBtn) submitBtn.textContent = "REGISTRARSE";
         if (toggleText) toggleText.textContent = "¿Ya tienes cuenta?";
         if (toggleLink) toggleLink.textContent = "Iniciar Sesión";
@@ -244,6 +335,8 @@ export function toggleAuthMode(e) {
             usernameInput.style.display = "none";
             usernameInput.required = false;
         }
+        if (birthDateWrap) birthDateWrap.style.display = "none";
+        if (birthDateInput) { birthDateInput.required = false; birthDateInput.value = ""; }
         if (submitBtn) submitBtn.textContent = "ENTRAR";
         if (toggleText) toggleText.textContent = "¿No tienes cuenta?";
         if (toggleLink) toggleLink.textContent = "Registrarse";
@@ -261,7 +354,9 @@ export async function handleAuth(e) {
 
     const email = emailInput ? emailInput.value : "";
     const password = passwordInput ? passwordInput.value : "";
-    const username = usernameInput ? usernameInput.value : "";
+    const username = usernameInput ? usernameInput.value.trim() : "";
+    const birthDateInput = document.getElementById("authBirthDate");
+    const birthDate = birthDateInput ? birthDateInput.value : "";
 
     const captchaToken = (window.turnstile && authWidgetId !== null)
         ? window.turnstile.getResponse(authWidgetId)
@@ -279,13 +374,21 @@ export async function handleAuth(e) {
 
     try {
         if (isRegisterMode) {
+            if (!validarFechaNacimiento(birthDate)) {
+                throw new Error("Ingresá una fecha de nacimiento válida.");
+            }
+            const ageGroup = calcularGrupoPorFecha(birthDate);
+            const birthYear = Number(birthDate.slice(0, 4));
+            if (ageGroup === "menor_13") {
+                alert("Tu cuenta quedará en el grupo protegido para menores de 13 años. Algunas funciones comunitarias pueden estar limitadas.");
+            }
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
-                options: { data: { username }, captchaToken }
+                options: { data: { username, birth_date: birthDate, birth_year: birthYear, age_group: ageGroup }, captchaToken }
             });
             if (error) throw error;
-            alert("¡Cuenta creada con éxito!");
+            alert("¡Registro enviado! Tu cuenta quedó clasificada según tu fecha de nacimiento. La clasificación pasará automáticamente a 13+ el día de tu cumpleaños número 13.");
             closeAuthModal();
         } else {
             const { error } = await supabase.auth.signInWithPassword({
