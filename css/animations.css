@@ -257,3 +257,20 @@ body.loaded footer {
     }
 
 }
+
+/* DREAMING ROSE — microinteracciones para promocionar el catálogo */
+.motion-reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.motion-reveal.is-visible{opacity:1;transform:translateY(0)}
+.hero-content.reveal.visible{animation:heroContentEnter .9s cubic-bezier(.2,.7,.2,1) both}
+@keyframes heroContentEnter{from{opacity:0;transform:translateY(24px) scale(.985);filter:blur(3px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+.project-card{position:relative;isolation:isolate;transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
+.project-card::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;background:radial-gradient(circle at var(--pointer-x,50%) var(--pointer-y,50%),rgba(255,65,104,.16),transparent 45%);transition:opacity .25s ease;z-index:0}
+.project-card:hover{transform:translateY(-6px);box-shadow:0 16px 35px rgba(0,0,0,.25),0 0 0 1px rgba(255,65,104,.12)}
+.project-card:hover::after{opacity:1}
+.btn-primary,.btn-main,.btn-outline,.btn-play-large{transition:transform .2s ease,box-shadow .25s ease,filter .25s ease}
+.btn-primary:hover,.btn-main:hover,.btn-outline:hover,.btn-play-large:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 8px 25px rgba(255,77,109,.18)}
+.navbar a,.mobile-menu-link{transition:color .2s ease,opacity .2s ease,transform .2s ease}
+.navbar a:hover{transform:translateY(-1px)}
+.hero-parallax-bg{will-change:transform}
+@media(max-width:760px){.motion-reveal{transform:translateY(12px)}.project-card:hover{transform:none}.btn-primary:active,.btn-main:active,.btn-outline:active,.btn-play-large:active{transform:scale(.98)}}
+@media(prefers-reduced-motion:reduce){.motion-reveal,.reveal,.project-card,.btn-primary,.btn-main,.btn-outline,.btn-play-large,.navbar a,.mobile-menu-link{animation:none!important;transition:none!important;transform:none!important;filter:none!important}.motion-reveal,.reveal{opacity:1!important}.project-card::after{display:none}}

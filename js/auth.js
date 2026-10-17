@@ -55,7 +55,7 @@ async function checkUserSession() {
 // Valida una fecha real y calcula el grupo según la edad exacta.
 // La transición a 13+ ocurre el día del cumpleaños número 13.
 function validarFechaNacimiento(value) {
-    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value || "")) return false;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return false;
     const [year, month, day] = value.split("-").map(Number);
     const date = new Date(Date.UTC(year, month - 1, day));
     return date.getUTCFullYear() === year &&
