@@ -50,6 +50,7 @@ async function init(){
   currentProfile=profile;
   const role=String(profile.role||"usuario").toLowerCase();
   $("profileName").textContent="@"+(profile.username||"usuario");
+  $("profileUsernameInput").value = profile.username || "";
   const ageGroup=profile.age_group==="menor_13"?"GRUPO PROTEGIDO":profile.age_group==="13_mas"?"13+": "SIN CLASIFICAR";
   $("profileMeta").textContent=`${role.toUpperCase()} · ${ageGroup} · ${user.email||"Correo no disponible"}`;
   $("profileNotice").textContent="Tu cuenta está cargada. Desde acá podés administrar tus favoritos y la configuración.";
@@ -64,6 +65,50 @@ async function init(){
   if(gamesError){$("favoriteGames").innerHTML='<p class="muted">No se pudieron cargar los datos de tus juegos favoritos.</p>';return;}
   $("favoriteGames").innerHTML=(games||[]).map(g=>`<article class="favorite-card"><img loading="lazy" src="${escapeHTML(g.image_url||'assets/images/Meteor Fighters.png')}" alt="Portada de ${escapeHTML(g.title)}"><div><strong>${escapeHTML(g.title)}</strong><small>${escapeHTML(g.categoria||"Sin categoría")} · ${escapeHTML(g.plataforma||"PC")}</small></div><a href="juegos.html">Ver catálogo</a></article>`).join("")||'<p class="muted">No hay favoritos disponibles para mostrar.</p>';
 }
+
+$("profileUsernameSave").addEventListener("click", async () => {
+  if (!currentUser || !currentProfile) return;
+  const input = $("profileUsernameInput");
+  const help = $("profileUsernameHelp");
+  const button = $("profileUsernameSave");
+  const next = (input.value || "").trim();
+  if (!/^[a-zA-Z0-9_-]{3,20}$/.test(next)) {
+    help.textContent = "Usá entre 3 y 20 caracteres: letras, números, guion o guion bajo.";
+    return;
+  }
+  if (next.toLowerCase() === String(currentProfile.username || "").toLowerCase()) {
+    help.textContent = "Ese ya es tu nombre de usuario.";
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "Guardando…";
+  help.textContent = "";
+  try {
+    const { data: existing, error: lookupError } = await supabase
+      .from("usuarios").select("id").ilike("username", next)
+      .neq("id", currentUser.id).limit(1);
+    if (lookupError) throw lookupError;
+    if (existing?.length) {
+      help.textContent = "Ese nombre ya está en uso. Probá con otro.";
+      return;
+    }
+    const { error: updateError } = await supabase.from("usuarios")
+      .update({ username: next }).eq("id", currentUser.id);
+    if (updateError) throw updateError;
+    const { error: metadataError } = await supabase.auth.updateUser({ data: { username: next } });
+    if (metadataError) console.warn("No se pudo sincronizar el nombre en metadatos:", metadataError);
+    currentProfile.username = next;
+    $("profileName").textContent = "@" + next;
+    help.textContent = "Nombre de usuario actualizado.";
+    $("profileNotice").textContent = "Tu nombre de usuario se actualizó correctamente.";
+  } catch (error) {
+    console.error("Error al actualizar nombre:", error);
+    help.textContent = "No se pudo guardar el nombre. " + (error?.message || "");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Guardar nombre";
+  }
+});
 
 $("birthDateSave").addEventListener("click", async () => {
   if (!currentUser || !currentProfile) return;

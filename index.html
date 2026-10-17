@@ -75,27 +75,30 @@
             <span class="brand">DREAMING ROSE</span>
         </div>
 
-        <nav class="nav-right">
+        <nav class="nav-right" aria-label="Navegación principal">
             <a href="juegos.html">PROYECTOS</a>
             <a href="#comunidad">COMUNIDAD</a>
             <a href="#ranking">RANKING</a>
 
-            <button id="btnPublish" onclick="openUpload()" class="btn-primary" style="display: none;">
-                PUBLICAR
-            </button>
+            <div class="nav-tools" aria-label="Herramientas">
+                <button id="btnPublish" onclick="openUpload()" class="btn-primary nav-icon-button" style="display: none;" title="Publicar juego" aria-label="Publicar juego">
+                    <span aria-hidden="true">＋</span><span class="nav-icon-label">Publicar</span>
+                </button>
+                <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline nav-icon-button nav-admin-button" style="display: none; border-color: var(--neon); color: var(--neon);" title="Panel de administración" aria-label="Panel de administración">
+                    <span aria-hidden="true">⚙</span><span class="nav-icon-label">Administración</span>
+                </button>
+            </div>
 
-            <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline" style="display: none; border-color: var(--neon); color: var(--neon);">
-                PANEL ADMIN
-            </button>
-
-            <div id="authArea" style="margin-left: 20px;">
+            <div id="authArea" class="nav-auth-area">
                 <button id="btnLogin" onclick="openAuthModal()" class="btn-outline">
                     INGRESAR
                 </button>
 
                 <div id="userInfo" style="display: none; align-items: center; gap: 10px;">
-                    <a id="btnProfile" href="perfil.html" class="btn-outline account-link" aria-label="Mi perfil">PERFIL</a>
-                    <a id="btnCreatorDashboard" href="creador.html" class="btn-outline account-link" style="display:none;" aria-label="Mi dashboard">MI DASHBOARD</a>
+                    <div class="nav-account-links">
+                        <a id="btnProfile" href="perfil.html" class="btn-outline account-link nav-account-button" aria-label="Mi perfil" title="Mi perfil"><span aria-hidden="true">♙</span><span>Perfil</span></a>
+                        <a id="btnCreatorDashboard" href="creador.html" class="btn-outline account-link nav-account-button" style="display:none;" aria-label="Mi dashboard" title="Mi dashboard"><span aria-hidden="true">▦</span><span>Dashboard</span></a>
+                    </div>
                     <span id="userBadge" style="font-size: 0.75rem; font-weight: 800; color: var(--neon);">
                         @usuario
                     </span>

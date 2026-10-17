@@ -1142,3 +1142,43 @@ button {
         font-size: 0.78rem;
     }
 }
+
+/* Navegación reorganizada: secciones a la izquierda, cuenta a la derecha */
+.nav-container { gap: 22px; }
+.nav-left { flex: 0 0 auto; min-width: max-content; }
+.nav-right {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.35vw, 22px);
+}
+.nav-right > a { flex: 0 0 auto; white-space: nowrap; }
+.nav-tools { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
+.nav-icon-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    min-width: 38px; min-height: 38px; padding: 8px 10px !important;
+    border-radius: 11px; font-size: .78rem; line-height: 1;
+}
+.nav-icon-button > span:first-child { font-size: 1.1rem; }
+.nav-auth-area { margin-left: auto !important; flex: 0 0 auto; }
+#userInfo { align-items: center; gap: 8px !important; }
+.nav-account-links { display: flex; align-items: center; gap: 7px; }
+.nav-account-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    white-space: nowrap; padding: 9px 12px !important; border-radius: 11px; font-size: .76rem;
+}
+.nav-account-button > span:first-child { font-size: 1rem; }
+#userBadge { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (min-width: 901px) and (max-width: 1150px) {
+    .nav-container { padding: 0 20px; gap: 12px; }
+    .nav-left .brand { font-size: .9rem; }
+    .logo { width: 43px; height: 43px; margin-right: 9px; }
+    .nav-right { gap: 10px; }
+    .nav-right > a { font-size: .72rem; }
+    .nav-icon-label { display: none; }
+    .nav-icon-button { width: 38px; padding: 8px !important; }
+    .nav-account-button { padding: 8px 9px !important; }
+    #userBadge { max-width: 105px; font-size: .68rem !important; }
+}
+@media (max-width: 900px) { .nav-right { display: none !important; } }

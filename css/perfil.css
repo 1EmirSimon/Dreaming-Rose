@@ -22,3 +22,22 @@
 .logout-button:hover,.primary-link:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,65,104,.18)}
 @media(max-width:760px){.birthdate-setting{padding:12px}.motion-reveal{transform:translateY(10px)}}
 @media(prefers-reduced-motion:reduce){.motion-reveal,.profile-hero,.panel,.setting-link,.logout-button,.primary-link{transition:none!important;transform:none!important;animation:none!important}.motion-reveal{opacity:1}}
+
+/* Campos de edición del perfil: visibles, legibles y adaptables a móvil */
+.username-setting { align-items: flex-start; }
+.setting-content { display:flex; flex-direction:column; align-items:flex-start; gap:8px; flex:1; min-width:0; }
+.setting-content label, .birthdate-setting label { color:var(--muted, #b9b4c4); font-size:.85rem; margin-top:4px; }
+.setting-content input, .birthdate-setting input {
+  width:100%; min-width:0; box-sizing:border-box; padding:11px 12px;
+  border:1px solid var(--border, #393342); border-radius:9px;
+  background:var(--input-bg, #121019); color:var(--text, #f7f3fa); font:inherit;
+}
+.setting-content input:focus, .birthdate-setting input:focus { outline:2px solid rgba(240,106,176,.45); outline-offset:1px; }
+.setting-content button, .birthdate-setting button { cursor:pointer; }
+.setting-content button:disabled, .birthdate-setting button:disabled { opacity:.55; cursor:not-allowed; }
+.birthdate-setting { overflow:hidden; }
+@media (max-width:600px) {
+  .setting-link.username-setting { display:flex; gap:12px; }
+  .setting-content { width:100%; }
+  .setting-content input, .birthdate-setting input { font-size:16px; }
+}
