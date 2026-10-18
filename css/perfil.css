@@ -10,7 +10,7 @@
 .birthdate-setting input{width:100%;min-height:43px;padding:10px;border-radius:8px;border:1px solid #39313e;background:#0b0a10;color:#fff;font:inherit;color-scheme:dark}
 .birthdate-setting .primary-link{margin-top:10px;min-height:42px}
 .birthdate-setting button:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.3)}
-.motion-reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+.motion-reveal{opacity:1;transform:translateY(0);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
 .motion-reveal.is-visible{opacity:1;transform:translateY(0)}
 .profile-hero{transition:border-color .3s ease,transform .3s ease,box-shadow .3s ease}
 .profile-hero:hover{border-color:#583044;box-shadow:0 12px 38px rgba(255,65,104,.08)}
@@ -41,3 +41,16 @@
   .setting-content { width:100%; }
   .setting-content input, .birthdate-setting input { font-size:16px; }
 }
+
+/* Ajustes de distribución del perfil */
+.profile-shell{margin-top:24px}
+.profile-grid{grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);align-items:start}
+.account-panel{align-self:start}
+.username-setting{align-items:flex-start}
+.setting-content{display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.setting-content label{font-size:.72rem;font-weight:700;color:#d8ced8}
+.setting-content input,.birthdate-setting input{font:inherit;color:var(--text)}
+.setting-content input{width:100%;min-height:42px;padding:10px;border-radius:8px;border:1px solid #39313e;background:#0b0b11}
+.setting-content .primary-link{align-self:flex-start}
+.primary-link:disabled,.birthdate-setting button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:760px){.profile-shell{margin-top:20px}.profile-grid{grid-template-columns:1fr}.username-setting{flex-wrap:wrap}}
