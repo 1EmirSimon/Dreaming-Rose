@@ -10,7 +10,7 @@
 .birthdate-setting input{width:100%;min-height:43px;padding:10px;border-radius:8px;border:1px solid #39313e;background:#0b0a10;color:#fff;font:inherit;color-scheme:dark}
 .birthdate-setting .primary-link{margin-top:10px;min-height:42px}
 .birthdate-setting button:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.3)}
-.motion-reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+.motion-reveal{opacity:1;transform:translateY(0);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
 .motion-reveal.is-visible{opacity:1;transform:translateY(0)}
 .profile-hero{transition:border-color .3s ease,transform .3s ease,box-shadow .3s ease}
 .profile-hero:hover{border-color:#583044;box-shadow:0 12px 38px rgba(255,65,104,.08)}
