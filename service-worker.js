@@ -1,7 +1,7 @@
 // Service Worker de Dreaming Rose
 // Cachea archivos estáticos para que la web cargue rápido.
 
-const CACHE_NAME = 'dreaming-rose-v-navbar-perfil-20261017-v2-profile-navbar-fix';
+const CACHE_NAME = 'dreaming-rose-navbar-explorar-20261017-v3';
 
 const ARCHIVOS_CACHE = [
     './',
