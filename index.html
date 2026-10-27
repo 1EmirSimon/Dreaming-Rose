@@ -81,6 +81,8 @@
             <a href="#comunidad">COMUNIDAD</a>
             <a href="#ranking">RANKING</a>
 
+            <a id="btnModerationQuick" href="moderacion.html" class="btn-outline nav-moderation-button" style="display:none;" title="Abrir moderación" aria-label="Abrir moderación">🛡️ <span>Moderación</span></a>
+
             <div class="nav-tools" aria-label="Herramientas">
                 <button id="btnPublish" onclick="openUpload()" class="btn-primary nav-icon-button" style="display: none;" title="Publicar juego" aria-label="Publicar juego">
                     <span aria-hidden="true">＋</span><span class="nav-icon-label">Publicar</span>
@@ -189,7 +191,10 @@
 
             <!-- Grid Horizontal / Multilínea de Tarjetas -->
             <div id="community-games" class="games-grid">
-                <!-- Se cargan dinámicamente -->
+                <!-- Se cargan dinámicamente; en el inicio se muestra una selección compacta -->
+            </div>
+            <div class="home-games-action">
+                <a href="juegos.html" class="btn-outline home-view-all">VER TODOS LOS JUEGOS <span aria-hidden="true">→</span></a>
             </div>
         </div>
     </div>
@@ -668,8 +673,12 @@
                 <span>PUBLICAR JUEGO</span>
             </button>
 
-            <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
+            <a id="mobileBtnModeration" class="mobile-menu-link" href="moderacion.html" onclick="closeMobileMenu()" style="display:none;">
                 <span class="mobile-menu-icon">🛡️</span>
+                <span>MODERACIÓN</span>
+            </a>
+            <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
+                <span class="mobile-menu-icon">⚙️</span>
                 <span>PANEL ADMIN</span>
             </button>
 

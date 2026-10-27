@@ -1,3 +1,13 @@
+
+function setProfileBirthDateBounds() {
+  const input = document.getElementById("birthDateInput");
+  if (!input) return;
+  const today = new Date();
+  input.max = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+  if (!input.min) input.min = "1900-01-01";
+}
+document.addEventListener("DOMContentLoaded", setProfileBirthDateBounds);
+
 import { supabase } from "./supabase.js";
 
 const $ = id => document.getElementById(id);

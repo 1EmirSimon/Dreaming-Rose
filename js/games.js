@@ -387,7 +387,12 @@ function renderGamesGrid(gamesList) {
         return;
     }
 
-    gamesList.forEach((game, index) => {
+    // En el inicio mostramos una selección breve para que la página no quede saturada.
+    // El catálogo completo sigue disponible en juegos.html.
+    const isHomePreview = Boolean(document.getElementById("proyectos"));
+    const gamesToRender = isHomePreview ? gamesList.slice(0, 4) : gamesList;
+
+    gamesToRender.forEach((game, index) => {
         const card = document.createElement("div");
         card.className = "game-card-hub card-stagger";
         card.dataset.gameId = game.id;

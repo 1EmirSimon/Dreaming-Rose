@@ -1216,3 +1216,24 @@ select:focus {
         margin-right: 6px;
     }
 }
+
+/* Inicio más limpio: botones de acceso y vista previa compacta */
+.nav-moderation-button {
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    padding:8px 12px; border-radius:8px; font-size:.68rem; font-weight:800;
+    white-space:nowrap; text-decoration:none; border-color:rgba(255,65,104,.7);
+    color:#ff7894; min-height:36px;
+}
+.nav-moderation-button:hover { background:rgba(255,65,104,.10); }
+.home-games-action { display:flex; justify-content:center; margin:22px 0 4px; }
+.home-view-all { display:inline-flex; align-items:center; gap:12px; padding:11px 16px; font-size:.72rem; text-decoration:none; border-radius:8px; }
+#community-games { grid-template-columns:repeat(4,minmax(0,1fr)); }
+#community-games .game-card-hub { min-width:0; }
+@media (max-width: 1000px) { #community-games { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width: 700px) {
+ .nav-moderation-button { padding:7px 9px; font-size:.65rem; }
+ .nav-moderation-button span { display:none; }
+ #community-games { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+ .home-games-action { margin-top:16px; }
+}
+@media (max-width: 420px) { #community-games { grid-template-columns:1fr; } }
