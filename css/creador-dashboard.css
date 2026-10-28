@@ -198,3 +198,11 @@
 .creator-metadata-actions{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 .creator-metadata-feedback{grid-column:1/-1;margin:0;color:#ffbdc9;font-size:.78rem;overflow-wrap:anywhere}
 @media(max-width:560px){.creator-metadata-form{grid-template-columns:1fr}.creator-metadata-actions{flex-direction:column}.creator-metadata-actions .creator-button{width:100%}}
+
+/* Formulario responsive de ficha completa: categoria, plataforma y edad */
+.creator-metadata-form{width:100%;box-sizing:border-box;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
+.creator-metadata-form label{min-width:0}
+.creator-metadata-form select{box-sizing:border-box;max-width:100%;min-height:44px}
+.creator-age-field small{font-weight:400;color:#aeb2c4;font-size:.7rem;line-height:1.45}
+.creator-metadata-actions,.creator-metadata-feedback{min-width:0}
+@media(max-width:760px){.creator-metadata-form{grid-template-columns:1fr;padding:11px;gap:11px}.creator-metadata-form select{font-size:16px;min-height:46px}.creator-metadata-actions{display:grid;grid-template-columns:1fr}.creator-metadata-actions .creator-button{width:100%;min-height:44px}.creator-complete-toggle{width:100%;min-height:44px;font-size:.82rem}.creator-metadata-feedback{overflow-wrap:anywhere}}

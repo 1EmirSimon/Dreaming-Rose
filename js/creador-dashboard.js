@@ -68,7 +68,8 @@ function gameCard(g) {
   const missingPlatform = !g.plataforma;
   const missingAge = !g.clasificacion_edad || g.clasificacion_edad === "Pendiente de clasificación";
   const missingMeta = missingCategory || missingPlatform || missingAge;
-  const metadataNotice = missingMeta ? `<div class="creator-metadata-alert" role="status"><strong>⚠ Falta completar la ficha de este juego.</strong><p>${[missingCategory ? "categoría" : "", missingPlatform ? "plataforma" : "", missingAge ? "clasificación por edad" : ""].filter(Boolean).join(", ")}.</p>${(missingCategory || missingPlatform) && !isOfficial(g) && g.user_id === currentUserId ? `<button class="creator-button creator-complete-toggle" type="button" data-game-id="${Number(g.id)}" aria-expanded="false">Completar categoría y plataforma</button><form class="creator-metadata-form" data-game-form="${Number(g.id)}" hidden><label>Categoría<select name="categoria" required><option value="">Elegí una categoría</option>${["Acción y lucha","Aventura y RPG","Plataformas","Carreras","Estrategia","Puzzle y lógica","Terror","Simulación","Deportes","Casual","Otro"].map(value => `<option value="${value}" ${g.categoria === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label>Plataforma<select name="plataforma" required><option value="">Elegí una plataforma</option>${["PC","Móvil","Linux","Mac","Otra"].map(value => `<option value="${value}" ${g.plataforma === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar cambios</button><button class="creator-button creator-button-quiet" type="button" data-game-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-game-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : ""}</div>` : "";
+  const canEditMetadata = !isOfficial(g) && g.user_id === currentUserId;
+  const metadataNotice = missingMeta ? `<div class="creator-metadata-alert" role="status"><strong>⚠ Falta completar la ficha de este juego.</strong><p>${[missingCategory ? "confirmar categoría" : "", missingPlatform ? "plataforma" : "", missingAge ? "clasificación por edad" : ""].filter(Boolean).join(", ")}.</p>${canEditMetadata ? `<button class="creator-button creator-complete-toggle" type="button" data-game-id="${Number(g.id)}" aria-expanded="false">Completar ficha</button><form class="creator-metadata-form" data-game-form="${Number(g.id)}" hidden><label>Categoría<select name="categoria" required><option value="">Elegí una categoría</option>${["Acción y lucha","Aventura y RPG","Plataformas","Carreras","Estrategia","Puzzle y lógica","Terror","Simulación","Deportes","Casual","Otro"].map(value => `<option value="${value}" ${g.categoria === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label>Plataforma<select name="plataforma" required><option value="">Elegí una plataforma</option>${["PC","Móvil","Linux","Mac","Otra"].map(value => `<option value="${value}" ${g.plataforma === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="creator-age-field">Clasificación por edad<select name="clasificacion_edad" required><option value="Pendiente de clasificación" ${g.clasificacion_edad === "Pendiente de clasificación" ? "selected" : ""}>Pendiente de clasificación</option>${["Menores de 13","13+","16+","18+"].map(value => `<option value="${value}" ${g.clasificacion_edad === value ? "selected" : ""}>${value}</option>`).join("")}</select><small>Elegí según el contenido real del juego. Si no lo sabés, dejalo pendiente y consultá a moderación.</small></label><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar cambios</button><button class="creator-button creator-button-quiet" type="button" data-game-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-game-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : ""}</div>` : "";
   const download = g.download_url
     ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
     : `<span class="creator-muted">Sin enlace de descarga</span>`;
@@ -186,10 +187,11 @@ async function saveGameMetadata(event) {
   }
   const category = form.elements.categoria.value.trim();
   const platform = form.elements.plataforma.value.trim();
+  const ageRating = form.elements.clasificacion_edad.value.trim();
   const feedback = document.querySelector(`[data-game-feedback="${gameId}"]`);
   const submit = form.querySelector('button[type="submit"]');
-  if (!category || !platform) {
-    if (feedback) feedback.textContent = "Elegí una categoría y una plataforma para guardar.";
+  if (!category || !platform || !ageRating) {
+    if (feedback) feedback.textContent = "Elegí una categoría, una plataforma y una clasificación por edad.";
     return;
   }
   submit.disabled = true;
@@ -197,15 +199,15 @@ async function saveGameMetadata(event) {
   try {
     const { data, error } = await supabase
       .from("juegos")
-      .update({ categoria: category, plataforma: platform, categoria_confirmada: true })
+      .update({ categoria: category, plataforma: platform, clasificacion_edad: ageRating, categoria_confirmada: true })
       .eq("id", gameId)
       .eq("user_id", currentUserId)
-      .select("id,categoria,plataforma,categoria_confirmada")
+      .select("id,categoria,plataforma,clasificacion_edad,categoria_confirmada")
       .single();
     if (error) throw error;
     Object.assign(game, data);
     renderGames();
-    setNotice(`Categoría y plataforma de “${game.title}” guardadas correctamente.`, "success");
+    setNotice(`Ficha de “${game.title}” guardada correctamente.`, "success");
   } catch (error) {
     console.error("No se pudieron guardar categoría y plataforma:", error);
     if (feedback) feedback.textContent = `No se pudo guardar: ${error.message || "error desconocido"}. Revisá los permisos RLS de juegos.`;
@@ -221,7 +223,7 @@ function handleMetadataActions(event) {
     if (form) {
       form.hidden = !form.hidden;
       toggle.setAttribute("aria-expanded", String(!form.hidden));
-      toggle.textContent = form.hidden ? "Completar categoría y plataforma" : "Ocultar formulario";
+      toggle.textContent = form.hidden ? "Completar ficha" : "Ocultar formulario";
     }
     return;
   }
@@ -233,7 +235,7 @@ function handleMetadataActions(event) {
     if (form) form.hidden = true;
     if (toggleButton) {
       toggleButton.setAttribute("aria-expanded", "false");
-      toggleButton.textContent = "Completar categoría y plataforma";
+      toggleButton.textContent = "Completar ficha";
     }
   }
 }
