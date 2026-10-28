@@ -68,7 +68,8 @@ function gameCard(g) {
   const missingPlatform = !g.plataforma;
   const missingAge = !g.clasificacion_edad || g.clasificacion_edad === "Pendiente de clasificación";
   const missingMeta = missingCategory || missingPlatform || missingAge;
-  const canEditMetadata = !isOfficial(g) && g.user_id === currentUserId;
+  // Los proyectos oficiales se editan desde la cuenta root; las publicaciones normales, solo por su dueño.
+  const canEditMetadata = (currentRole === "root" && isOfficial(g)) || (!isOfficial(g) && g.user_id === currentUserId);
   const metadataNotice = missingMeta ? `<div class="creator-metadata-alert" role="status"><strong>⚠ Falta completar la ficha de este juego.</strong><p>${[missingCategory ? "confirmar categoría" : "", missingPlatform ? "plataforma" : "", missingAge ? "clasificación por edad" : ""].filter(Boolean).join(", ")}.</p>${canEditMetadata ? `<button class="creator-button creator-complete-toggle" type="button" data-game-id="${Number(g.id)}" aria-expanded="false">Completar ficha</button><form class="creator-metadata-form" data-game-form="${Number(g.id)}" hidden><label>Categoría<select name="categoria" required><option value="">Elegí una categoría</option>${["Acción y lucha","Aventura y RPG","Plataformas","Carreras","Estrategia","Puzzle y lógica","Terror","Simulación","Deportes","Casual","Otro"].map(value => `<option value="${value}" ${g.categoria === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label>Plataforma<select name="plataforma" required><option value="">Elegí una plataforma</option>${["PC","Móvil","Linux","Mac","Otra"].map(value => `<option value="${value}" ${g.plataforma === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="creator-age-field">Clasificación por edad<select name="clasificacion_edad" required><option value="Pendiente de clasificación" ${g.clasificacion_edad === "Pendiente de clasificación" ? "selected" : ""}>Pendiente de clasificación</option>${["Menores de 13","13+","16+","18+"].map(value => `<option value="${value}" ${g.clasificacion_edad === value ? "selected" : ""}>${value}</option>`).join("")}</select><small>Elegí según el contenido real del juego. Si no lo sabés, dejalo pendiente y consultá a moderación.</small></label><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar cambios</button><button class="creator-button creator-button-quiet" type="button" data-game-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-game-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : ""}</div>` : "";
   const download = g.download_url
     ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
@@ -181,8 +182,10 @@ async function saveGameMetadata(event) {
   event.preventDefault();
   const gameId = Number(form.dataset.gameForm);
   const game = myGames.find(item => Number(item.id) === gameId);
-  if (!game || game.user_id !== currentUserId || isOfficial(game)) {
-    setNotice("Solo podés completar los datos de tus propias publicaciones.", "error");
+  const canEditOfficial = currentRole === "root" && game && isOfficial(game);
+  const canEditOwn = game && !isOfficial(game) && game.user_id === currentUserId;
+  if (!game || (!canEditOfficial && !canEditOwn)) {
+    setNotice("Solo podés completar tus propias publicaciones. Los proyectos oficiales se editan desde la cuenta root.", "error");
     return;
   }
   const category = form.elements.categoria.value.trim();
@@ -197,11 +200,15 @@ async function saveGameMetadata(event) {
   submit.disabled = true;
   if (feedback) feedback.textContent = "Guardando…";
   try {
-    const { data, error } = await supabase
+    let updateQuery = supabase
       .from("juegos")
       .update({ categoria: category, plataforma: platform, clasificacion_edad: ageRating, categoria_confirmada: true })
-      .eq("id", gameId)
-      .eq("user_id", currentUserId)
+      .eq("id", gameId);
+
+    // Los juegos oficiales pueden tener user_id NULL; no se debe filtrar por dueño en ese caso.
+    if (!canEditOfficial) updateQuery = updateQuery.eq("user_id", currentUserId);
+
+    const { data, error } = await updateQuery
       .select("id,categoria,plataforma,clasificacion_edad,categoria_confirmada")
       .single();
     if (error) throw error;
