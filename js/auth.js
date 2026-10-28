@@ -1,15 +1,3 @@
-
-// Mantener el calendario de registro dentro de fechas válidas (hasta hoy).
-function setBirthDatePickerBounds() {
-    const input = document.getElementById("authBirthDate");
-    if (!input) return;
-    const today = new Date();
-    const localToday = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
-    input.max = localToday;
-    if (!input.min) input.min = "1900-01-01";
-}
-document.addEventListener("DOMContentLoaded", setBirthDatePickerBounds);
-
 // js/auth.js
 
 // TODO lo relacionado a login/registro/sesión:
@@ -203,7 +191,6 @@ function updateUI(user, profile) {
     const userBadge = document.getElementById("userBadge");
     const btnPublish = document.getElementById("btnPublish");
     const btnAdminPanel = document.getElementById("btnAdminPanel");
-    const btnModerationQuick = document.getElementById("btnModerationQuick");
     const btnCreatorDashboard = document.getElementById("btnCreatorDashboard");
     const btnSolicitar = document.getElementById("btnSolicitarCreador");
 
@@ -244,13 +231,8 @@ function updateUI(user, profile) {
         // verdad está en admin.js + las políticas RLS de Supabase)
         const allowedAdminRoles = ['moderador', 'root'];
         if (btnAdminPanel) {
-            btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "inline-flex" : "none";
+            btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "inline-block" : "none";
         }
-        if (btnModerationQuick) {
-            btnModerationQuick.style.display = allowedAdminRoles.includes(userRole) ? "inline-flex" : "none";
-        }
-        const mobileModeration = document.getElementById("mobileBtnModeration");
-        if (mobileModeration) mobileModeration.style.display = allowedAdminRoles.includes(userRole) ? "flex" : "none";
 
                 // Botón de "Agregar Proyecto" (solo mod/root)
         const btnAgregarProyecto = document.getElementById("btnAgregarProyectoOficial");
@@ -270,9 +252,6 @@ function updateUI(user, profile) {
         if (btnPublish) btnPublish.style.display = "none";
         if (btnCreatorDashboard) btnCreatorDashboard.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
-        if (btnModerationQuick) btnModerationQuick.style.display = "none";
-        const mobileModeration = document.getElementById("mobileBtnModeration");
-        if (mobileModeration) mobileModeration.style.display = "none";
         const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
         if (mobileCreatorDashboard) mobileCreatorDashboard.style.display = "none";
         const mobileAdmin = document.getElementById("mobileBtnAdmin");

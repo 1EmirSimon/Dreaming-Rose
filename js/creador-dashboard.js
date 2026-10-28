@@ -64,8 +64,11 @@ function gameCard(g) {
   const visits = visitsAvailable ? fmt(visitCounts.get(Number(g.id)) || 0) : "N/D";
   const published = g.created_at ? new Date(g.created_at).toLocaleDateString("es-AR") : "Sin fecha";
   const reason = g.motivo_revision ? `<p class="creator-reason"><strong>Motivo de revisión:</strong> ${escapeHTML(g.motivo_revision)}</p>` : "";
-  const missingMeta = g.categoria_confirmada !== true || !g.categoria || !g.clasificacion_edad || g.clasificacion_edad === "Pendiente de clasificación";
-  const metadataNotice = missingMeta ? `<p class="creator-reason" role="status"><strong>Falta completar la ficha:</strong> este juego necesita categoría y/o clasificación por edad para quedar correctamente organizado en el catálogo.</p>` : "";
+  const missingCategory = !g.categoria || g.categoria_confirmada !== true;
+  const missingPlatform = !g.plataforma;
+  const missingAge = !g.clasificacion_edad || g.clasificacion_edad === "Pendiente de clasificación";
+  const missingMeta = missingCategory || missingPlatform || missingAge;
+  const metadataNotice = missingMeta ? `<div class="creator-metadata-alert" role="status"><strong>⚠ Falta completar la ficha de este juego.</strong><p>${[missingCategory ? "categoría" : "", missingPlatform ? "plataforma" : "", missingAge ? "clasificación por edad" : ""].filter(Boolean).join(", ")}.</p>${(missingCategory || missingPlatform) && !isOfficial(g) && g.user_id === currentUserId ? `<button class="creator-button creator-complete-toggle" type="button" data-game-id="${Number(g.id)}" aria-expanded="false">Completar categoría y plataforma</button><form class="creator-metadata-form" data-game-form="${Number(g.id)}" hidden><label>Categoría<select name="categoria" required><option value="">Elegí una categoría</option>${["Acción y lucha","Aventura y RPG","Plataformas","Carreras","Estrategia","Puzzle y lógica","Terror","Simulación","Deportes","Casual","Otro"].map(value => `<option value="${value}" ${g.categoria === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label>Plataforma<select name="plataforma" required><option value="">Elegí una plataforma</option>${["PC","Móvil","Linux","Mac","Otra"].map(value => `<option value="${value}" ${g.plataforma === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar cambios</button><button class="creator-button creator-button-quiet" type="button" data-game-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-game-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : ""}</div>` : "";
   const download = g.download_url
     ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
     : `<span class="creator-muted">Sin enlace de descarga</span>`;
@@ -171,6 +174,70 @@ async function loadDashboard(user) {
   }
 }
 
+async function saveGameMetadata(event) {
+  const form = event.target.closest("form[data-game-form]");
+  if (!form) return;
+  event.preventDefault();
+  const gameId = Number(form.dataset.gameForm);
+  const game = myGames.find(item => Number(item.id) === gameId);
+  if (!game || game.user_id !== currentUserId || isOfficial(game)) {
+    setNotice("Solo podés completar los datos de tus propias publicaciones.", "error");
+    return;
+  }
+  const category = form.elements.categoria.value.trim();
+  const platform = form.elements.plataforma.value.trim();
+  const feedback = document.querySelector(`[data-game-feedback="${gameId}"]`);
+  const submit = form.querySelector('button[type="submit"]');
+  if (!category || !platform) {
+    if (feedback) feedback.textContent = "Elegí una categoría y una plataforma para guardar.";
+    return;
+  }
+  submit.disabled = true;
+  if (feedback) feedback.textContent = "Guardando…";
+  try {
+    const { data, error } = await supabase
+      .from("juegos")
+      .update({ categoria: category, plataforma: platform, categoria_confirmada: true })
+      .eq("id", gameId)
+      .eq("user_id", currentUserId)
+      .select("id,categoria,plataforma,categoria_confirmada")
+      .single();
+    if (error) throw error;
+    Object.assign(game, data);
+    renderGames();
+    setNotice(`Categoría y plataforma de “${game.title}” guardadas correctamente.`, "success");
+  } catch (error) {
+    console.error("No se pudieron guardar categoría y plataforma:", error);
+    if (feedback) feedback.textContent = `No se pudo guardar: ${error.message || "error desconocido"}. Revisá los permisos RLS de juegos.`;
+  } finally {
+    submit.disabled = false;
+  }
+}
+
+function handleMetadataActions(event) {
+  const toggle = event.target.closest("[data-game-id]");
+  if (toggle && toggle.classList.contains("creator-complete-toggle")) {
+    const form = document.querySelector(`[data-game-form="${toggle.dataset.gameId}"]`);
+    if (form) {
+      form.hidden = !form.hidden;
+      toggle.setAttribute("aria-expanded", String(!form.hidden));
+      toggle.textContent = form.hidden ? "Completar categoría y plataforma" : "Ocultar formulario";
+    }
+    return;
+  }
+  const cancel = event.target.closest("[data-game-cancel]");
+  if (cancel) {
+    const id = cancel.dataset.gameCancel;
+    const form = document.querySelector(`[data-game-form="${id}"]`);
+    const toggleButton = document.querySelector(`.creator-complete-toggle[data-game-id="${id}"]`);
+    if (form) form.hidden = true;
+    if (toggleButton) {
+      toggleButton.setAttribute("aria-expanded", "false");
+      toggleButton.textContent = "Completar categoría y plataforma";
+    }
+  }
+}
+
 async function init() {
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -210,4 +277,6 @@ $("creatorRefresh").addEventListener("click", async () => {
   if (user) await loadDashboard(user);
 });
 $("creatorSearch").addEventListener("input", renderGames);
+$("creatorGames").addEventListener("click", handleMetadataActions);
+$("creatorGames").addEventListener("submit", saveGameMetadata);
 await init();

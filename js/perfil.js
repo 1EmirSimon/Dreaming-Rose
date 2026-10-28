@@ -1,36 +1,4 @@
-
-function setProfileBirthDateBounds() {
-  const input = document.getElementById("birthDateInput");
-  if (!input) return;
-  const today = new Date();
-  input.max = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
-  if (!input.min) input.min = "1900-01-01";
-}
-document.addEventListener("DOMContentLoaded", setProfileBirthDateBounds);
-
 import { supabase } from "./supabase.js";
-
-// Mostrar los bloques con animación. Sin este observador quedaban invisibles
-// porque .motion-reveal empieza con opacity: 0.
-function initProfileReveal() {
-  const elements = document.querySelectorAll(".motion-reveal");
-  if (!elements.length) return;
-  if (!("IntersectionObserver" in window)) {
-    elements.forEach(el => el.classList.add("is-visible"));
-    return;
-  }
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08 });
-  elements.forEach(el => observer.observe(el));
-}
-
-document.addEventListener("DOMContentLoaded", initProfileReveal);
 
 const $ = id => document.getElementById(id);
 const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
