@@ -1182,3 +1182,89 @@ button {
     #userBadge { max-width: 105px; font-size: .68rem !important; }
 }
 @media (max-width: 900px) { .nav-right { display: none !important; } }
+
+
+/* FIX FINAL: evitar que la barra de navegación empuje Perfil/Dashboard fuera de pantalla */
+.nav-container { width: 100%; max-width: 100%; padding-left: clamp(12px, 2vw, 32px); padding-right: clamp(12px, 2vw, 32px); gap: clamp(10px, 1.2vw, 20px); box-sizing: border-box; }
+.nav-left { min-width: 0; }
+.nav-left .brand { white-space: nowrap; letter-spacing: clamp(1px, .2vw, 3px); font-size: clamp(.72rem, .85vw, .9rem); }
+.nav-right { min-width: 0; flex: 1 1 auto; justify-content: flex-end; gap: clamp(7px, .9vw, 15px); }
+.nav-right > a { margin-right: 0 !important; letter-spacing: clamp(.5px, .08vw, 1.5px); font-size: clamp(.62rem, .68vw, .75rem); }
+.nav-tools { gap: 6px; }
+.nav-auth-area { min-width: 0; }
+#userInfo { min-width: 0; }
+.nav-account-links { flex: 0 0 auto; }
+.nav-account-button { padding: 8px 9px !important; letter-spacing: .5px; }
+#userBadge { max-width: 105px; }
+@media (min-width: 901px) and (max-width: 1500px) {
+  .nav-container { gap: 10px; padding-left: 14px; padding-right: 14px; }
+  .nav-left .brand { letter-spacing: 1px; font-size: .72rem; }
+  .logo { width: 40px; height: 40px; margin-right: 7px; }
+  .nav-right { gap: 7px; }
+  .nav-right > a { font-size: .62rem; letter-spacing: .3px; }
+  .nav-icon-label { display: none; }
+  .nav-icon-button { width: 36px; min-width: 36px; padding: 7px !important; }
+  .nav-account-button { padding: 7px !important; font-size: .65rem; }
+  #userBadge { display: none; }
+}
+@media (max-width: 900px) {
+  .nav-container { padding-left: 12px; padding-right: 12px; }
+  .nav-right { display: none !important; }
+}
+
+
+/* FIX 2026-10: navegación compacta y dashboard visible sin desbordar */
+.navbar, .navbar * { box-sizing: border-box; }
+.navbar { width: 100%; max-width: 100%; }
+.nav-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-left: clamp(10px, 1.4vw, 24px);
+  padding-right: clamp(10px, 1.4vw, 24px);
+  gap: clamp(8px, .85vw, 15px);
+}
+.nav-left { flex: 0 1 auto; min-width: 0; }
+.nav-left .logo, .nav-brand, .brand { min-width: 0; }
+.nav-right {
+  min-width: 0;
+  flex: 1 1 0;
+  gap: clamp(5px, .55vw, 10px);
+  overflow: visible;
+}
+.nav-right > a, .nav-right button {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+}
+.nav-right > a { font-size: clamp(.58rem, .62vw, .72rem); }
+.nav-tools, .nav-account-links, .nav-auth-area {
+  min-width: 0;
+  flex: 0 1 auto;
+  gap: clamp(4px, .4vw, 7px);
+}
+.nav-account-links { display: flex; align-items: center; }
+#btnCreatorDashboard { order: -1; }
+.nav-account-button, .nav-icon-button {
+  padding: 8px 10px !important;
+  letter-spacing: .7px !important;
+}
+.nav-account-button span, .nav-icon-button .nav-icon-label { white-space: nowrap; }
+@media (min-width: 901px) and (max-width: 1600px) {
+  .nav-left .brand-name, .nav-left .logo-text { display: none; }
+  .nav-right > a { font-size: .58rem; letter-spacing: .25px; }
+  .nav-account-button, .nav-icon-button { padding: 7px 8px !important; }
+}
+@media (max-width: 1200px) {
+  .nav-right { display: none !important; }
+  .mobile-menu-toggle, #mobileMenuToggle, .hamburger-button, .hamburger-btn { display: flex !important; }
+}
+@media (max-width: 900px) {
+  .nav-container { justify-content: space-between; }
+  .nav-right { display: none !important; }
+}
+/* El dashboard conserva la visibilidad por rol que decide auth.js. */
+#btnCreatorDashboard[style*="inline-block"] { display: inline-flex !important; }
+#mobileBtnCreatorDashboard[style*="flex"] { display: flex !important; }
+
+@media (min-width: 1601px) { .nav-container { max-width: 100% !important; } .nav-left .brand { font-size: .78rem; letter-spacing: 3px; } .nav-right { gap: 7px; } .nav-right > a { letter-spacing: .7px; font-size: .66rem; } .nav-account-button, .nav-icon-button { padding: 7px 9px !important; } }
