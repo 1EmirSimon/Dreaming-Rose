@@ -200,9 +200,16 @@ function updateUI(user, profile) {
         if (userInfo) userInfo.style.display = "flex";
 
         const userRole = (profile.role || 'usuario').toLowerCase();
-        const roleTag = userRole !== 'usuario' ? ` [${userRole.toUpperCase()}]` : '';
-        const ageTag = profile.age_group === 'menor_13' ? ' [GRUPO PROTEGIDO]' : profile.age_group === '13_mas' ? ' [13+]' : profile.age_group === 'sin_clasificar' ? ' [SIN CLASIFICAR]' : '';
-        if (userBadge) userBadge.textContent = `@${profile.username || 'usuario'}${roleTag}${ageTag}`;
+        const navContainer = document.querySelector('.nav-container');
+        if (navContainer) {
+            navContainer.classList.remove('role-usuario', 'role-creador', 'role-moderador', 'role-root');
+            navContainer.classList.add(`role-${['usuario', 'creador', 'moderador', 'root'].includes(userRole) ? userRole : 'usuario'}`);
+        }
+        const ageLabel = profile.age_group === 'menor_13' ? 'Grupo protegido' : profile.age_group === '13_mas' ? '13+' : profile.age_group === 'sin_clasificar' ? 'Sin clasificar' : '';
+        if (userBadge) {
+            userBadge.textContent = `@${profile.username || 'usuario'}`;
+            userBadge.title = `${userRole.toUpperCase()}${ageLabel ? ' · ' + ageLabel : ''}`;
+        }
 
         // El botón de "Publicar Juego" solo lo ven creador/moderador/root
         const allowedPublishRoles = ['creador', 'moderador', 'root'];
@@ -249,6 +256,10 @@ function updateUI(user, profile) {
         // No hay sesión: mostrar "Ingresar" y ocultar todo lo demás
         if (btnLogin) btnLogin.style.display = "inline-block";
         if (userInfo) userInfo.style.display = "none";
+        const navContainer = document.querySelector('.nav-container');
+        if (navContainer) {
+            navContainer.classList.remove('role-usuario', 'role-creador', 'role-moderador', 'role-root');
+        }
         if (btnPublish) btnPublish.style.display = "none";
         if (btnCreatorDashboard) btnCreatorDashboard.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
