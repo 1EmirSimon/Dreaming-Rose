@@ -148,3 +148,42 @@
     height: auto;
 
 }
+
+/* HOME INDEX: más aire visual y contenido mejor distribuido en escritorio. */
+@media (min-width: 901px) {
+  .hero {
+    min-height: min(900px, 100vh);
+    padding: 140px 0 110px;
+  }
+  .hero-content {
+    max-width: 1120px;
+    padding-left: clamp(7%, 9vw, 150px);
+    padding-right: 5%;
+  }
+  .hero p {
+    max-width: 590px;
+    line-height: 1.75;
+    margin-bottom: 44px;
+  }
+  .hero-actions { gap: 18px; }
+  .section-dark, .section-gradient {
+    padding-top: 112px;
+    padding-bottom: 112px;
+  }
+  .container {
+    max-width: 1360px;
+    padding-left: 36px;
+    padding-right: 36px;
+  }
+  .section-title { margin-bottom: 48px; }
+  .hub-container, .ranking-layout-box {
+    padding: 34px;
+  }
+  .games-grid { gap: 24px; }
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .hero-content { padding-left: 6%; }
+  .container { padding-left: 26px; padding-right: 26px; }
+  .section-dark, .section-gradient { padding-top: 88px; padding-bottom: 88px; }
+  .hub-container, .ranking-layout-box { padding: 26px; }
+}

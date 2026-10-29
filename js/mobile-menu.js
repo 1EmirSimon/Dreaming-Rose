@@ -1,7 +1,7 @@
 // js/mobile-menu.js
 // Menú hamburguesa para mobile.
 
-const MOBILE_BREAKPOINT = 900;
+const MOBILE_BREAKPOINT = 1200;
 
 window.toggleMobileMenu = function() {
     const menu = document.getElementById("mobileMenu");
