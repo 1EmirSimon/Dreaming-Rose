@@ -1268,3 +1268,310 @@ button {
 #mobileBtnCreatorDashboard[style*="flex"] { display: flex !important; }
 
 @media (min-width: 1601px) { .nav-container { max-width: 100% !important; } .nav-left .brand { font-size: .78rem; letter-spacing: 3px; } .nav-right { gap: 7px; } .nav-right > a { letter-spacing: .7px; font-size: .66rem; } .nav-account-button, .nav-icon-button { padding: 7px 9px !important; } }
+
+
+/* ============================================================
+   FIX DESKTOP DEFINITIVO — navbar visible + portada espaciosa
+   Estos cambios solo se aplican a escritorio (>900px).
+============================================================ */
+
+/* La barra no debe cambiar al menú móvil en notebooks de 901–1200px.
+   El menú hamburguesa queda reservado para pantallas de 900px o menos. */
+@media (min-width: 901px) {
+  .navbar {
+    height: 72px;
+    background: linear-gradient(to bottom, rgba(5,5,8,.97), rgba(5,5,8,.84));
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  .nav-container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: clamp(16px, 2vw, 34px);
+    padding-right: clamp(16px, 2vw, 34px);
+    gap: clamp(10px, 1.1vw, 20px);
+  }
+
+  .nav-left {
+    flex: 0 0 auto;
+    min-width: max-content;
+  }
+
+  .nav-left .logo {
+    width: 43px;
+    height: 43px;
+    margin-right: 9px;
+  }
+
+  .nav-left .brand {
+    font-size: clamp(.68rem, .75vw, .86rem);
+    letter-spacing: clamp(1px, .12vw, 2px);
+  }
+
+  .nav-right {
+    display: flex !important;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: clamp(5px, .65vw, 12px);
+    overflow: visible;
+  }
+
+  .nav-right > a {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    margin-right: 0 !important;
+    white-space: nowrap;
+    font-size: clamp(.56rem, .61vw, .72rem);
+    letter-spacing: .35px;
+  }
+
+  .nav-tools {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .nav-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 6px 8px !important;
+    gap: 5px;
+    font-size: .68rem;
+    border-radius: 8px;
+  }
+
+  .nav-icon-button > span:first-child {
+    font-size: 1rem;
+  }
+
+  .nav-auth-area {
+    flex: 0 0 auto;
+    min-width: 0;
+    margin-left: clamp(2px, .35vw, 7px) !important;
+  }
+
+  #userInfo {
+    display: flex;
+    align-items: center;
+    gap: 6px !important;
+    min-width: 0;
+  }
+
+  .nav-account-links {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .nav-account-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 7px 8px !important;
+    border-radius: 8px;
+    font-size: .66rem;
+    letter-spacing: .2px !important;
+    white-space: nowrap;
+  }
+
+  .nav-account-button > span:first-child {
+    font-size: .95rem;
+  }
+
+  /* La visibilidad del Dashboard la decide auth.js según el rol. */
+  #btnCreatorDashboard[style*="inline-block"],
+  #btnCreatorDashboard[style*="flex"] {
+    display: inline-flex !important;
+  }
+
+  #btnAdminPanel[style*="inline-block"],
+  #btnAdminPanel[style*="flex"] {
+    display: inline-flex !important;
+  }
+
+  #btnPublish[style*="inline-block"],
+  #btnPublish[style*="flex"] {
+    display: inline-flex !important;
+  }
+
+  .hamburger-btn,
+  .hamburger-button,
+  #mobileMenuToggle,
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+}
+
+/* Notebook/monitor chico: mantener navegación de escritorio sin que desborde. */
+@media (min-width: 901px) and (max-width: 1150px) {
+  .nav-container {
+    padding-left: 12px;
+    padding-right: 12px;
+    gap: 7px;
+  }
+
+  .nav-left .logo {
+    width: 36px;
+    height: 36px;
+    margin-right: 5px;
+  }
+
+  .nav-left .brand {
+    font-size: .62rem;
+    letter-spacing: .6px;
+  }
+
+  .nav-right {
+    gap: 5px;
+  }
+
+  .nav-right > a {
+    font-size: .53rem;
+    letter-spacing: 0;
+  }
+
+  .nav-icon-label {
+    display: none !important;
+  }
+
+  .nav-icon-button {
+    width: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 5px !important;
+  }
+
+  .nav-account-button {
+    padding: 6px 7px !important;
+    font-size: .6rem;
+  }
+
+  #userBadge {
+    display: none !important;
+  }
+
+  #btnProfile > span:last-child {
+    display: none;
+  }
+
+  #btnCreatorDashboard > span:last-child {
+    display: inline;
+  }
+}
+
+/* Portada principal: más aire en escritorio, sin tocar reglas de celular. */
+@media (min-width: 901px) {
+  .hero {
+    min-height: min(790px, 88vh);
+    padding-top: 110px;
+    padding-bottom: 90px;
+  }
+
+  .hero-content {
+    width: min(100% - 80px, 1440px);
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(30px, 5vw, 90px);
+    padding-right: 30px;
+  }
+
+  .hero h1 {
+    margin-top: 18px;
+    margin-bottom: 28px;
+    line-height: 1.08;
+  }
+
+  .hero p {
+    max-width: 650px;
+    line-height: 1.8;
+    margin-bottom: 36px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 18px;
+    margin-top: 10px;
+  }
+
+  .hero-actions .btn-main,
+  .hero-actions .btn-outline {
+    padding: 16px 26px;
+  }
+
+  .section-dark,
+  .section-gradient {
+    padding-top: 136px;
+    padding-bottom: 136px;
+  }
+
+  .container {
+    max-width: 1440px;
+    padding-left: clamp(32px, 3.2vw, 56px);
+    padding-right: clamp(32px, 3.2vw, 56px);
+  }
+
+  .section-title {
+    margin-bottom: 64px;
+  }
+
+  .section-title h2 {
+    font-size: clamp(1.45rem, 1.5vw, 1.85rem);
+    letter-spacing: clamp(3px, .35vw, 6px);
+  }
+
+  .grid-projects {
+    gap: clamp(24px, 2vw, 34px);
+  }
+
+  .hub-container {
+    padding: clamp(30px, 3vw, 48px);
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .hub-header {
+    margin-bottom: 28px;
+  }
+
+  .filter-tabs-primary,
+  .filter-tabs-secondary {
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .games-grid {
+    gap: clamp(20px, 1.8vw, 30px);
+  }
+
+  .game-card-info {
+    padding: 20px;
+  }
+
+  .ranking-layout-box {
+    padding: clamp(32px, 3vw, 50px);
+  }
+
+  .ranking-header {
+    margin-bottom: 32px;
+  }
+
+  .ranking-grid-content {
+    gap: clamp(30px, 3vw, 48px);
+  }
+}
+
+/* Solo el breakpoint real de móvil oculta la barra de escritorio. */
+@media (max-width: 900px) {
+  .nav-right {
+    display: none !important;
+  }
+}
