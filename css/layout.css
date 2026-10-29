@@ -1575,315 +1575,297 @@ button {
     display: none !important;
   }
 }
+=======
+/* NAVBAR COMPACTO — jerarquía visual y acciones según rol */
+.navbar {
+  height: 68px;
+  background: rgba(7, 7, 12, .94);
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.nav-container {
+  max-width: 1500px;
+  padding-inline: clamp(14px, 2.1vw, 30px);
+  gap: clamp(12px, 1.4vw, 22px);
+}
+.nav-left { gap: 8px; }
+.nav-left .logo {
+  width: 38px;
+  height: 38px;
+  margin-right: 2px;
+}
+.nav-left .brand {
+  font-size: .76rem;
+  letter-spacing: 2px;
+}
+.nav-right {
+  gap: clamp(5px, .7vw, 11px);
+}
+.nav-right > a {
+  margin: 0 !important;
+  padding: 9px 10px;
+  border-radius: 9px;
+  font-size: .66rem !important;
+  letter-spacing: .65px !important;
+  color: rgba(255,255,255,.78);
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.nav-right > a:hover {
+  background: rgba(255,42,117,.10);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.nav-right > a[aria-label="Explorar catálogo de juegos"] { display: none !important; }
+.nav-tools { gap: 6px; }
+.nav-icon-button,
+.nav-account-button {
+  min-height: 34px;
+  min-width: 34px;
+  padding: 7px 9px !important;
+  border-radius: 9px !important;
+  font-size: .68rem !important;
+  letter-spacing: .3px !important;
+}
+.nav-icon-button > span:first-child,
+.nav-account-button > span:first-child { font-size: .95rem; }
+.nav-auth-area { margin-left: auto !important; }
+#userInfo { gap: 7px !important; }
+.nav-account-links { gap: 5px; }
+#userBadge {
+  max-width: 115px;
+  font-size: .68rem !important;
+  color: rgba(255,255,255,.82) !important;
+  font-weight: 700 !important;
+}
+#btnLogin {
+  min-height: 34px;
+  padding: 8px 13px !important;
+  border-radius: 9px;
+  font-size: .68rem;
+}
+.navbar .btn-close {
+  border-radius: 9px !important;
+  min-height: 32px;
+}
+.nav-container.role-usuario #userBadge,
+.nav-container.role-creador #userBadge,
+.nav-container.role-moderador #userBadge,
+.nav-container.role-root #userBadge {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-container.role-moderador .nav-admin-button,
+.nav-container.role-root .nav-admin-button {
+  background: rgba(255,42,117,.10);
+  border-color: rgba(255,42,117,.48) !important;
+  box-shadow: 0 0 0 1px rgba(255,42,117,.06), 0 4px 16px rgba(255,42,117,.08);
+}
+.nav-container.role-moderador .nav-admin-button:hover,
+.nav-container.role-root .nav-admin-button:hover {
+  background: rgba(255,42,117,.18);
+}
+@media (min-width: 1201px) {
+  .nav-icon-label { display: inline; }
+}
+@media (min-width: 981px) and (max-width: 1200px) {
+  .nav-container { gap: 8px; padding-inline: 12px; }
+  .nav-left .logo { width: 34px; height: 34px; }
+  .nav-left .brand { font-size: .66rem; letter-spacing: 1px; }
+  .nav-right { gap: 3px; }
+  .nav-right > a { padding: 8px 7px; font-size: .58rem !important; }
+  .nav-icon-label { display: none !important; }
+  .nav-account-button { padding: 7px !important; }
+  #userBadge { display: none !important; }
+  .nav-right .btn-close { padding-inline: 8px !important; }
+}
+@media (max-width: 980px) {
+  .navbar { height: 62px; }
+  .nav-container { padding-inline: 13px; }
+  .nav-left .logo { width: 35px; height: 35px; }
+  .nav-left .brand { font-size: .7rem; letter-spacing: 1.3px; }
+  .nav-right { display: none !important; }
+  .hamburger-btn { display: flex !important; }
+}
+@media (max-width: 420px) {
+  .nav-left .brand { font-size: .62rem; letter-spacing: .7px; }
+  .nav-left .logo { width: 31px; height: 31px; }
+}
 
 
-/* ==========================================================
-   DESKTOP FIX — navbar + espacios de la página principal
-   Solo afecta pantallas de computadora (desde 901px).
-========================================================== */
-@media (min-width: 901px) {
+/* FIX VISUAL PC — navegación completa, dashboard visible por rol y más aire en el inicio */
+@media (min-width: 1201px) {
   .navbar {
-    height: 64px !important;
-    min-height: 64px !important;
-    background: rgba(5, 5, 8, .96);
-    border-bottom: 1px solid rgba(255,255,255,.07);
-    backdrop-filter: blur(14px);
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 0 !important;
   }
-
   .nav-container {
-    width: 100%;
-    max-width: 100% !important;
-    height: 64px !important;
-    min-height: 64px !important;
-    margin: 0 auto;
-    padding: 0 clamp(18px, 2.1vw, 34px) !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: clamp(10px, 1.2vw, 20px) !important;
-  }
-
-  .nav-left {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 7px !important;
-    min-width: max-content;
-  }
-
-  .nav-left .logo {
-    width: 35px !important;
-    height: 35px !important;
-    margin: 0 2px 0 0 !important;
-  }
-
-  .nav-left .brand {
-    font-size: clamp(.62rem, .7vw, .78rem) !important;
-    letter-spacing: clamp(.8px, .12vw, 1.8px) !important;
-    white-space: nowrap;
-  }
-
-  .nav-right {
+    width: calc(100% - 64px) !important;
+    max-width: 1720px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    margin: 0 auto !important;
+    padding: 0 16px !important;
     display: flex !important;
-    flex: 1 1 auto;
-    min-width: 0;
-    align-items: center;
-    justify-content: flex-end;
-    gap: clamp(3px, .45vw, 8px) !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 22px !important;
     overflow: visible !important;
   }
-
-  .nav-right > a {
-    display: inline-flex;
-    flex: 0 1 auto;
-    align-items: center;
-    justify-content: center;
+  .nav-left {
+    flex: 0 0 auto !important;
+    gap: 10px !important;
+    min-width: max-content !important;
+  }
+  .nav-left .logo {
+    width: 40px !important;
+    height: 40px !important;
     margin: 0 !important;
-    padding: 8px clamp(5px, .55vw, 9px) !important;
-    font-size: clamp(.57rem, .62vw, .68rem) !important;
-    letter-spacing: .4px !important;
-    line-height: 1.1;
-    white-space: nowrap;
   }
-
-  .nav-right > a[aria-label="Explorar catálogo de juegos"] {
-    display: none !important;
+  .nav-left .brand {
+    font-size: .78rem !important;
+    letter-spacing: 2px !important;
+    white-space: nowrap !important;
   }
-
-  .nav-tools {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 4px !important;
+  .nav-right {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: clamp(8px, .8vw, 16px) !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
   }
-
+  .nav-right > a {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px clamp(7px, .65vw, 13px) !important;
+    margin: 0 !important;
+    font-size: clamp(.66rem, .65vw, .78rem) !important;
+    letter-spacing: 1px !important;
+    white-space: nowrap !important;
+  }
+  .nav-tools,
+  .nav-account-links,
+  #userInfo {
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
   .nav-icon-button,
   .nav-account-button,
-  #btnLogin {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    min-width: 31px !important;
-    min-height: 31px !important;
-    height: 31px;
-    padding: 6px 8px !important;
-    border-radius: 8px !important;
-    font-size: .64rem !important;
-    letter-spacing: .2px !important;
-    line-height: 1;
-    white-space: nowrap;
+  #btnLogin,
+  #btnSolicitarCreador,
+  #userInfo > .btn-close {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 9px 14px !important;
+    border-radius: 9px !important;
+    font-size: .72rem !important;
+    letter-spacing: .65px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
   }
-
-  .nav-icon-button > span:first-child,
-  .nav-account-button > span:first-child {
-    font-size: .9rem;
+  .nav-icon-label {
+    display: inline !important;
   }
-
-  .nav-auth-area {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    margin-left: 4px !important;
-    min-width: 0;
-  }
-
-  #userInfo {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 5px !important;
-    min-width: 0;
-  }
-
-  .nav-account-links {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 4px !important;
-  }
-
   #userBadge {
-    display: inline-block;
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: .64rem !important;
+    display: inline-block !important;
+    max-width: 115px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: .7rem !important;
   }
-
-  /* Respect the role set by auth.js, but don't let CSS hide authorized links. */
   #btnCreatorDashboard[style*="inline-block"],
   #btnCreatorDashboard[style*="inline-flex"] {
     display: inline-flex !important;
     visibility: visible !important;
     opacity: 1 !important;
   }
-
-  #btnAdminPanel[style*="inline-block"],
-  #btnAdminPanel[style*="inline-flex"] {
-    display: inline-flex !important;
-  }
-
-  #btnPublish[style*="inline-block"],
-  #btnPublish[style*="inline-flex"] {
-    display: inline-flex !important;
-  }
-
-  .hamburger-btn,
-  #hamburgerBtn {
-    display: none !important;
-  }
-}
-
-/* Notebook widths: keep the desktop navbar visible and tighten its controls. */
-@media (min-width: 901px) and (max-width: 1200px) {
-  .nav-container {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    gap: 7px !important;
-  }
-
-  .nav-left .logo {
-    width: 30px !important;
-    height: 30px !important;
-  }
-
-  .nav-left .brand {
-    font-size: .58rem !important;
-    letter-spacing: .45px !important;
-  }
-
-  .nav-right {
-    gap: 2px !important;
-  }
-
-  .nav-right > a {
-    padding: 7px 5px !important;
-    font-size: .54rem !important;
-    letter-spacing: 0 !important;
-  }
-
-  .nav-icon-label {
+  .hamburger-btn {
     display: none !important;
   }
 
-  .nav-icon-button,
-  .nav-account-button,
-  #btnLogin {
-    min-width: 28px !important;
-    min-height: 28px !important;
-    height: 28px !important;
-    padding: 5px 6px !important;
-    font-size: .59rem !important;
-  }
-
-  #userBadge {
-    display: none !important;
-  }
-
-  #btnSolicitarCreador {
-    padding: 5px 6px !important;
-    font-size: .55rem !important;
-  }
-}
-
-/* Spacious homepage on PC only — no changes to phone/tablet styles. */
-@media (min-width: 901px) {
+  /* La portada no queda apretada contra los bordes ni contra el navbar. */
   .hero {
-    min-height: 720px;
-    padding-top: 115px;
-    padding-bottom: 100px;
+    min-height: 760px !important;
+    padding-top: 145px !important;
+    padding-bottom: 110px !important;
   }
-
   .hero-content {
-    width: min(100% - 72px, 1440px);
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: clamp(28px, 4vw, 72px);
-    padding-right: clamp(28px, 3vw, 52px);
+    width: min(calc(100% - 120px), 1480px) !important;
+    max-width: 1480px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: clamp(24px, 3vw, 54px) !important;
+    padding-right: clamp(24px, 3vw, 54px) !important;
   }
-
   .hero h1 {
-    margin-top: 20px;
-    margin-bottom: 28px;
-    line-height: 1.1;
+    margin-top: 22px !important;
+    margin-bottom: 30px !important;
+    line-height: 1.08 !important;
   }
-
   .hero p {
-    max-width: 680px;
-    line-height: 1.85;
-    margin-bottom: 34px;
+    max-width: 680px !important;
+    line-height: 1.8 !important;
+    margin-bottom: 36px !important;
   }
-
   .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 12px;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
   }
-
   .section-dark,
   .section-gradient {
-    padding-top: 112px;
-    padding-bottom: 112px;
+    padding-top: 110px !important;
+    padding-bottom: 110px !important;
   }
-
   .container {
-    max-width: 1440px;
-    padding-left: clamp(32px, 3.4vw, 58px);
-    padding-right: clamp(32px, 3.4vw, 58px);
+    max-width: 1480px !important;
+    padding-left: clamp(36px, 3.5vw, 64px) !important;
+    padding-right: clamp(36px, 3.5vw, 64px) !important;
   }
-
-  .section-title {
-    margin-bottom: 52px;
-  }
-
   .grid-projects,
   .games-grid {
-    column-gap: clamp(22px, 2vw, 34px);
-    row-gap: clamp(26px, 2.2vw, 38px);
-  }
-
-  .hub-container {
-    padding: clamp(28px, 3vw, 46px);
-    margin-top: 12px;
-    margin-bottom: 12px;
-  }
-
-  .hub-header {
-    margin-bottom: 28px;
-  }
-
-  .filter-tabs-primary,
-  .filter-tabs-secondary {
-    gap: 12px;
-    margin-bottom: 22px;
-  }
-
-  .game-card-info {
-    padding: 20px;
-  }
-
-  .ranking-layout-box {
-    padding: clamp(30px, 3vw, 48px);
-  }
-
-  .ranking-header {
-    margin-bottom: 30px;
-  }
-
-  .ranking-grid-content {
-    gap: clamp(28px, 3vw, 46px);
+    column-gap: clamp(24px, 2vw, 36px) !important;
+    row-gap: clamp(28px, 2.2vw, 40px) !important;
   }
 }
 
-/* Mobile styles are intentionally left alone; only hide desktop nav below 901px. */
-@media (max-width: 900px) {
-  .nav-right {
-    display: none !important;
+/* En notebooks, conservar la barra de escritorio pero comprimir los controles. */
+@media (min-width: 981px) and (max-width: 1200px) {
+  .nav-container {
+    width: calc(100% - 24px) !important;
+    max-width: none !important;
+    padding: 0 8px !important;
+    gap: 7px !important;
   }
+  .nav-left { gap: 5px !important; }
+  .nav-left .logo { width: 30px !important; height: 30px !important; }
+  .nav-left .brand { font-size: .58rem !important; letter-spacing: .5px !important; }
+  .nav-right { display: flex !important; gap: 2px !important; }
+  .nav-right > a { padding: 7px 5px !important; font-size: .54rem !important; letter-spacing: 0 !important; }
+  .nav-icon-label { display: none !important; }
+  .nav-icon-button, .nav-account-button, #btnLogin, #btnSolicitarCreador,
+  #userInfo > .btn-close {
+    min-height: 30px !important; height: 30px !important;
+    padding: 5px 6px !important; font-size: .58rem !important;
+  }
+  #userBadge { display: none !important; }
+  .hamburger-btn { display: none !important; }
 }
 
