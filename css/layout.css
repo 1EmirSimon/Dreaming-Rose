@@ -1466,3 +1466,26 @@ button {
   .navbar { height: 58px !important; min-height: 58px !important; }
   .nav-container { height: 58px !important; min-height: 58px !important; }
 }
+
+
+/* Ajuste funcional: mostrar siempre el acceso al dashboard para roles autorizados. */
+@media (min-width: 1201px) {
+  #userInfo .nav-account-links { display: flex !important; visibility: visible !important; opacity: 1 !important; }
+  #btnCreatorDashboard[style*="inline-block"],
+  #btnCreatorDashboard[style*="inline-flex"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+#mobileMenu #mobileBtnCreatorDashboard[style*="flex"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+/* El área de cuenta no debe recortarse ni desaparecer en anchos intermedios. */
+@media (min-width: 981px) and (max-width: 1200px) {
+  .nav-right { display: none !important; }
+  .hamburger-btn { display: flex !important; }
+}
