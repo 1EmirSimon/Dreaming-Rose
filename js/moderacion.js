@@ -43,7 +43,7 @@ function filteredGames() {
   const term = $("searchInput").value.trim().toLocaleLowerCase("es-AR");
   return games.filter(g => {
     const statusOK = status === "todos" || g.estado_moderacion === status;
-    const haystack = [g.title, g.author, g.description].filter(Boolean).join(" ").toLocaleLowerCase("es-AR");
+    const haystack = [g.title, g.author, g.description, g.categoria, g.plataforma, g.clasificacion_edad, ...(Array.isArray(g.etiquetas) ? g.etiquetas : [])].filter(Boolean).join(" ").toLocaleLowerCase("es-AR");
     return statusOK && (!term || haystack.includes(term));
   });
 }
@@ -66,6 +66,16 @@ function renderGames() {
     const downloadUrl = safeHttpUrl(g.download_url || "");
     const status = g.estado_moderacion || "pendiente";
     const reason = escapeHTML(g.motivo_revision || "");
+    const category = g.categoria || "Sin categoría";
+    const platform = g.plataforma || "Sin plataforma";
+    const ageRating = g.clasificacion_edad || "Sin clasificación";
+    const tags = Array.isArray(g.etiquetas) ? g.etiquetas.slice(0, 3) : [];
+    const screenshotUrls = (Array.isArray(g.screenshots) ? g.screenshots : [])
+      .map(item => typeof item === "string" ? item : item?.url || item?.src || "")
+      .map(safeHttpUrl).filter(Boolean).slice(0, 4);
+    const screenshotsMarkup = screenshotUrls.length
+      ? `<div class="moderation-screenshots">${screenshotUrls.map((url, index) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir captura ${index + 1}"><img src="${escapeHTML(url)}" alt="Captura ${index + 1} de ${title}" loading="lazy" referrerpolicy="no-referrer"></a>`).join("")}</div>`
+      : `<p class="moderation-meta">Sin capturas adicionales</p>`;
     const statusClass = status === "aprobado" ? "approved" : status === "rechazado" ? "rejected" : "pending";
     const official = g.es_proyecto_oficial ? '<span class="moderation-badge">PROYECTO OFICIAL</span>' : "";
     const cover = imageUrl
@@ -86,7 +96,16 @@ function renderGames() {
           <span class="moderation-meta">ID #${id}</span>
         </div>
         <div class="moderation-meta"><span>Autor: ${author}</span><span>Creado: ${safeDate(g.created_at)}</span><span>Publicación: ${safeDate(g.publish_at)}</span></div>
+        <div class="moderation-data-grid">
+          <div><small>CATEGORÍA</small><strong>${escapeHTML(category)}</strong></div>
+          <div><small>PLATAFORMA</small><strong>${escapeHTML(platform)}</strong></div>
+          <div><small>EDAD RECOMENDADA</small><strong>${escapeHTML(ageRating)}</strong></div>
+          <div><small>VERIFICACIÓN</small><strong>${g.categoria_confirmada ? "Confirmada" : "Pendiente"}</strong></div>
+        </div>
+        ${tags.length ? `<div class="moderation-tags">${tags.map(tag => `<span>#${escapeHTML(tag)}</span>`).join("")}</div>` : ""}
         <p class="moderation-description">${description}</p>
+        <div class="moderation-screenshots-wrap"><strong>Capturas del juego</strong>${screenshotsMarkup}</div>
+        ${g.revisado_at ? `<p class="moderation-meta">Última revisión: ${safeDate(g.revisado_at)}</p>` : ""}
         <div class="moderation-links">${download}</div>
         ${reasonEditor}
         <div class="moderation-buttons">
@@ -129,7 +148,7 @@ async function loadGames() {
 
   try {
     const { data, error } = await supabase.from("juegos")
-      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,es_proyecto_oficial,estado_moderacion,revisado_por,revisado_at,motivo_revision")
+      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,es_proyecto_oficial,estado_moderacion,revisado_por,revisado_at,motivo_revision,categoria,plataforma,screenshots,clasificacion_edad,etiquetas,categoria_confirmada")
       .order("created_at", { ascending: false });
     if (error) throw error;
     games = data || [];
@@ -151,8 +170,8 @@ async function setModerationStatus(gameId, newStatus) {
 
   const reasonField = $(`reason-${gameId}`);
   const reason = reasonField?.value.trim() || "";
-  if (newStatus === "rechazado" && !reason) {
-    alert("Para rechazar una publicación, escribí el motivo.");
+  if (newStatus === "rechazado" && reason.length < 10) {
+    alert("Para rechazar una publicación, escribí un motivo de al menos 10 caracteres.");
     reasonField?.focus();
     return;
   }
@@ -162,11 +181,13 @@ async function setModerationStatus(gameId, newStatus) {
   const buttons = document.querySelectorAll(`[data-id="${gameId}"]`);
   buttons.forEach(button => button.disabled = true);
   try {
-    const { error } = await supabase.from("juegos").update({
-      estado_moderacion: newStatus,
-      motivo_revision: reason || null
-    }).eq("id", gameId);
+    const { data, error } = await supabase.rpc("admin_resolver_juego", {
+      p_juego_id: Number(gameId),
+      p_estado: newStatus,
+      p_motivo: reason
+    });
     if (error) throw error;
+    if (!data?.ok) throw new Error(data?.message || "La base de datos no confirmó la decisión.");
     setNotice(`«${game.title}» quedó ${newStatus}.`, "success");
     await loadGames();
   } catch (error) {

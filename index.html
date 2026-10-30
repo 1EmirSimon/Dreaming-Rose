@@ -27,6 +27,7 @@
 @media(max-width:900px){.nav-right #userInfo{display:none!important}}
 </style>
 <link rel="stylesheet" href="css/desktop-responsive.css?v=20261030-desktop-clean-2">
+    <link rel="stylesheet" href="css/admin-panel.css?v=20261030-admin-v3">
 </head>
 <body>
 
@@ -358,48 +359,68 @@
     </div>
 </div>
 
-<!-- MODAL PANEL DE ADMINISTRACIÓN (SOLO PARA ROOT Y MODERADOR) -->
-<div id="adminModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 800px; width: 90%;">
-        <h2>PANEL DE ADMINISTRACIÓN</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Gestión de Roles y Usuarios de Dreaming Rose</p>
+<!-- PANEL ADMINISTRATIVO DREAMING ROSE -->
+<div id="adminModal" class="modal-overlay admin-modal-overlay" aria-hidden="true">
+  <section class="modal-content admin-panel-modal" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
+    <header class="admin-panel-header">
+      <div>
+        <span class="admin-panel-eyebrow">DREAMING ROSE / STAFF</span>
+        <h2 id="adminPanelTitle">Administración</h2>
+        <p>Usuarios, solicitudes, apelaciones y registro de actividad.</p>
+      </div>
+      <button class="admin-panel-close" type="button" onclick="closeAdminModal()" aria-label="Cerrar panel">×</button>
+    </header>
 
-        <!-- Pestañas -->
-        <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-            <button onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="tab-btn active" style="padding: 6px 14px; font-size: 0.75rem;">Usuarios</button>
-            <button onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
-                Solicitudes <span id="badgeSolicitudes" style="background: var(--accent); color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
-            </button>
-            <button onclick="mostrarTabAdmin('apelaciones')" id="tabAdminApelaciones" class="tab-btn" style="padding: 6px 14px; font-size: 0.75rem;">
-                Apelaciones <span id="badgeApelaciones" style="background: #ff4d6d; color: white; padding: 1px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 4px; display: none;">0</span>
-            </button>
+    <div id="adminNotice" class="admin-notice" role="status" aria-live="polite">Verificando permisos…</div>
+
+    <nav class="admin-tabs" aria-label="Secciones administrativas" role="tablist">
+      <button id="tabAdminUsuarios" class="admin-tab active" type="button" role="tab" aria-controls="tabContentUsuarios" aria-selected="true" onclick="mostrarTabAdmin('usuarios')">Usuarios</button>
+      <button id="tabAdminSolicitudes" class="admin-tab" type="button" role="tab" aria-controls="tabContentSolicitudes" aria-selected="false" onclick="mostrarTabAdmin('solicitudes')">Solicitudes <span id="badgeSolicitudes" class="admin-tab-badge" hidden>0</span></button>
+      <button id="tabAdminApelaciones" class="admin-tab" type="button" role="tab" aria-controls="tabContentApelaciones" aria-selected="false" onclick="mostrarTabAdmin('apelaciones')">Apelaciones <span id="badgeApelaciones" class="admin-tab-badge" hidden>0</span></button>
+      <button id="tabAdminAuditoria" class="admin-tab" type="button" role="tab" aria-controls="tabContentAuditoria" aria-selected="false" onclick="mostrarTabAdmin('auditoria')">Actividad</button>
+    </nav>
+
+    <section id="tabContentUsuarios" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminUsuarios">
+      <div class="admin-toolbar">
+        <div class="admin-subtabs" aria-label="Filtrar usuarios">
+          <button class="admin-subtab active" type="button" data-filter="todos" onclick="filtrarUsuariosAdmin('todos', this)">Todos</button>
+          <button class="admin-subtab" type="button" data-filter="admins" onclick="filtrarUsuariosAdmin('admins', this)">Staff</button>
+          <button class="admin-subtab" type="button" data-filter="usuarios" onclick="filtrarUsuariosAdmin('usuarios', this)">Usuarios</button>
+          <button class="admin-subtab" type="button" data-filter="creadores" onclick="filtrarUsuariosAdmin('creadores', this)">Creadores</button>
+          <button class="admin-subtab" type="button" data-filter="baneados" onclick="filtrarUsuariosAdmin('baneados', this)">Suspendidos</button>
         </div>
+        <label class="admin-search-wrap" for="adminUserSearch">
+          <span aria-hidden="true">⌕</span>
+          <input id="adminUserSearch" type="search" placeholder="Buscar por nombre de usuario…" autocomplete="off">
+        </label>
+      </div>
+      <div class="admin-users-caption"><span id="adminUsersCount">Cargando usuarios…</span><button id="adminUsersRefresh" class="admin-refresh" type="button">Actualizar</button></div>
+      <div id="adminUsersList" class="admin-users-list" aria-live="polite"><p class="admin-empty">Cargando usuarios…</p></div>
+      <div id="adminUsersPager" class="admin-pager"></div>
+    </section>
 
-        <!-- Tab Usuarios -->
-        <div id="tabContentUsuarios" style="max-height: 400px; overflow-y: auto;">
-            <!-- Sub-pestañas -->
-            <div class="admin-subtabs">
-                <button onclick="filtrarUsuariosAdmin('todos', this)" class="admin-subtab active" data-filter="todos">Todos</button>
-                <button onclick="filtrarUsuariosAdmin('admins', this)" class="admin-subtab" data-filter="admins">Admins</button>
-                <button onclick="filtrarUsuariosAdmin('usuarios', this)" class="admin-subtab" data-filter="usuarios">Usuarios</button>
-                <button onclick="filtrarUsuariosAdmin('baneados', this)" class="admin-subtab" data-filter="baneados">⛔ Baneados</button>
-            </div>
+    <section id="tabContentSolicitudes" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminSolicitudes" hidden>
+      <div class="admin-section-heading"><div><h3>Solicitudes de creador</h3><p>Revisá las solicitudes pendientes y asigná el rol cuando corresponda.</p></div><button id="adminRequestsRefresh" class="admin-refresh" type="button">Actualizar</button></div>
+      <div id="listaSolicitudes" class="admin-review-list"><p class="admin-empty">Cargando solicitudes…</p></div>
+    </section>
 
-            <div id="adminUsersList"></div>
-        </div>
+    <section id="tabContentApelaciones" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminApelaciones" hidden>
+      <div class="admin-section-heading"><div><h3>Apelaciones</h3><p>Revisá los pedidos de usuarios suspendidos.</p></div><button id="adminAppealsRefresh" class="admin-refresh" type="button">Actualizar</button></div>
+      <div id="listaApelaciones" class="admin-review-list"><p class="admin-empty">Cargando apelaciones…</p></div>
+    </section>
 
-        <!-- Tab Solicitudes -->
-        <div id="tabContentSolicitudes" style="max-height: 400px; overflow-y: auto; display: none;">
-            <div id="listaSolicitudes"></div>
-        </div>
+    <section id="tabContentAuditoria" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminAuditoria" hidden>
+      <div class="admin-section-heading"><div><h3>Registro de actividad</h3><p>Historial de cambios de roles, moderación y revisiones administrativas.</p></div><button id="adminAuditRefresh" class="admin-refresh" type="button">Actualizar</button></div>
+      <div class="admin-audit-toolbar">
+        <label class="admin-audit-filter-wrap"><span>Tipo de acción</span><select id="adminAuditFilter" aria-label="Filtrar actividad"><option value="todas">Todas las acciones</option><option value="usuarios">Usuarios y roles</option><option value="juegos">Publicaciones y juegos</option><option value="solicitudes">Solicitudes de creador</option><option value="apelaciones">Apelaciones</option></select></label>
+        <label class="admin-search-wrap admin-audit-search" for="adminAuditSearch"><span aria-hidden="true">⌕</span><input id="adminAuditSearch" type="search" placeholder="Buscar actor, usuario o motivo…" autocomplete="off"></label>
+      </div>
+      <div id="adminAuditCount" class="admin-audit-count">Cargando actividad…</div>
+      <div id="adminAuditList" class="admin-audit-list"><p class="admin-empty">Cargando actividad…</p></div>
+    </section>
 
-        <!-- Tab Apelaciones -->
-        <div id="tabContentApelaciones" style="max-height: 400px; overflow-y: auto; display: none;">
-            <div id="listaApelaciones"></div>
-        </div>
-
-        <button onclick="closeAdminModal()" class="btn-close" style="margin-top: 20px;">CERRAR</button>
-    </div>
+    <footer class="admin-panel-footer"><span>Los permisos se validan nuevamente en Supabase al ejecutar cada acción.</span><button type="button" class="btn-close" onclick="closeAdminModal()">Cerrar</button></footer>
+  </section>
 </div>
 
 <!-- MODAL PUBLICAR JUEGO (CREADORES) -->

@@ -95,6 +95,22 @@
       .moderation-buttons .moderation-button{width:100%;min-height:44px}
     }
     @media(max-width:360px){.moderation-app-brand small{display:none}.moderation-return{font-size:.6rem}.moderation-stat span{font-size:.57rem}}
+  
+    .moderation-data-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+    .moderation-data-grid>div{display:grid;gap:5px;min-width:0;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:8px;background:#101522}
+    .moderation-data-grid small{color:#78839a;font-size:.58rem;font-weight:800;letter-spacing:.08em}
+    .moderation-data-grid strong{color:#e6ebf5;font-size:.72rem;overflow-wrap:anywhere}
+    .moderation-tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+    .moderation-tags span{padding:4px 8px;border:1px solid rgba(0,255,247,.18);border-radius:99px;color:#8ce9e4;background:rgba(0,255,247,.05);font-size:.64rem}
+    .moderation-screenshots-wrap{display:grid;gap:8px;margin:14px 0}
+    .moderation-screenshots-wrap>strong{font-size:.72rem;color:#bfc7d6}
+    .moderation-screenshots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+    .moderation-screenshots a{display:block;overflow:hidden;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#080b12;aspect-ratio:16/10}
+    .moderation-screenshots img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
+    .moderation-screenshots a:hover img{transform:scale(1.04)}
+    @media(max-width:850px){.moderation-data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:480px){.moderation-screenshots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
   </style>
 <link rel="stylesheet" href="css/desktop-responsive.css?v=20261030-desktop-clean-2">
 </head>
@@ -136,6 +152,6 @@
     <p class="moderation-footnote">Los permisos reales se validan en Supabase. Esta interfaz no contiene claves privadas.</p>
   </div>
 </main>
-<script type="module" src="js/moderacion.js"></script>
+<script type="module" src="js/moderacion.js?v=20261030-admin-v3"></script>
 </body>
 </html>

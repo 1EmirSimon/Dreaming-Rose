@@ -1,398 +1,455 @@
 import { supabase } from "./supabase.js";
 import { escapeHTML } from "./utils.js";
 
-const ALLOWED_ADMIN_ROLES = ['moderador', 'root'];
+const STAFF_ROLES = new Set(["moderador", "root"]);
+const PAGE_SIZE = 30;
 let currentAdminRole = null;
 let currentAdminId = null;
-let allUsersData = [];        // Cache de usuarios
-let filtroActual = 'todos';   // Filtro activo
+let activeFilter = "todos";
+let currentPage = 0;
+let currentUsers = [];
+let totalUsers = 0;
+let searchDebounce = null;
+let previousBodyOverflow = "";
+let usersRequestVersion = 0;
+let auditEntriesCache = [];
+
+const $ = (id) => document.getElementById(id);
+const safe = (value) => escapeHTML(value == null ? "" : String(value));
+const formatDate = (value) => {
+  if (!value) return "Sin fecha";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Fecha desconocida" : date.toLocaleString("es-AR", { dateStyle: "medium", timeStyle: "short" });
+};
+
+function setAdminNotice(message, type = "") {
+  const notice = $("adminNotice");
+  if (!notice) return;
+  notice.className = `admin-notice ${type}`.trim();
+  notice.textContent = message;
+}
+
+function setBadge(id, count) {
+  const badge = $(id);
+  if (!badge) return;
+  badge.textContent = String(count || 0);
+  badge.hidden = !count;
+}
 
 export async function openAdminModal() {
-    try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-        if (userError || !user) {
-            alert("⚠️ Tenés que iniciar sesión primero.");
-            return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-            .from('usuarios')
-            .select('role')
-            .eq('id', user.id)
-            .single();
-
-        const myRole = (profile?.role || '').toLowerCase();
-
-        if (profileError || !ALLOWED_ADMIN_ROLES.includes(myRole)) {
-            console.error("No se pudo verificar el rol:", profileError);
-            alert("❌ No tenés permisos para acceder al panel de administración.");
-            return;
-        }
-
-        currentAdminRole = myRole;
-        currentAdminId = user.id;
-
-        const modal = document.getElementById("adminModal");
-        if (modal) {
-            modal.classList.add("active");
-            document.body.style.overflow = "hidden";
-            await loadUsersList(currentAdminRole);
-            await cargarApelaciones();
-            await cargarSolicitudes();
-        }
-    } catch (err) {
-        console.error("Error abriendo el panel de admin:", err);
-        alert("⚠️ Ocurrió un error al abrir el panel. Mirá la consola (F12) para más detalle.");
+  try {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      alert("Tenés que iniciar sesión para acceder a administración.");
+      return;
     }
+
+    const { data: profile, error: profileError } = await supabase
+      .from("usuarios")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    const role = String(profile?.role || "").toLowerCase();
+    if (profileError || !STAFF_ROLES.has(role)) {
+      setAdminNotice("Acceso denegado. Esta sección es exclusiva para moderador y root.", "error");
+      alert("No tenés permisos para acceder al panel de administración.");
+      return;
+    }
+
+    currentAdminRole = role;
+    currentAdminId = user.id;
+    previousBodyOverflow = document.body.style.overflow;
+
+    const modal = $("adminModal");
+    if (!modal) throw new Error("No se encontró el panel administrativo en index.html.");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    mostrarTabAdmin("usuarios");
+    await Promise.all([cargarSolicitudes(), cargarApelaciones()]);
+    setAdminNotice(`Sesión verificada · rol ${role}. Las acciones se autorizan en la base de datos.`, "success");
+  } catch (error) {
+    console.error("Error abriendo administración:", error);
+    setAdminNotice(`No se pudo abrir el panel: ${error.message || "error inesperado"}`, "error");
+  }
 }
 
 export function closeAdminModal() {
-    const modal = document.getElementById("adminModal");
-    if (modal) {
-        modal.classList.remove("active");
-        document.body.style.overflow = "auto";
-    }
+  const modal = $("adminModal");
+  if (modal) {
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+  }
+  document.body.style.overflow = previousBodyOverflow;
 }
 
-// Carga los usuarios. En desktop se ve como tabla, en mobile como tarjetas.
-async function loadUsersList(currentRole) {
-    const contenedor = document.getElementById("adminUsersList");
-    if (!contenedor) return;
-
-    contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando usuarios...</p>";
-
-    const { data: usuarios, error } = await supabase
-        .from('usuarios')
-        .select('id, username, email, role')
-        .order('username', { ascending: true });
-
-    if (error) {
-        console.error("Error al obtener usuarios:", error);
-        contenedor.innerHTML = "<p style='color:#ff4d6d; text-align:center;'>Error al cargar la lista.</p>";
-        return;
-    }
-
-    allUsersData = usuarios;
-    renderUsersByFilter();
+function currentRoleFilter(query) {
+  switch (activeFilter) {
+    case "admins": return query.in("role", ["moderador", "root"]);
+    case "usuarios": return query.eq("role", "usuario");
+    case "creadores": return query.eq("role", "creador");
+    case "baneados": return query.eq("role", "banned");
+    default: return query;
+  }
 }
 
-// Filtra y renderiza según la sub-pestaña activa
-function renderUsersByFilter() {
-    const contenedor = document.getElementById("adminUsersList");
-    if (!contenedor) return;
+async function loadUsersList() {
+  const container = $("adminUsersList");
+  if (!container) return;
+  const requestVersion = ++usersRequestVersion;
+  container.innerHTML = '<p class="admin-empty">Cargando usuarios…</p>';
 
-    let usuarios = [...allUsersData];
+  let query = supabase
+    .from("usuarios")
+    .select("id,username,email,role,warnings_count,created_at", { count: "exact" })
+    .order("username", { ascending: true });
 
-    // Filtrar según el filtro activo
-    if (filtroActual === 'admins') {
-        usuarios = usuarios.filter(u => ['moderador', 'root'].includes((u.role || '').toLowerCase()));
-    } else if (filtroActual === 'usuarios') {
-        usuarios = usuarios.filter(u => (u.role || 'usuario').toLowerCase() === 'usuario');
-    } else if (filtroActual === 'baneados') {
-        usuarios = usuarios.filter(u => (u.role || '').toLowerCase() === 'banned');
-    }
+  query = currentRoleFilter(query);
+  const search = $("adminUserSearch")?.value?.trim();
+  if (search) query = query.ilike("username", `%${search.replace(/[%_]/g, "\\$&")}%`);
 
-    if (usuarios.length === 0) {
-        contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>No hay usuarios en esta categoría.</p>";
-        return;
-    }
+  const from = currentPage * PAGE_SIZE;
+  const { data, error, count } = await query.range(from, from + PAGE_SIZE - 1);
+  if (requestVersion !== usersRequestVersion) return;
 
-    const isRoot = currentAdminRole === 'root';
-    const esMobile = window.innerWidth <= 700;
+  if (error) {
+    console.error("Error cargando usuarios:", error);
+    container.innerHTML = '<p class="admin-empty error">No se pudo cargar la lista de usuarios. Revisá permisos y conexión.</p>';
+    setAdminNotice(`Error al cargar usuarios: ${error.message}`, "error");
+    return;
+  }
 
-    contenedor.innerHTML = "";
+  currentUsers = data || [];
+  totalUsers = count || 0;
+  renderUsers();
+  renderUsersPager();
+}
 
-    usuarios.forEach(userItem => {
-        const currentUserRole = (userItem.role || 'usuario').toLowerCase();
+function renderUsers() {
+  const container = $("adminUsersList");
+  if (!container) return;
+  const countLabel = $("adminUsersCount");
+  const start = totalUsers ? currentPage * PAGE_SIZE + 1 : 0;
+  const end = Math.min((currentPage + 1) * PAGE_SIZE, totalUsers);
+  if (countLabel) countLabel.textContent = `${start}–${end} de ${totalUsers} usuarios`;
 
-        const esMiFila = userItem.id === currentAdminId;
-        const usuarioEsRoot = currentUserRole === 'root';
+  if (!currentUsers.length) {
+    container.innerHTML = '<p class="admin-empty">No hay usuarios para este filtro.</p>';
+    return;
+  }
 
-        let puedeEditar = true;
-        let motivoBloqueo = "";
+  container.innerHTML = currentUsers.map((item) => {
+    const role = String(item.role || "usuario").toLowerCase();
+    const isSelf = item.id === currentAdminId;
+    const isRootTarget = role === "root";
+    const isModeratorTarget = role === "moderador";
+    const canEdit = !isSelf && !isRootTarget && (currentAdminRole === "root" || !isModeratorTarget);
+    const roleLabels = { usuario: "Usuario", creador: "Creador", moderador: "Moderador", root: "Root", banned: "Suspendido" };
+    const roles = ["usuario", "creador", ...(currentAdminRole === "root" ? ["moderador"] : []), "banned"];
+    const roleOptions = roles.map((r) => `<option value="${r}" ${r === role ? "selected" : ""}>${roleLabels[r]}</option>`).join("");
+    const action = canEdit
+      ? `<label class="admin-role-control"><span class="sr-only">Cambiar rol de ${safe(item.username)}</span><select class="role-select" data-user-id="${safe(item.id)}" aria-label="Cambiar rol de ${safe(item.username)}">${roleOptions}</select></label>`
+      : `<span class="admin-locked">${isSelf ? "Tu cuenta" : isRootTarget ? "Cuenta protegida" : "Solo root puede modificar staff"}</span>`;
 
-        if (esMiFila) {
-            puedeEditar = false;
-            motivoBloqueo = "No podés cambiar tu propio rol";
-        } else if (usuarioEsRoot && !isRoot) {
-            puedeEditar = false;
-            motivoBloqueo = "Solo otro root puede cambiar a un root";
-        } else if (usuarioEsRoot && isRoot) {
-            puedeEditar = false;
-            motivoBloqueo = "No se puede degradar a otro root";
-        }
+    const warnings = Number(item.warnings_count || 0);
+    const joined = item.created_at ? `Alta ${formatDate(item.created_at)}` : "Fecha de alta no disponible";
+    return `<article class="admin-user-row ${role === "banned" ? "is-banned" : ""} ${STAFF_ROLES.has(role) ? "is-staff" : ""}">
+      <div class="admin-user-main"><strong>@${safe(item.username || "sin_nombre")}</strong><span>${safe(item.email || "Sin correo")} · ${safe(joined)}</span>${warnings ? `<small class="admin-warning-count">⚠ ${warnings} advertencia${warnings === 1 ? "" : "s"}</small>` : ""}</div>
+      <span class="admin-role-badge badge-${safe(role)}">${safe(roleLabels[role] || role)}</span>
+      <div class="admin-user-action">${action}</div>
+    </article>`;
+  }).join("");
 
-        const selectHTML = `
-            <select class="role-select" onchange="changeUserRole('${userItem.id}', this.value)">
-                <option value="usuario" ${currentUserRole === 'usuario' ? 'selected' : ''}>Usuario</option>
-                <option value="creador" ${currentUserRole === 'creador' ? 'selected' : ''}>Creador</option>
-                <option value="moderador" ${currentUserRole === 'moderador' ? 'selected' : ''}>Moderador</option>
-                ${isRoot ? `<option value="root" ${currentUserRole === 'root' ? 'selected' : ''}>Root</option>` : ''}
-                <option value="banned" ${currentUserRole === 'banned' ? 'selected' : ''}>⛔ Banear</option>
-            </select>
-        `;
-
-        const accionHTML = puedeEditar
-            ? selectHTML
-            : `<span class="admin-blocked-msg">${motivoBloqueo}</span>`;
-
-        const username = escapeHTML(userItem.username) || 'sin_nombre';
-        const email = escapeHTML(userItem.email) || 'N/A';
-
-        if (esMobile) {
-            const card = document.createElement("div");
-            card.className = "admin-user-card";
-            if (currentUserRole === 'banned') card.classList.add("admin-user-banned");
-            if (['moderador', 'root'].includes(currentUserRole)) card.classList.add("admin-user-staff");
-            card.innerHTML = `
-                <div class="admin-user-card-header">
-                    <strong>@${username}</strong>
-                    <span class="badge-role badge-${currentUserRole}">${currentUserRole.toUpperCase()}</span>
-                </div>
-                <div class="admin-user-card-email">${email}</div>
-                <div class="admin-user-card-action">${accionHTML}</div>
-            `;
-            contenedor.appendChild(card);
-        } else {
-            const row = document.createElement("div");
-            row.className = "admin-user-row";
-            if (currentUserRole === 'banned') row.classList.add("admin-user-banned");
-            if (['moderador', 'root'].includes(currentUserRole)) row.classList.add("admin-user-staff");
-            row.innerHTML = `
-                <div class="admin-cell admin-cell-user"><strong>@${username}</strong></div>
-                <div class="admin-cell admin-cell-email">${email}</div>
-                <div class="admin-cell admin-cell-role"><span class="badge-role badge-${currentUserRole}">${currentUserRole.toUpperCase()}</span></div>
-                <div class="admin-cell admin-cell-action">${accionHTML}</div>
-            `;
-            contenedor.appendChild(row);
-        }
+  container.querySelectorAll("select[data-user-id]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const userId = select.dataset.userId;
+      const newRole = select.value;
+      const previousRole = currentUsers.find((user) => user.id === userId)?.role || "usuario";
+      select.value = previousRole;
+      changeUserRole(userId, newRole, select);
     });
+  });
 }
 
-// Cambiar el filtro desde las sub-pestañas
-window.filtrarUsuariosAdmin = function(filtro, btn) {
-    filtroActual = filtro;
+function renderUsersPager() {
+  const pager = $("adminUsersPager");
+  if (!pager) return;
+  const pages = Math.max(1, Math.ceil(totalUsers / PAGE_SIZE));
+  pager.innerHTML = `
+    <button type="button" class="admin-page-button" data-page="prev" ${currentPage <= 0 ? "disabled" : ""}>← Anterior</button>
+    <span>Página ${currentPage + 1} de ${pages}</span>
+    <button type="button" class="admin-page-button" data-page="next" ${currentPage + 1 >= pages ? "disabled" : ""}>Siguiente →</button>`;
+  pager.querySelector('[data-page="prev"]')?.addEventListener("click", () => { currentPage -= 1; loadUsersList(); });
+  pager.querySelector('[data-page="next"]')?.addEventListener("click", () => { currentPage += 1; loadUsersList(); });
+}
 
-    // Actualizar clases de los botones
-    document.querySelectorAll(".admin-subtab").forEach(b => b.classList.remove("active"));
-    if (btn) btn.classList.add("active");
-
-    renderUsersByFilter();
+window.filtrarUsuariosAdmin = function (filter, button) {
+  activeFilter = ["todos", "admins", "usuarios", "creadores", "baneados"].includes(filter) ? filter : "todos";
+  currentPage = 0;
+  document.querySelectorAll(".admin-subtab").forEach((item) => item.classList.toggle("active", item === button));
+  loadUsersList();
 };
 
-export async function changeUserRole(userId, newRole) {
-    try {
-        const { error } = await supabase
-            .from('usuarios')
-            .update({ role: newRole })
-            .eq('id', userId);
+export async function changeUserRole(userId, newRole, control = null) {
+  const allowed = ["usuario", "creador", "moderador", "banned"];
+  if (!allowed.includes(newRole)) return;
+  const target = currentUsers.find((user) => user.id === userId);
+  if (!target) return;
 
-        if (error) throw error;
+  const label = newRole === "banned" ? "suspender" : `cambiar el rol a ${newRole}`;
+  if (!confirm(`¿Confirmás ${label} a @${target.username || "sin_nombre"}?`)) return;
 
-        alert(`✅ Rol actualizado a [${newRole.toUpperCase()}] exitosamente.`);
-        await loadUsersList(currentAdminRole);
-    } catch (err) {
-        console.error("Error cambiando el rol:", err);
-        alert("⚠️ No se pudo cambiar el rol. Verifica las políticas RLS en Supabase.");
+  let reason = "";
+  if (newRole === "banned") {
+    reason = (prompt("Motivo de la suspensión (obligatorio, mínimo 10 caracteres):") || "").trim();
+    if (reason.length < 10) {
+      alert("La suspensión necesita un motivo de al menos 10 caracteres.");
+      return;
     }
+  } else {
+    reason = (prompt("Motivo o nota administrativa (opcional):") || "").trim();
+  }
+
+  if (control) control.disabled = true;
+  try {
+    const { data, error } = await supabase.rpc("admin_change_user_role", {
+      p_user_id: userId,
+      p_new_role: newRole,
+      p_reason: reason
+    });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.message || "La base de datos no confirmó el cambio.");
+    setAdminNotice(data.changed ? `Rol de @${target.username} actualizado a ${newRole}.` : "El usuario ya tenía ese rol.", "success");
+    await loadUsersList();
+  } catch (error) {
+    console.error("Error cambiando rol:", error);
+    setAdminNotice(`No se pudo cambiar el rol: ${error.message || "error inesperado"}`, "error");
+    if (control) control.disabled = false;
+    await loadUsersList();
+  }
 }
 
-// ============================================================
-// PESTAÑAS DEL PANEL
-// ============================================================
-
-window.mostrarTabAdmin = function(tab) {
-    const tabUsuarios = document.getElementById("tabContentUsuarios");
-    const tabSolicitudes = document.getElementById("tabContentSolicitudes");
-    const tabApelaciones = document.getElementById("tabContentApelaciones");
-    const btnUsuarios = document.getElementById("tabAdminUsuarios");
-    const btnSolicitudes = document.getElementById("tabAdminSolicitudes");
-    const btnApelaciones = document.getElementById("tabAdminApelaciones");
-
-    // Ocultar todos
-    [tabUsuarios, tabSolicitudes, tabApelaciones].forEach(el => el && (el.style.display = "none"));
-    [btnUsuarios, btnSolicitudes, btnApelaciones].forEach(el => el && el.classList.remove("active"));
-
-    if (tab === 'usuarios') {
-        tabUsuarios.style.display = "block";
-        btnUsuarios.classList.add("active");
-    } else if (tab === 'solicitudes') {
-        tabSolicitudes.style.display = "block";
-        btnSolicitudes.classList.add("active");
-        cargarSolicitudes();
-    } else if (tab === 'apelaciones') {
-        tabApelaciones.style.display = "block";
-        btnApelaciones.classList.add("active");
-        cargarApelaciones();
+window.mostrarTabAdmin = function (tab) {
+  const tabs = {
+    usuarios: ["tabContentUsuarios", "tabAdminUsuarios"],
+    solicitudes: ["tabContentSolicitudes", "tabAdminSolicitudes"],
+    apelaciones: ["tabContentApelaciones", "tabAdminApelaciones"],
+    auditoria: ["tabContentAuditoria", "tabAdminAuditoria"]
+  };
+  if (!tabs[tab]) tab = "usuarios";
+  Object.entries(tabs).forEach(([key, [panelId, buttonId]]) => {
+    const panel = $(panelId);
+    const button = $(buttonId);
+    const active = key === tab;
+    if (panel) panel.hidden = !active;
+    if (button) {
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", String(active));
     }
+  });
+  if (tab === "usuarios") loadUsersList();
+  if (tab === "solicitudes") cargarSolicitudes();
+  if (tab === "apelaciones") cargarApelaciones();
+  if (tab === "auditoria") cargarAuditoria();
 };
 
 async function cargarSolicitudes() {
-    const contenedor = document.getElementById("listaSolicitudes");
-    if (!contenedor) return;
-
-    contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando solicitudes...</p>";
-
-    const { data: solicitudes, error } = await supabase
-        .from('solicitudes_creador')
-        .select('*, usuarios!solicitudes_creador_user_id_fkey(username, email)')
-        .eq('estado', 'pendiente')
-        .order('created_at', { ascending: true });
-
-    if (error) {
-        console.error("Error al cargar solicitudes:", error);
-        contenedor.innerHTML = "<p style='color:#ff4d6d; text-align:center;'>Error al cargar solicitudes.</p>";
-        return;
-    }
-
-    const badge = document.getElementById("badgeSolicitudes");
-    if (badge) {
-        if (solicitudes && solicitudes.length > 0) {
-            badge.textContent = solicitudes.length;
-            badge.style.display = "inline-block";
-        } else {
-            badge.style.display = "none";
-        }
-    }
-
-    if (!solicitudes || solicitudes.length === 0) {
-        contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>No hay solicitudes pendientes.</p>";
-        return;
-    }
-
-    contenedor.innerHTML = solicitudes.map(s => `
-        <div class="solicitud-card">
-            <div class="solicitud-header">
-                <div>
-                    <strong>@${escapeHTML(s.usuarios?.username) || 'sin_nombre'}</strong>
-                    <div class="solicitud-email">${escapeHTML(s.usuarios?.email) || 'N/A'}</div>
-                </div>
-                <span class="solicitud-fecha">${new Date(s.created_at).toLocaleDateString('es-AR')}</span>
-            </div>
-            <p class="solicitud-mensaje">"${escapeHTML(s.mensaje)}"</p>
-            <div class="solicitud-acciones">
-                <button onclick="resolverSolicitud(${s.id}, 'aprobado')" class="btn-primary solicitud-btn">✅ Aprobar</button>
-                <button onclick="resolverSolicitud(${s.id}, 'rechazado')" class="btn-outline solicitud-btn">❌ Rechazar</button>
-            </div>
-        </div>
-    `).join("");
+  const container = $("listaSolicitudes");
+  if (!container) return;
+  container.innerHTML = '<p class="admin-empty">Cargando solicitudes…</p>';
+  const { data, error } = await supabase
+    .from("solicitudes_creador")
+    .select("id,user_id,mensaje,estado,created_at,usuarios!solicitudes_creador_user_id_fkey(username,email)")
+    .eq("estado", "pendiente")
+    .order("created_at", { ascending: true })
+    .limit(100);
+  if (error) {
+    console.error("Error cargando solicitudes:", error);
+    container.innerHTML = '<p class="admin-empty error">No se pudieron cargar las solicitudes.</p>';
+    setAdminNotice(`Error en solicitudes: ${error.message}`, "error");
+    return;
+  }
+  setBadge("badgeSolicitudes", data?.length || 0);
+  if (!data?.length) {
+    container.innerHTML = '<p class="admin-empty">No hay solicitudes pendientes.</p>';
+    return;
+  }
+  container.innerHTML = data.map((item) => `
+    <article class="admin-review-card">
+      <div class="admin-review-head"><div><strong>@${safe(item.usuarios?.username || "sin_nombre")}</strong><span>${safe(item.usuarios?.email || "Sin correo")}</span></div><time>${safe(formatDate(item.created_at))}</time></div>
+      <p>${safe(item.mensaje || "Sin mensaje")}</p>
+      <div class="admin-review-actions"><button type="button" class="admin-action approve" data-request-id="${Number(item.id)}" data-status="aprobado">Aprobar solicitud</button><button type="button" class="admin-action reject" data-request-id="${Number(item.id)}" data-status="rechazado">Rechazar</button></div>
+    </article>`).join("");
+  container.querySelectorAll("button[data-request-id]").forEach((button) => button.addEventListener("click", async () => {
+    button.disabled = true;
+    try { await resolverSolicitud(Number(button.dataset.requestId), button.dataset.status); }
+    finally { if (button.isConnected) button.disabled = false; }
+  }));
 }
 
-window.resolverSolicitud = async function(solicitudId, nuevoEstado) {
-    if (!['aprobado', 'rechazado'].includes(nuevoEstado)) return;
-
-    const confirmar = confirm(`¿Confirmás ${nuevoEstado === 'aprobado' ? 'aprobar' : 'rechazar'} esta solicitud?`);
-    if (!confirmar) return;
-
-    const { data, error } = await supabase.rpc('resolver_solicitud_creador', {
-        p_solicitud_id: Number(solicitudId),
-        p_estado: nuevoEstado
-    });
-
-    if (error || !data?.ok) {
-        console.error("Error resolviendo solicitud:", error || data);
-        alert(`⚠️ No se pudo resolver la solicitud. ${error?.message || data?.message || ''}`);
-        return;
-    }
-
-    alert(`✅ Solicitud ${nuevoEstado === 'aprobado' ? 'aprobada' : 'rechazada'}.`);
+window.resolverSolicitud = async function (id, status) {
+  if (!["aprobado", "rechazado"].includes(status)) return;
+  const action = status === "aprobado" ? "aprobar" : "rechazar";
+  if (!confirm(`¿Confirmás ${action} esta solicitud?`)) return;
+  let reason = "";
+  if (status === "rechazado") {
+    reason = (prompt("Motivo del rechazo (obligatorio, mínimo 10 caracteres):") || "").trim();
+    if (reason.length < 10) { alert("El rechazo necesita un motivo de al menos 10 caracteres."); return; }
+  }
+  try {
+    const { data, error } = await supabase.rpc("admin_resolver_solicitud_creador", { p_solicitud_id: Number(id), p_estado: status, p_motivo: reason });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.message || "No se confirmó la operación.");
+    setAdminNotice(`Solicitud ${status === "aprobado" ? "aprobada" : "rechazada"}.`, "success");
     await cargarSolicitudes();
+    if (status === "aprobado") await loadUsersList();
+  } catch (error) {
+    console.error("Error resolviendo solicitud:", error);
+    setAdminNotice(`No se pudo resolver la solicitud: ${error.message}`, "error");
+  }
 };
 
 async function cargarApelaciones() {
-    const contenedor = document.getElementById("listaApelaciones");
-    if (!contenedor) return;
-
-    contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>Cargando apelaciones...</p>";
-
-    const { data: apelaciones, error } = await supabase
-        .from('apelaciones')
-        .select('*, usuarios!apelaciones_user_id_fkey(username, email)')
-        .eq('estado', 'pendiente')
-        .order('created_at', { ascending: true });
-
-    if (error) {
-        console.error("Error al cargar apelaciones:", error);
-        contenedor.innerHTML = "<p style='color:#ff4d6d; text-align:center;'>Error al cargar apelaciones.</p>";
-        return;
-    }
-
-    const badge = document.getElementById("badgeApelaciones");
-    if (badge) {
-        if (apelaciones && apelaciones.length > 0) {
-            badge.textContent = apelaciones.length;
-            badge.style.display = "inline-block";
-        } else {
-            badge.style.display = "none";
-        }
-    }
-
-    if (!apelaciones || apelaciones.length === 0) {
-        contenedor.innerHTML = "<p style='color:#888; text-align:center; padding: 20px;'>No hay apelaciones pendientes.</p>";
-        return;
-    }
-
-    contenedor.innerHTML = apelaciones.map(a => `
-        <div class="solicitud-card">
-            <div class="solicitud-header">
-                <div>
-                    <strong>@${escapeHTML(a.usuarios?.username) || 'sin_nombre'}</strong>
-                    <div class="solicitud-email">${escapeHTML(a.usuarios?.email) || 'N/A'}</div>
-                </div>
-                <span class="solicitud-fecha">${new Date(a.created_at).toLocaleDateString('es-AR')}</span>
-            </div>
-            <p class="solicitud-mensaje">"${escapeHTML(a.mensaje)}"</p>
-            <div class="solicitud-acciones">
-                <button onclick="resolverApelacion(${a.id}, 'aprobada')" class="btn-primary solicitud-btn">✅ Aprobar</button>
-                <button onclick="resolverApelacion(${a.id}, 'rechazada')" class="btn-outline solicitud-btn">❌ Rechazar</button>
-            </div>
-        </div>
-    `).join("");
+  const container = $("listaApelaciones");
+  if (!container) return;
+  container.innerHTML = '<p class="admin-empty">Cargando apelaciones…</p>';
+  const { data, error } = await supabase
+    .from("apelaciones")
+    .select("id,user_id,mensaje,estado,created_at,usuarios!apelaciones_user_id_fkey(username,email)")
+    .eq("estado", "pendiente")
+    .order("created_at", { ascending: true })
+    .limit(100);
+  if (error) {
+    console.error("Error cargando apelaciones:", error);
+    container.innerHTML = '<p class="admin-empty error">No se pudieron cargar las apelaciones.</p>';
+    setAdminNotice(`Error en apelaciones: ${error.message}`, "error");
+    return;
+  }
+  setBadge("badgeApelaciones", data?.length || 0);
+  if (!data?.length) {
+    container.innerHTML = '<p class="admin-empty">No hay apelaciones pendientes.</p>';
+    return;
+  }
+  container.innerHTML = data.map((item) => `
+    <article class="admin-review-card">
+      <div class="admin-review-head"><div><strong>@${safe(item.usuarios?.username || "sin_nombre")}</strong><span>${safe(item.usuarios?.email || "Sin correo")}</span></div><time>${safe(formatDate(item.created_at))}</time></div>
+      <p>${safe(item.mensaje || "Sin mensaje")}</p>
+      <div class="admin-review-actions"><button type="button" class="admin-action approve" data-appeal-id="${Number(item.id)}" data-status="aprobada">Aprobar apelación</button><button type="button" class="admin-action reject" data-appeal-id="${Number(item.id)}" data-status="rechazada">Rechazar</button></div>
+    </article>`).join("");
+  container.querySelectorAll("button[data-appeal-id]").forEach((button) => button.addEventListener("click", async () => {
+    button.disabled = true;
+    try { await resolverApelacion(Number(button.dataset.appealId), button.dataset.status); }
+    finally { if (button.isConnected) button.disabled = false; }
+  }));
 }
 
-window.resolverApelacion = async function(apelacionId, nuevoEstado) {
-    if (!['aprobada', 'rechazada'].includes(nuevoEstado)) return;
-
-    const mensaje = nuevoEstado === 'aprobada'
-        ? '¿Aprobar esta apelación? El usuario va a recuperar su cuenta como "usuario común".'
-        : '⚠️ ¿Rechazar esta apelación? El usuario NO va a poder volver a apelar nunca más.';
-
-    if (!confirm(mensaje)) return;
-
-    const { data, error } = await supabase.rpc('resolver_apelacion', {
-        p_apelacion_id: Number(apelacionId),
-        p_estado: nuevoEstado
-    });
-
-    if (error || !data?.ok) {
-        console.error("Error resolviendo apelación:", error || data);
-        alert(`⚠️ No se pudo resolver la apelación. ${error?.message || data?.message || ''}`);
-        return;
-    }
-
-    alert(`✅ Apelación ${nuevoEstado === 'aprobada' ? 'aprobada' : 'rechazada'}.`);
-    await cargarApelaciones();
-    await loadUsersList(currentAdminRole);
+window.resolverApelacion = async function (id, status) {
+  if (!["aprobada", "rechazada"].includes(status)) return;
+  const promptText = status === "aprobada"
+    ? "¿Aprobar esta apelación? La cuenta volverá al rol usuario."
+    : "¿Rechazar esta apelación? El usuario no podrá volver a apelar.";
+  if (!confirm(promptText)) return;
+  let reason = "";
+  if (status === "rechazada") {
+    reason = (prompt("Motivo del rechazo (obligatorio, mínimo 10 caracteres):") || "").trim();
+    if (reason.length < 10) { alert("El rechazo necesita un motivo de al menos 10 caracteres."); return; }
+  }
+  try {
+    const { data, error } = await supabase.rpc("admin_resolver_apelacion", { p_apelacion_id: Number(id), p_estado: status, p_motivo: reason });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.message || "No se confirmó la operación.");
+    setAdminNotice(`Apelación ${status === "aprobada" ? "aprobada" : "rechazada"}.`, "success");
+    await Promise.all([cargarApelaciones(), loadUsersList()]);
+  } catch (error) {
+    console.error("Error resolviendo apelación:", error);
+    setAdminNotice(`No se pudo resolver la apelación: ${error.message}`, "error");
+  }
 };
 
-window.cargarApelaciones = cargarApelaciones;
+const actionLabels = {
+  "user.role_changed": "Cambio de rol",
+  "game.moderation_changed": "Decisión de moderación",
+  "game.deleted": "Publicación eliminada",
+  "creator_request.resolved": "Solicitud de creador resuelta",
+  "appeal.resolved": "Apelación resuelta"
+};
 
-// ============================================================
-// RE-RENDER AL ROTAR / CAMBIAR TAMAÑO
-// ============================================================
-let resizeTimeout;
-window.addEventListener("resize", () => {
-    const modal = document.getElementById("adminModal");
-    if (!modal || !modal.classList.contains("active")) return;
+const auditGroups = {
+  todas: null,
+  usuarios: new Set(["user.role_changed"]),
+  juegos: new Set(["game.moderation_changed", "game.deleted"]),
+  solicitudes: new Set(["creator_request.resolved"]),
+  apelaciones: new Set(["appeal.resolved"])
+};
 
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        if (currentAdminRole) loadUsersList(currentAdminRole);
-    }, 250);
+function renderAuditoria() {
+  const container = $("adminAuditList");
+  if (!container) return;
+  const group = $("adminAuditFilter")?.value || "todas";
+  const search = ($("adminAuditSearch")?.value || "").trim().toLocaleLowerCase("es-AR");
+  const allowed = auditGroups[group] || null;
+  const data = auditEntriesCache.filter((entry) => {
+    if (allowed && !allowed.has(entry.action_key)) return false;
+    if (!search) return true;
+    const haystack = [entry.actor_username, entry.actor_role, entry.target_label, entry.target_id, entry.reason, actionLabels[entry.action_key]]
+      .filter(Boolean).join(" ").toLocaleLowerCase("es-AR");
+    return haystack.includes(search);
+  });
+  const count = $("adminAuditCount");
+  if (count) count.textContent = `${data.length} de ${auditEntriesCache.length} acciones recientes`;
+  if (!data.length) {
+    container.innerHTML = '<p class="admin-empty">No hay acciones que coincidan con el filtro.</p>';
+    return;
+  }
+  container.innerHTML = data.map((entry) => {
+    const before = entry.before_data || {};
+    const after = entry.after_data || {};
+    const field = Object.prototype.hasOwnProperty.call(after, "role") ? "role" : Object.prototype.hasOwnProperty.call(after, "estado_moderacion") ? "estado_moderacion" : Object.prototype.hasOwnProperty.call(after, "estado") ? "estado" : null;
+    const transition = field ? `${before[field] || "—"} → ${after[field] || "—"}` : "";
+    return `<article class="admin-audit-entry">
+      <div class="admin-audit-top"><strong>${safe(actionLabels[entry.action_key] || entry.action_key)}</strong><time>${safe(formatDate(entry.created_at))}</time></div>
+      <div class="admin-audit-target">${safe(entry.target_label || `${entry.target_type} #${entry.target_id}`)} ${transition ? `<span>${safe(transition)}</span>` : ""}</div>
+      <div class="admin-audit-meta">Por <strong>${safe(entry.actor_username || "Sistema")}</strong> · ${safe(entry.actor_role || "sin rol")}</div>
+      ${entry.reason ? `<p class="admin-audit-reason">Motivo: ${safe(entry.reason)}</p>` : ""}
+    </article>`;
+  }).join("");
+}
+
+async function cargarAuditoria() {
+  const container = $("adminAuditList");
+  if (!container) return;
+  container.innerHTML = '<p class="admin-empty">Cargando actividad…</p>';
+  const { data, error } = await supabase
+    .from("admin_audit_log")
+    .select("id,actor_username,actor_role,action_key,target_type,target_label,target_id,reason,before_data,after_data,created_at")
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(100);
+  if (error) {
+    console.error("Error cargando auditoría:", error);
+    container.innerHTML = '<p class="admin-empty error">No se pudo cargar el historial. Comprobá la última migración en Supabase.</p>';
+    setAdminNotice(`Error en auditoría: ${error.message}`, "error");
+    return;
+  }
+  auditEntriesCache = data || [];
+  renderAuditoria();
+}
+
+// Refresh controls and search.
+$("adminUsersRefresh")?.addEventListener("click", loadUsersList);
+$("adminRequestsRefresh")?.addEventListener("click", cargarSolicitudes);
+$("adminAppealsRefresh")?.addEventListener("click", cargarApelaciones);
+$("adminAuditRefresh")?.addEventListener("click", cargarAuditoria);
+$("adminAuditFilter")?.addEventListener("change", renderAuditoria);
+$("adminAuditSearch")?.addEventListener("input", renderAuditoria);
+$("adminUserSearch")?.addEventListener("input", () => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => { currentPage = 0; loadUsersList(); }, 250);
 });
 
 window.openAdminModal = openAdminModal;
 window.closeAdminModal = closeAdminModal;
 window.changeUserRole = changeUserRole;
 window.cargarSolicitudes = cargarSolicitudes;
+window.cargarApelaciones = cargarApelaciones;
