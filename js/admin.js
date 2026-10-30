@@ -280,40 +280,20 @@ async function cargarSolicitudes() {
 }
 
 window.resolverSolicitud = async function(solicitudId, nuevoEstado) {
+    if (!['aprobado', 'rechazado'].includes(nuevoEstado)) return;
+
     const confirmar = confirm(`¿Confirmás ${nuevoEstado === 'aprobado' ? 'aprobar' : 'rechazar'} esta solicitud?`);
     if (!confirmar) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const { data, error } = await supabase.rpc('resolver_solicitud_creador', {
+        p_solicitud_id: Number(solicitudId),
+        p_estado: nuevoEstado
+    });
 
-    const { data: solicitud, error: errorSolicitud } = await supabase
-        .from('solicitudes_creador')
-        .update({
-            estado: nuevoEstado,
-            revisado_por: user.id,
-            revisado_at: new Date().toISOString()
-        })
-        .eq('id', solicitudId)
-        .select()
-        .single();
-
-    if (errorSolicitud) {
-        console.error("Error actualizando solicitud:", errorSolicitud);
-        alert("⚠️ No se pudo actualizar la solicitud.");
+    if (error || !data?.ok) {
+        console.error("Error resolviendo solicitud:", error || data);
+        alert(`⚠️ No se pudo resolver la solicitud. ${error?.message || data?.message || ''}`);
         return;
-    }
-
-    if (nuevoEstado === 'aprobado' && solicitud?.user_id) {
-        const { error: errorRol } = await supabase
-            .from('usuarios')
-            .update({ role: 'creador' })
-            .eq('id', solicitud.user_id);
-
-        if (errorRol) {
-            console.error("Error actualizando rol:", errorRol);
-            alert("⚠️ Se aprobó la solicitud, pero no se pudo actualizar el rol. Revisalo manualmente.");
-            return;
-        }
     }
 
     alert(`✅ Solicitud ${nuevoEstado === 'aprobado' ? 'aprobada' : 'rechazada'}.`);
@@ -372,45 +352,23 @@ async function cargarApelaciones() {
 }
 
 window.resolverApelacion = async function(apelacionId, nuevoEstado) {
+    if (!['aprobada', 'rechazada'].includes(nuevoEstado)) return;
+
     const mensaje = nuevoEstado === 'aprobada'
         ? '¿Aprobar esta apelación? El usuario va a recuperar su cuenta como "usuario común".'
         : '⚠️ ¿Rechazar esta apelación? El usuario NO va a poder volver a apelar nunca más.';
 
     if (!confirm(mensaje)) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const { data, error } = await supabase.rpc('resolver_apelacion', {
+        p_apelacion_id: Number(apelacionId),
+        p_estado: nuevoEstado
+    });
 
-    // 1. Actualizar la apelación
-    const { data: apelacion, error: errorApelacion } = await supabase
-        .from('apelaciones')
-        .update({
-            estado: nuevoEstado,
-            revisado_por: user.id,
-            revisado_at: new Date().toISOString()
-        })
-        .eq('id', apelacionId)
-        .select()
-        .single();
-
-    if (errorApelacion) {
-        console.error("Error actualizando apelación:", errorApelacion);
-        alert("⚠️ No se pudo actualizar la apelación.");
+    if (error || !data?.ok) {
+        console.error("Error resolviendo apelación:", error || data);
+        alert(`⚠️ No se pudo resolver la apelación. ${error?.message || data?.message || ''}`);
         return;
-    }
-
-    // 2. Si se aprobó, cambiar el rol del usuario a 'usuario'
-    if (nuevoEstado === 'aprobada' && apelacion?.user_id) {
-        const { error: errorRol } = await supabase
-            .from('usuarios')
-            .update({ role: 'usuario' })
-            .eq('id', apelacion.user_id);
-
-        if (errorRol) {
-            console.error("Error actualizando rol:", errorRol);
-            alert("⚠️ Se aprobó la apelación, pero no se pudo restaurar el rol. Hacelo manualmente.");
-            return;
-        }
     }
 
     alert(`✅ Apelación ${nuevoEstado === 'aprobada' ? 'aprobada' : 'rechazada'}.`);

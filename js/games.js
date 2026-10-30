@@ -6,7 +6,6 @@ let misLikes = new Set();
 let allGames = [];
 let currentGameId = null;
 let publishWidgetId = null;
-let BAD_WORDS = ["pelotudo", "boludo", "puto", "imbecil"];
 let knownGameIds = new Set();
 let knownCommentIds = new Set();
 
@@ -69,30 +68,6 @@ function initPublishCaptcha() {
             sitekey: container.dataset.sitekey,
             theme: "dark",
         });
-    }
-}
-
-// ============================================================
-// PALABRAS PROHIBIDAS
-// ============================================================
-
-export async function cargarPalabrasProhibidas() {
-    try {
-        const { data, error } = await supabase
-            .from('palabras_prohibidas')
-            .select('palabra');
-
-        if (error) {
-            console.error("Error cargando palabras prohibidas:", error);
-            return;
-        }
-
-        if (data && data.length > 0) {
-            BAD_WORDS = data.map(row => row.palabra.toLowerCase());
-            console.log(`✅ ${BAD_WORDS.length} palabras prohibidas cargadas.`);
-        }
-    } catch (err) {
-        console.error("Excepción cargando palabras prohibidas:", err);
     }
 }
 
@@ -203,8 +178,6 @@ export async function initGames() {
     if (gridHub) gridHub.innerHTML = "<p style='color:#888; text-align:center; grid-column:1/-1; padding: 20px;'>Cargando juegos...</p>";
     const gridProy = document.getElementById("grid-proyectos");
     if (gridProy) gridProy.innerHTML = "<p style='color:#888; padding: 10px;'>Cargando proyectos...</p>";
-
-    await cargarPalabrasProhibidas();
 
     try {
         await loadGamesData();
@@ -555,42 +528,54 @@ window.submitComment = async function(event) {
 
     const username = perfil?.username || user.email?.split("@")[0] || "Jugador";
 
-    const containsBadWord = BAD_WORDS.some(word => texto.toLowerCase().includes(word));
-    if (containsBadWord) {
-        mostrarError("Por favor mantené un lenguaje respetuoso. Este tipo de mensajes generan una advertencia en tu cuenta.");
+    // La moderación se ejecuta en PostgreSQL. No se filtran palabras aquí,
+    // porque el cliente no debe poder evitar el contador de advertencias.
+    const { data: insertedComment, error } = await supabase
+        .from('comentarios_juegos')
+        .insert([{
+            juego_id: currentGameId,
+            user_id: user.id,
+            username,
+            comentario: texto
+        }])
+        .select('id')
+        .maybeSingle();
+
+    if (error) {
+        console.error("Error al comentar:", error);
+        mostrarError("Ocurrió un error al enviar el comentario.");
         return;
     }
 
-    const { error } = await supabase.from('comentarios_juegos').insert([{
-        juego_id: currentGameId,
-        user_id: user.id,
-        username: username,
-        comentario: texto
-    }]);
+    // The BEFORE INSERT trigger returns NULL for moderated content. In that
+    // case there is no inserted row, but the warning/ban update has committed.
+    if (!insertedComment) {
+        const { data: moderationProfile, error: moderationError } = await supabase
+            .from('usuarios')
+            .select('role, warnings_count')
+            .eq('id', user.id)
+            .single();
 
-    if (error) {
-        const msg = error.message || "";
+        if (input) input.value = "";
 
-        if (msg.includes("ADVERTENCIA")) {
-            mostrarError("Tu comentario fue bloqueado por lenguaje inapropiado. Esta es tu primera advertencia.");
-            if (input) input.value = "";
+        if (moderationError || !moderationProfile) {
+            mostrarError("El comentario fue bloqueado por moderación.");
             return;
         }
 
-        if (msg.includes("CUENTA_BANEADA")) {
+        if (String(moderationProfile.role || '').toLowerCase() === 'banned') {
             mostrarError("Tu cuenta fue suspendida por reincidir con lenguaje inapropiado.");
             await supabase.auth.signOut();
-            location.reload();
+            setTimeout(() => location.reload(), 700);
             return;
         }
 
-        if (msg.includes("COMENTARIO_BLOQUEADO")) {
-            mostrarError("Tu comentario fue bloqueado por lenguaje inapropiado.");
+        if (Number(moderationProfile.warnings_count || 0) >= 1) {
+            mostrarError("Tu comentario fue bloqueado por lenguaje inapropiado. Esta es tu primera advertencia.");
             return;
         }
 
-        console.error("Error al comentar:", error);
-        mostrarError("Ocurrió un error al enviar el comentario.");
+        mostrarError("Tu comentario fue bloqueado por moderación.");
         return;
     }
 
