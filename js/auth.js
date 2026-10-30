@@ -192,6 +192,7 @@ function updateUI(user, profile) {
     const btnPublish = document.getElementById("btnPublish");
     const btnAdminPanel = document.getElementById("btnAdminPanel");
     const btnCreatorDashboard = document.getElementById("btnCreatorDashboard");
+    const btnModerationLink = document.getElementById("btnModerationLink");
     const btnSolicitar = document.getElementById("btnSolicitarCreador");
 
     if (user && profile) {
@@ -204,39 +205,24 @@ function updateUI(user, profile) {
         const ageTag = profile.age_group === 'menor_13' ? ' [GRUPO PROTEGIDO]' : profile.age_group === '13_mas' ? ' [13+]' : profile.age_group === 'sin_clasificar' ? ' [SIN CLASIFICAR]' : '';
         if (userBadge) userBadge.textContent = `@${profile.username || 'usuario'}${roleTag}${ageTag}`;
 
-        // El botón de "Publicar Juego" solo lo ven creador/moderador/root
+        // Las acciones de cuenta se agrupan dentro del botón Perfil.
         const allowedPublishRoles = ['creador', 'moderador', 'root'];
-        if (btnPublish) {
-            btnPublish.style.display = allowedPublishRoles.includes(userRole) ? "inline-block" : "none";
-        }
-        if (btnCreatorDashboard) {
-            btnCreatorDashboard.style.display = allowedPublishRoles.includes(userRole) ? "inline-block" : "none";
-        }
-        const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
-        if (mobileCreatorDashboard) {
-            mobileCreatorDashboard.style.display = allowedPublishRoles.includes(userRole) ? "flex" : "none";
-        }
-        const mobileAdmin = document.getElementById("mobileBtnAdmin");
-        if (mobileAdmin) {
-            mobileAdmin.style.display = ['moderador', 'root'].includes(userRole) ? "flex" : "none";
-        }
-
-        // El botón de "Ser Creador" solo lo ve un usuario común
-        if (btnSolicitar) {
-            btnSolicitar.style.display = userRole === 'usuario' ? "inline-block" : "none";
-        }
-
-        // El botón de "Panel Admin" solo lo ven moderador/root
-        // (esto es solo para mostrar/ocultar el botón; la seguridad de
-        // verdad está en admin.js + las políticas RLS de Supabase)
         const allowedAdminRoles = ['moderador', 'root'];
-        if (btnAdminPanel) {
-            btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "flex" : "none";
-        }
-        const navAdminMenu = document.getElementById("navAdminMenu");
-        if (navAdminMenu) {
-            navAdminMenu.style.display = allowedAdminRoles.includes(userRole) ? "block" : "none";
-        }
+        const canPublish = allowedPublishRoles.includes(userRole);
+        const canModerate = allowedAdminRoles.includes(userRole);
+
+        if (btnPublish) btnPublish.style.display = canPublish ? "flex" : "none";
+        if (btnCreatorDashboard) btnCreatorDashboard.style.display = canPublish ? "flex" : "none";
+        if (btnModerationLink) btnModerationLink.style.display = canModerate ? "flex" : "none";
+        if (btnAdminPanel) btnAdminPanel.style.display = canModerate ? "flex" : "none";
+        if (btnSolicitar) btnSolicitar.style.display = userRole === 'usuario' ? "flex" : "none";
+
+        const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
+        if (mobileCreatorDashboard) mobileCreatorDashboard.style.display = canPublish ? "flex" : "none";
+        const mobileModeration = document.getElementById("mobileBtnModeration");
+        if (mobileModeration) mobileModeration.style.display = canModerate ? "flex" : "none";
+        const mobileAdmin = document.getElementById("mobileBtnAdmin");
+        if (mobileAdmin) mobileAdmin.style.display = canModerate ? "flex" : "none";
 
                 // Botón de "Agregar Proyecto" (solo mod/root)
         const btnAgregarProyecto = document.getElementById("btnAgregarProyectoOficial");
@@ -255,11 +241,12 @@ function updateUI(user, profile) {
         if (userInfo) userInfo.style.display = "none";
         if (btnPublish) btnPublish.style.display = "none";
         if (btnCreatorDashboard) btnCreatorDashboard.style.display = "none";
+        if (btnModerationLink) btnModerationLink.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
-        const navAdminMenu = document.getElementById("navAdminMenu");
-        if (navAdminMenu) navAdminMenu.style.display = "none";
         const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
         if (mobileCreatorDashboard) mobileCreatorDashboard.style.display = "none";
+        const mobileModeration = document.getElementById("mobileBtnModeration");
+        if (mobileModeration) mobileModeration.style.display = "none";
         const mobileAdmin = document.getElementById("mobileBtnAdmin");
         if (mobileAdmin) mobileAdmin.style.display = "none";
         if (btnSolicitar) btnSolicitar.style.display = "none";

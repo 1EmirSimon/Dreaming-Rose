@@ -13,8 +13,8 @@
     <title>Dreaming Rose Hub | Studio</title>
 
     <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css?v=20261030-responsive-1">
-<link rel="stylesheet" href="css/publish-optimized.css?v=20261030-responsive-1">
+    <link rel="stylesheet" href="css/style.css?v=20261030-desktop-clean-2">
+<link rel="stylesheet" href="css/publish-optimized.css?v=20261030-desktop-clean-2">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     
@@ -26,6 +26,7 @@
 @media(max-width:1100px){#userBadge{display:none!important}#userInfo{gap:6px!important}}
 @media(max-width:900px){.nav-right #userInfo{display:none!important}}
 </style>
+<link rel="stylesheet" href="css/desktop-responsive.css?v=20261030-desktop-clean-2">
 </head>
 <body>
 
@@ -82,34 +83,24 @@
                 <a href="#ranking">RANKING</a>
             </div>
 
-            <div class="nav-tools nav-tools-clean" aria-label="Acciones">
-                <button id="btnPublish" onclick="openUpload()" class="btn-primary nav-icon-button nav-publish-clean" style="display: none;" title="Publicar juego" aria-label="Publicar juego">
-                    <span aria-hidden="true">＋</span><span class="nav-icon-label">Publicar</span>
-                </button>
-                <details class="nav-admin-menu" id="navAdminMenu" style="display:none;">
-                    <summary class="nav-clean-trigger" aria-label="Administración">⚙ <span>Administración</span></summary>
-                    <div class="nav-dropdown nav-admin-dropdown">
-                        <button id="btnAdminPanel" onclick="openAdminModal()" type="button" style="display:none;">Panel de administración</button>
-                        <a href="moderacion.html">Moderación de juegos</a>
-                    </div>
-                </details>
-            </div>
-
             <div id="authArea" class="nav-auth-area nav-auth-clean">
-                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline nav-login-clean">Ingresar</button>
-                <div id="userInfo" class="nav-user-clean" style="display: none; align-items: center; gap: 10px;">
+                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline nav-login-clean" type="button">Ingresar</button>
+                <div id="userInfo" class="nav-user-clean" style="display:none;">
                     <details class="nav-account-menu" id="navAccountMenu">
-                        <summary class="nav-clean-trigger nav-account-trigger">
+                        <summary class="nav-clean-trigger nav-account-trigger" aria-label="Abrir menú de perfil">
                             <span class="nav-account-avatar" aria-hidden="true">♙</span>
-                            <span class="nav-account-label">Mi cuenta</span>
+                            <span class="nav-account-label">Perfil</span>
                             <span class="nav-account-caret" aria-hidden="true">⌄</span>
                         </summary>
                         <div class="nav-dropdown nav-account-dropdown">
                             <span id="userBadge" class="nav-dropdown-user">@usuario</span>
                             <a id="btnProfile" href="perfil.html"><span aria-hidden="true">♙</span> Mi perfil</a>
                             <a id="btnCreatorDashboard" href="creador.html" style="display:none;"><span aria-hidden="true">▦</span> Mi dashboard</a>
-                            <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" type="button" style="display:none;">Solicitar ser creador</button>
-                            <button class="nav-logout-clean" onclick="logout()" type="button">Cerrar sesión</button>
+                            <a id="btnModerationLink" href="moderacion.html" style="display:none;"><span aria-hidden="true">🛡</span> Moderación de juegos</a>
+                            <button id="btnPublish" onclick="openUpload()" type="button" style="display:none;"><span aria-hidden="true">＋</span> Publicar juego</button>
+                            <button id="btnAdminPanel" onclick="openAdminModal()" type="button" style="display:none;"><span aria-hidden="true">⚙</span> Panel de administración</button>
+                            <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" type="button" style="display:none;"><span aria-hidden="true">✦</span> Solicitar ser creador</button>
+                            <button class="nav-logout-clean" onclick="logout()" type="button"><span aria-hidden="true">↪</span> Cerrar sesión</button>
                         </div>
                     </details>
                 </div>
@@ -665,6 +656,9 @@
             <a id="mobileBtnCreatorDashboard" class="mobile-menu-link" href="creador.html" style="display:none;" onclick="closeMobileMenu()">
                 <span class="mobile-menu-icon">📊</span><span>MI DASHBOARD</span>
             </a>
+            <a id="mobileBtnModeration" class="mobile-menu-link" href="moderacion.html" style="display:none;" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🛡️</span><span>MODERACIÓN</span>
+            </a>
 
             <button id="mobileBtnPublish" class="mobile-menu-link" onclick="closeMobileMenu(); openUpload();" style="display: none;">
                 <span class="mobile-menu-icon">📤</span>
@@ -758,6 +752,6 @@
 
 <!-- Carga de Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js?v=20261030-responsive-1"></script>
+<script type="module" src="js/main.js?v=20261030-desktop-clean-2"></script>
 </body>
 </html>

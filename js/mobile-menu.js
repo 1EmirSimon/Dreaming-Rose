@@ -1,7 +1,7 @@
 // js/mobile-menu.js
 // Menú hamburguesa para mobile.
 
-const MOBILE_BREAKPOINT = 1200;
+const MOBILE_BREAKPOINT = 1040;
 
 window.toggleMobileMenu = function() {
     const menu = document.getElementById("mobileMenu");
@@ -47,6 +47,7 @@ export function actualizarMenuMobile(user, profile) {
     const guestSection = document.getElementById("mobileMenuGuestSection");
     const btnPublish = document.getElementById("mobileBtnPublish");
     const btnAdmin = document.getElementById("mobileBtnAdmin");
+    const btnModeration = document.getElementById("mobileBtnModeration");
     const btnSolicitar = document.getElementById("mobileBtnSolicitar");
 
     if (!section || !guestSection) return;
@@ -69,6 +70,9 @@ export function actualizarMenuMobile(user, profile) {
         if (btnAdmin) {
             btnAdmin.style.display = ['moderador', 'root'].includes(rol) ? "flex" : "none";
         }
+        if (btnModeration) {
+            btnModeration.style.display = ['moderador', 'root'].includes(rol) ? "flex" : "none";
+        }
 
         // Solicitar ser creador: solo usuario común
         if (btnSolicitar) {
@@ -80,6 +84,7 @@ export function actualizarMenuMobile(user, profile) {
         guestSection.style.display = "flex";
         const btnDashboard = document.getElementById("mobileBtnCreatorDashboard");
         if (btnDashboard) btnDashboard.style.display = "none";
+        if (btnModeration) btnModeration.style.display = "none";
     }
 }
 

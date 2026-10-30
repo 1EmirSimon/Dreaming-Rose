@@ -1,0 +1,195 @@
+/* DREAMING ROSE — Desktop / notebook fluid layout
+   Tested layout targets: 1024, 1280, 1366, 1440, 1600 and 1920 CSS px. */
+:root {
+  --dr-desktop-max: 1480px;
+  --dr-desktop-gutter: clamp(22px, 3.2vw, 58px);
+  --dr-desktop-section: clamp(68px, 6vw, 104px);
+}
+
+html { scroll-padding-top: 88px; }
+body { min-width: 320px; }
+
+/* Main content breathes on large displays without becoming too wide on laptops. */
+.container {
+  width: min(calc(100% - (var(--dr-desktop-gutter) * 2)), var(--dr-desktop-max));
+  max-width: var(--dr-desktop-max);
+  margin-inline: auto;
+  padding-inline: 0;
+}
+.section-dark,
+.section-gradient { padding-block: var(--dr-desktop-section); }
+.section-title { margin-bottom: clamp(30px, 3.6vw, 52px); }
+.section-title h2 {
+  font-size: clamp(1.15rem, 1.35vw, 1.55rem);
+  letter-spacing: clamp(2px, .32vw, 5px);
+  line-height: 1.28;
+}
+
+/* Cards fill their grid tracks instead of keeping a fixed 240px width. */
+.grid-projects,
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 238px), 1fr));
+  gap: clamp(14px, 1.25vw, 20px);
+  align-items: stretch;
+}
+.grid-projects .project-card,
+.grid-projects .project-card { width: auto; min-width: 0; height: 100%; }
+.project-card { min-width: 0; }
+.project-card .card-media { height: clamp(142px, 12vw, 190px); }
+.project-card .card-body { min-width: 0; padding: clamp(13px, 1.25vw, 18px); }
+.project-card .card-body h3 { font-size: clamp(.78rem, .78vw, .94rem); line-height: 1.35; }
+.project-card .card-body p { font-size: clamp(.7rem, .68vw, .8rem); line-height: 1.5; }
+
+.hub-container,
+.ranking-layout-box {
+  padding: clamp(18px, 2.2vw, 32px);
+  border-radius: clamp(12px, 1vw, 16px);
+}
+.hub-header,
+.ranking-header { gap: 16px; flex-wrap: wrap; }
+.filter-tabs-primary,
+.filter-tabs-secondary { flex-wrap: wrap; row-gap: 8px; }
+.games-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+.ranking-grid-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(290px, .9fr);
+  gap: clamp(16px, 1.8vw, 28px);
+}
+.ranking-left-col,
+.ranking-right-col,
+.ranking-cards-wrapper,
+.recent-comments-box { min-width: 0; }
+
+/* Creator dashboard: a single statistics strip rather than four detached boxes. */
+.creator-dashboard-page .creator-shell {
+  width: min(calc(100% - (var(--dr-desktop-gutter) * 2)), 1440px);
+  max-width: 1440px;
+  padding-top: clamp(20px, 2.4vw, 34px);
+}
+.creator-header { gap: 20px; }
+.creator-intro { padding: clamp(30px, 3.2vw, 48px) 0 22px; }
+.creator-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2vw, 30px);
+  margin-top: 18px;
+}
+.creator-shortcuts a {
+  min-height: 34px;
+  padding: 5px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.17);
+  border-radius: 0;
+  background: transparent;
+  color: #cfd1dc;
+}
+.creator-shortcuts a:hover {
+  border-bottom-color: #ff4d6d;
+  background: transparent;
+  transform: none;
+}
+.creator-shortcuts a .shortcut-icon {
+  display: inline;
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: #ff7c99;
+}
+.creator-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(25,25,40,.82), rgba(13,13,22,.86));
+}
+.creator-metric {
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(16px, 1.8vw, 25px);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.creator-metric + .creator-metric { border-left: 1px solid rgba(255,255,255,.09); }
+.creator-metric:before { top: 17px; bottom: 17px; }
+.creator-metric strong { font-size: clamp(1.55rem, 2.2vw, 2.35rem); }
+.creator-game-group { padding: clamp(14px, 1.5vw, 22px); }
+.creator-game-card { grid-template-columns: clamp(170px, 16vw, 230px) minmax(0, 1fr); }
+.creator-game-cover { min-height: 190px; max-height: 250px; }
+.creator-game-content { min-width: 0; }
+
+/* Moderation page: fluid content width and cards that adapt to notebook sizes. */
+.moderation-wrap {
+  width: min(calc(100% - (var(--dr-desktop-gutter) * 2)), 1440px) !important;
+  max-width: 1440px;
+}
+.moderation-app-header-inner {
+  width: min(calc(100% - (var(--dr-desktop-gutter) * 2)), 1440px) !important;
+}
+.moderation-game {
+  grid-template-columns: clamp(160px, 16vw, 220px) minmax(0, 1fr) !important;
+}
+.moderation-game-body { min-width: 0; }
+
+/* Catalog and profile keep the same page rhythm as the home page. */
+.wrap { width: min(calc(100% - (var(--dr-desktop-gutter) * 2)), 1440px); max-width: 1440px; }
+.game-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr)); }
+.profile-shell { width: min(calc(100% - (var(--dr-desktop-gutter) * 2)), 1180px); max-width: 1180px; }
+
+@media (min-width: 1600px) {
+  :root { --dr-desktop-gutter: clamp(48px, 4vw, 80px); }
+  .ranking-grid-content { grid-template-columns: minmax(0, 1.4fr) minmax(340px, .85fr); }
+}
+
+@media (max-width: 1366px) and (min-width: 1041px) {
+  :root { --dr-desktop-section: clamp(64px, 5.2vw, 82px); }
+  .container { width: calc(100% - 64px); }
+  .grid-projects,
+  .games-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+  .ranking-grid-content { grid-template-columns: minmax(0, 1.15fr) minmax(270px, .9fr); }
+  .creator-dashboard-page .creator-shell { width: calc(100% - 64px); }
+  .creator-game-card { grid-template-columns: 175px minmax(0, 1fr); }
+}
+
+@media (max-width: 1040px) {
+  :root { --dr-desktop-gutter: 22px; --dr-desktop-section: 68px; }
+  .ranking-grid-content { grid-template-columns: 1fr; }
+  .moderation-game { grid-template-columns: 170px minmax(0, 1fr) !important; }
+  .creator-dashboard-page .creator-shell,
+  .moderation-wrap,
+  .moderation-app-header-inner,
+  .wrap,
+  .profile-shell { width: calc(100% - 40px) !important; }
+}
+
+@media (max-width: 760px) {
+  :root { --dr-desktop-gutter: 16px; --dr-desktop-section: 58px; }
+  .container,
+  .creator-dashboard-page .creator-shell,
+  .moderation-wrap,
+  .moderation-app-header-inner,
+  .wrap,
+  .profile-shell { width: calc(100% - 32px) !important; }
+  .creator-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .creator-metric { padding: 14px; }
+  .creator-metric:nth-child(3) { border-left: 0; border-top: 1px solid rgba(255,255,255,.09); }
+  .creator-metric:nth-child(4) { border-top: 1px solid rgba(255,255,255,.09); }
+  .creator-shortcuts { flex-wrap: wrap; gap: 8px 18px; }
+}
+
+@media (max-width: 560px) {
+  .creator-game-card { grid-template-columns: 1fr; }
+  .moderation-game { grid-template-columns: 1fr !important; }
+  .moderation-cover { height: 180px; min-height: 0; }
+}
+
+@media (max-height: 760px) and (min-width: 1041px) {
+  .section-dark,
+  .section-gradient { padding-block: 62px; }
+  .section-title { margin-bottom: 30px; }
+  .creator-intro { padding-top: 24px; }
+}

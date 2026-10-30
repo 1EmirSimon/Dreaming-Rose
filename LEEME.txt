@@ -1,19 +1,30 @@
-DREAMING ROSE — RESTAURACIÓN DE ESTILOS + NAVBAR RESPONSIVE
+DREAMING ROSE — DESKTOP / NOTEBOOK POLISH + PROFILE MENU
 
-CONTENIDO
-- css/: hojas de estilo originales restauradas con sus nombres/rutas correctos.
-- index.html, juegos.html, creador.html, moderacion.html, perfil.html: referencias CSS con versión nueva para evitar caché vieja.
-- service-worker.js: versión de caché renovada e incluye navigation-responsive.css.
-- js/mobile-menu.js: breakpoint sincronizado con el navbar y atributos accesibles.
+QUÉ CAMBIA
+- La página principal usa contenedores y grillas fluidas para notebooks y monitores de 1024 a 1920+ px.
+- Las tarjetas ya no fuerzan un ancho fijo; se acomodan al espacio disponible.
+- El navbar de escritorio queda reducido a marca, navegación principal y un solo botón Perfil.
+- Dashboard, publicación, administración y moderación quedan dentro del menú Perfil y se muestran según el rol.
+- Moderación aparece también en el menú hamburguesa y en el acceso del dashboard solo para moderador/root.
+- El resumen de métricas del dashboard pasa de cuatro tarjetas independientes a una sola franja compacta.
+- Se actualizó la caché del Service Worker para recoger la versión nueva.
+
+ARCHIVOS A REEMPLAZAR
+- index.html, juegos.html, creador.html, moderacion.html, perfil.html
+- css/navigation-responsive.css
+- css/desktop-responsive.css (archivo nuevo)
+- js/main.js, js/auth.js, js/mobile-menu.js, js/creador-dashboard.js
+- service-worker.js
 
 INSTALACIÓN
-1. Hacé una copia de seguridad de tu repositorio actual.
-2. Descomprimí este ZIP en la raíz del proyecto (donde están index.html, juegos.html y las carpetas css/ y js/).
-3. Aceptá reemplazar los archivos incluidos.
-4. No borres el resto de js/, assets/, ni archivos de configuración.
-5. Subí los cambios a GitHub para que Netlify despliegue la versión nueva.
+1. Hacé una copia de seguridad del repositorio.
+2. Descomprimí el ZIP en la raíz del proyecto (donde están index.html, css/ y js/).
+3. Reemplazá los archivos indicados y conservá el resto de tus archivos y carpetas, especialmente assets/ y los demás módulos JS.
+4. Subí los cambios a GitHub para que Netlify publique la actualización.
+5. Después de publicar, cerrá la pestaña anterior del sitio y abrilo de nuevo. En iPhone puede ser necesario cerrar la PWA y volver a abrirla para renovar el Service Worker.
 
-IMPORTANTE
-- El paquete no reemplaza tus imágenes, juegos, lógica de Supabase ni otros scripts.
-- Se restauran todas las hojas CSS presentes en los archivos que compartiste.
-- dstyle.css se conserva como hoja adicional, pero no se conecta a ninguna página porque ninguna de las páginas compartidas la referencia.
+PERMISOS
+Dashboard: creador, moderador y root.
+Moderación y Panel de administración: moderador y root.
+Publicar juego: creador, moderador y root.
+Los permisos de seguridad siguen dependiendo de Supabase/RLS; ocultar enlaces no sustituye las validaciones del servidor.

@@ -268,6 +268,8 @@ async function init() {
 
     if (profileError || !profile) throw profileError || new Error("No se encontró el perfil.");
     const role = String(profile.role || "usuario").toLowerCase();
+    const moderationShortcut = $("creatorModerationShortcut");
+    if (moderationShortcut) moderationShortcut.hidden = !["moderador", "root"].includes(role);
     currentUserId = user.id;
     currentRole = role;
     if (!["creador", "moderador", "root"].includes(role)) {

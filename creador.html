@@ -6,11 +6,12 @@
   <meta name="theme-color" content="#08080c">
   <title>Dashboard | Dreaming Rose</title>
   <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
-  <link rel="stylesheet" href="css/style.css?v=20261030-responsive-1">
-  <link rel="stylesheet" href="css/creador-dashboard.css?v=20261030-responsive-1">
+  <link rel="stylesheet" href="css/style.css?v=20261030-desktop-clean-2">
+  <link rel="stylesheet" href="css/creador-dashboard.css?v=20261030-desktop-clean-2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="css/desktop-responsive.css?v=20261030-desktop-clean-2">
 </head>
 <body class="creator-dashboard-page">
   <main class="creator-shell">
@@ -32,7 +33,7 @@
       <nav class="creator-shortcuts" aria-label="Secciones del dashboard">
         <a href="#creatorOverview"><span class="shortcut-icon">▦</span> Resumen</a>
         <a href="#creatorCatalog"><span class="shortcut-icon">◈</span> Catálogo</a>
-        <a href="./moderacion.html"><span class="shortcut-icon">✓</span> Moderación</a>
+        <a id="creatorModerationShortcut" href="./moderacion.html" hidden><span class="shortcut-icon">✓</span> Moderación</a>
       </nav>
     </section>
 
