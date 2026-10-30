@@ -26,7 +26,34 @@
 @media(max-width:1100px){#userBadge{display:none!important}#userInfo{gap:6px!important}}
 @media(max-width:900px){.nav-right #userInfo{display:none!important}}
 </style>
-</head>
+<style id="dreaming-rose-clean-navigation">
+.navbar .nav-container{gap:clamp(12px,2vw,28px);min-height:76px}
+.navbar .nav-left{flex:0 0 auto;gap:10px}
+.navbar .nav-left .logo{width:34px;height:34px;object-fit:contain}
+.navbar .nav-left .brand{font-size:.76rem;letter-spacing:3px;white-space:nowrap}
+.navbar .nav-right-clean{display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.2vw,34px);flex:1;min-width:0}
+.nav-main-links{display:flex;align-items:center;gap:clamp(14px,2vw,30px)}
+.nav-main-links>a{font-size:.68rem;font-weight:800;letter-spacing:1.2px;text-decoration:none;white-space:nowrap;transition:color .2s ease}
+.nav-main-links>a:hover{color:var(--neon,#00fff7)}
+.nav-tools-clean,.nav-auth-clean{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.nav-publish-clean{min-height:36px;padding:8px 14px!important;border-radius:7px!important;font-size:.68rem!important;letter-spacing:.8px}
+.nav-admin-menu,.nav-account-menu{position:relative}
+.nav-clean-trigger{list-style:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 12px;border:1px solid rgba(0,255,247,.38);border-radius:7px;color:var(--neon,#00fff7);background:rgba(0,255,247,.045);font:800 .66rem Inter,sans-serif;letter-spacing:.7px;cursor:pointer;white-space:nowrap}
+.nav-clean-trigger::-webkit-details-marker{display:none}
+.nav-clean-trigger:hover,.nav-admin-menu[open]>.nav-clean-trigger,.nav-account-menu[open]>.nav-clean-trigger{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.38)}
+.nav-account-trigger{border-color:rgba(255,255,255,.2);color:#f3f3f7;background:rgba(255,255,255,.035)}
+.nav-account-avatar{font-size:1rem}
+.nav-account-caret{opacity:.7;font-size:.9rem}
+.nav-dropdown{position:absolute;z-index:1000;top:calc(100% + 10px);right:0;min-width:205px;padding:7px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(12,13,20,.98);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(16px);display:grid;gap:3px}
+.nav-dropdown a,.nav-dropdown button{display:flex;align-items:center;gap:9px;width:100%;padding:10px 11px;border:0;border-radius:6px;background:transparent;color:#e9eaf0;text-align:left;text-decoration:none;font:600 .75rem Inter,sans-serif;cursor:pointer}
+.nav-dropdown a:hover,.nav-dropdown button:hover{background:rgba(255,255,255,.08);color:var(--neon,#00fff7)}
+.nav-dropdown-user{padding:9px 11px 10px;color:var(--neon,#00fff7);font-size:.7rem;font-weight:800;border-bottom:1px solid rgba(255,255,255,.09);margin-bottom:3px}
+.nav-dropdown .nav-logout-clean{border-top:1px solid rgba(255,255,255,.09);margin-top:4px;padding-top:12px;color:#ff8da2}
+.nav-login-clean{padding:9px 15px!important;font-size:.68rem!important}
+.nav-user-clean{position:relative}
+@media(max-width:1100px){.navbar .nav-container{gap:12px}.navbar .nav-right-clean{gap:12px}.nav-main-links{gap:13px}.nav-main-links>a{font-size:.61rem;letter-spacing:.7px}.navbar .nav-left .brand{font-size:.68rem;letter-spacing:2px}}
+@media(max-width:900px){.navbar .nav-right-clean{display:none}}
+</style>\n</head>
 <body>
 
 <div id="scrollProgress" class="scroll-progress"></div>
@@ -75,40 +102,43 @@
             <span class="brand">DREAMING ROSE</span>
         </div>
 
-        <nav class="nav-right" aria-label="Navegación principal">
-            <a href="juegos.html">PROYECTOS</a>
-            <a href="juegos.html" aria-label="Explorar catálogo de juegos">EXPLORAR</a>
-            <a href="#comunidad">COMUNIDAD</a>
-            <a href="#ranking">RANKING</a>
-
-            <div class="nav-tools" aria-label="Herramientas">
-                <button id="btnPublish" onclick="openUpload()" class="btn-primary nav-icon-button" style="display: none;" title="Publicar juego" aria-label="Publicar juego">
-                    <span aria-hidden="true">＋</span><span class="nav-icon-label">Publicar</span>
-                </button>
-                <button id="btnAdminPanel" onclick="openAdminModal()" class="btn-outline nav-icon-button nav-admin-button" style="display: none; border-color: var(--neon); color: var(--neon);" title="Panel de administración" aria-label="Panel de administración">
-                    <span aria-hidden="true">⚙</span><span class="nav-icon-label">Administración</span>
-                </button>
+        <nav class="nav-right nav-right-clean" aria-label="Navegación principal">
+            <div class="nav-main-links">
+                <a href="juegos.html" aria-label="Explorar catálogo de juegos">EXPLORAR</a>
+                <a href="#comunidad">COMUNIDAD</a>
+                <a href="#ranking">RANKING</a>
             </div>
 
-            <div id="authArea" class="nav-auth-area">
-                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline">
-                    INGRESAR
+            <div class="nav-tools nav-tools-clean" aria-label="Acciones">
+                <button id="btnPublish" onclick="openUpload()" class="btn-primary nav-icon-button nav-publish-clean" style="display: none;" title="Publicar juego" aria-label="Publicar juego">
+                    <span aria-hidden="true">＋</span><span class="nav-icon-label">Publicar</span>
                 </button>
-
-                <div id="userInfo" style="display: none; align-items: center; gap: 10px;">
-                    <div class="nav-account-links">
-                        <a id="btnProfile" href="perfil.html" class="btn-outline account-link nav-account-button" aria-label="Mi perfil" title="Mi perfil"><span aria-hidden="true">♙</span><span>Perfil</span></a>
-                        <a id="btnCreatorDashboard" href="creador.html" class="btn-outline account-link nav-account-button" style="display:none;" aria-label="Mi dashboard" title="Mi dashboard"><span aria-hidden="true">▦</span><span>Dashboard</span></a>
+                <details class="nav-admin-menu" id="navAdminMenu" style="display:none;">
+                    <summary class="nav-clean-trigger" aria-label="Administración">⚙ <span>Administración</span></summary>
+                    <div class="nav-dropdown nav-admin-dropdown">
+                        <button id="btnAdminPanel" onclick="openAdminModal()" type="button" style="display:none;">Panel de administración</button>
+                        <a href="moderacion.html">Moderación de juegos</a>
                     </div>
-                    <span id="userBadge" style="font-size: 0.75rem; font-weight: 800; color: var(--neon);">
-                        @usuario
-                    </span>
-                    <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" class="btn-outline" style="display: none; padding: 6px 10px; font-size: 0.65rem; border-color: var(--neon); color: var(--neon);">
-                        SER CREADOR
-                    </button>
-                    <button onclick="logout()" class="btn-close" style="margin:0; padding: 6px 12px; font-size: 0.7rem;">
-                        SALIR
-                    </button>
+                </details>
+            </div>
+
+            <div id="authArea" class="nav-auth-area nav-auth-clean">
+                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline nav-login-clean">Ingresar</button>
+                <div id="userInfo" class="nav-user-clean" style="display: none; align-items: center; gap: 10px;">
+                    <details class="nav-account-menu" id="navAccountMenu">
+                        <summary class="nav-clean-trigger nav-account-trigger">
+                            <span class="nav-account-avatar" aria-hidden="true">♙</span>
+                            <span class="nav-account-label">Mi cuenta</span>
+                            <span class="nav-account-caret" aria-hidden="true">⌄</span>
+                        </summary>
+                        <div class="nav-dropdown nav-account-dropdown">
+                            <span id="userBadge" class="nav-dropdown-user">@usuario</span>
+                            <a id="btnProfile" href="perfil.html"><span aria-hidden="true">♙</span> Mi perfil</a>
+                            <a id="btnCreatorDashboard" href="creador.html" style="display:none;"><span aria-hidden="true">▦</span> Mi dashboard</a>
+                            <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" type="button" style="display:none;">Solicitar ser creador</button>
+                            <button class="nav-logout-clean" onclick="logout()" type="button">Cerrar sesión</button>
+                        </div>
+                    </details>
                 </div>
             </div>
         </nav>
@@ -755,6 +785,6 @@
 
 <!-- Carga de Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=20261030-clean-nav-2"></script>
 </body>
 </html>

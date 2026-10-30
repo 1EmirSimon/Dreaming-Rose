@@ -5,7 +5,7 @@ import "./username.js";
 import "./solicitudes.js";
 import { showWebsite } from "./animations.js";
 import { initGames } from "./games.js";
-import { initAuth } from "./auth.js";
+import { initAuth } from "./auth.js?v=20261030-clean-nav-2";
 import "./mobile-menu.js";
 import { waitForLaunch } from "./launch.js";
 import "./hero.js";

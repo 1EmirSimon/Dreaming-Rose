@@ -231,7 +231,11 @@ function updateUI(user, profile) {
         // verdad está en admin.js + las políticas RLS de Supabase)
         const allowedAdminRoles = ['moderador', 'root'];
         if (btnAdminPanel) {
-            btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "inline-block" : "none";
+            btnAdminPanel.style.display = allowedAdminRoles.includes(userRole) ? "flex" : "none";
+        }
+        const navAdminMenu = document.getElementById("navAdminMenu");
+        if (navAdminMenu) {
+            navAdminMenu.style.display = allowedAdminRoles.includes(userRole) ? "block" : "none";
         }
 
                 // Botón de "Agregar Proyecto" (solo mod/root)
@@ -252,6 +256,8 @@ function updateUI(user, profile) {
         if (btnPublish) btnPublish.style.display = "none";
         if (btnCreatorDashboard) btnCreatorDashboard.style.display = "none";
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
+        const navAdminMenu = document.getElementById("navAdminMenu");
+        if (navAdminMenu) navAdminMenu.style.display = "none";
         const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
         if (mobileCreatorDashboard) mobileCreatorDashboard.style.display = "none";
         const mobileAdmin = document.getElementById("mobileBtnAdmin");
