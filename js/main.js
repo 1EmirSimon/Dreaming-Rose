@@ -6,7 +6,7 @@ import "./solicitudes.js";
 import { showWebsite } from "./animations.js";
 import { initGames } from "./games.js";
 import { initAuth } from "./auth.js?v=20261030-clean-nav-2";
-import "./mobile-menu.js";
+import "./mobile-menu.js?v=20261030-responsive-1";
 import { waitForLaunch } from "./launch.js";
 import "./hero.js";
 import "./admin.js"; // Se importa el panel de administración

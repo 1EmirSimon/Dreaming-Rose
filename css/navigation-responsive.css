@@ -1,0 +1,453 @@
+/*
+ * DREAMING ROSE — Responsive navigation
+ * Replaces the accumulated navbar overrides with one predictable layout.
+ * Desktop: one balanced row. Tablet/mobile: existing hamburger navigation.
+ */
+
+.navbar,
+.navbar * {
+  box-sizing: border-box;
+}
+
+.navbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 1200;
+  width: 100%;
+  min-height: 68px;
+  height: 68px;
+  overflow: visible;
+  background: linear-gradient(180deg, rgba(5, 5, 8, .97), rgba(5, 5, 8, .88));
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.navbar .nav-container {
+  width: min(100% - 48px, 1540px);
+  max-width: 1540px;
+  min-width: 0;
+  height: 64px;
+  margin-inline: auto;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(16px, 2vw, 32px);
+}
+
+.navbar .nav-left {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: max-content;
+  gap: 10px;
+}
+
+.navbar .nav-left .logo {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  flex: 0 0 32px;
+  object-fit: contain;
+}
+
+.navbar .nav-left .brand {
+  display: block;
+  margin: 0;
+  color: #f7f7fa;
+  font-size: clamp(.68rem, .78vw, .82rem);
+  font-weight: 800;
+  letter-spacing: clamp(1.2px, .18vw, 2.6px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.navbar .nav-right-clean {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: clamp(12px, 1.5vw, 24px);
+  margin: 0;
+}
+
+.nav-main-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  gap: clamp(14px, 1.65vw, 26px);
+}
+
+.nav-main-links > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin: 0 !important;
+  padding: 0 2px;
+  color: rgba(245, 246, 250, .84);
+  font-size: clamp(.63rem, .68vw, .73rem);
+  font-weight: 800;
+  letter-spacing: clamp(.55px, .08vw, 1.1px);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .18s ease;
+}
+
+.nav-main-links > a:hover,
+.nav-main-links > a:focus-visible {
+  color: var(--neon, #00fff7);
+}
+
+.nav-tools-clean,
+.nav-auth-clean {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: 0;
+  gap: 9px;
+  margin: 0;
+}
+
+.nav-publish-clean,
+.nav-login-clean,
+.nav-clean-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 37px;
+  padding: 0 13px !important;
+  border-radius: 7px !important;
+  font-family: Inter, sans-serif;
+  font-size: .67rem !important;
+  font-weight: 800;
+  letter-spacing: .45px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nav-publish-clean {
+  gap: 7px;
+}
+
+.nav-admin-menu,
+.nav-account-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.nav-clean-trigger {
+  list-style: none;
+  gap: 8px;
+  border: 1px solid rgba(0, 255, 247, .34);
+  background: rgba(0, 255, 247, .055);
+  color: var(--neon, #00fff7);
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav-clean-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.nav-clean-trigger::marker {
+  content: "";
+}
+
+.nav-account-trigger {
+  border-color: rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .035);
+  color: #f3f4f7;
+}
+
+.nav-clean-trigger:hover,
+.nav-admin-menu[open] > .nav-clean-trigger,
+.nav-account-menu[open] > .nav-clean-trigger {
+  border-color: rgba(255, 255, 255, .34);
+  background: rgba(255, 255, 255, .09);
+}
+
+.nav-account-avatar {
+  font-size: .95rem;
+}
+
+.nav-account-caret {
+  opacity: .65;
+  font-size: .85rem;
+}
+
+.nav-dropdown {
+  position: absolute;
+  z-index: 1300;
+  top: calc(100% + 10px);
+  right: 0;
+  display: grid;
+  min-width: 218px;
+  gap: 3px;
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: rgba(12, 13, 20, .985);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .48);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.nav-dropdown a,
+.nav-dropdown button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 39px;
+  margin: 0;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #e8eaf0;
+  font: 600 .75rem/1.25 Inter, sans-serif;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-dropdown a:hover,
+.nav-dropdown button:hover,
+.nav-dropdown a:focus-visible,
+.nav-dropdown button:focus-visible {
+  background: rgba(255, 255, 255, .075);
+  color: var(--neon, #00fff7);
+}
+
+.nav-dropdown-user {
+  display: block;
+  overflow: hidden;
+  padding: 9px 11px 11px;
+  border-bottom: 1px solid rgba(255, 255, 255, .09);
+  color: var(--neon, #00fff7);
+  font-size: .72rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-dropdown .nav-logout-clean {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, .09);
+  color: #ff9bad;
+}
+
+.navbar .nav-user-clean {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.navbar #userInfo {
+  gap: 0 !important;
+}
+
+.navbar #btnLogin {
+  min-height: 37px;
+  padding: 0 15px !important;
+  border-radius: 7px;
+  font-size: .68rem;
+  white-space: nowrap;
+}
+
+/* Keep the existing mobile drawer as the single navigation on smaller screens. */
+.navbar .hamburger-btn {
+  display: none;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .04);
+}
+
+.navbar .hamburger-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+/* Wide desktop */
+@media (min-width: 1441px) {
+  .navbar .nav-container {
+    width: min(100% - 64px, 1600px);
+  }
+}
+
+/* Standard laptop and smaller desktop */
+@media (min-width: 1101px) and (max-width: 1440px) {
+  .navbar .nav-container {
+    width: calc(100% - 40px);
+    gap: 16px;
+  }
+
+  .navbar .nav-left {
+    gap: 8px;
+  }
+
+  .navbar .nav-left .logo {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .navbar .nav-left .brand {
+    font-size: .68rem;
+    letter-spacing: 1.2px;
+  }
+
+  .navbar .nav-right-clean {
+    gap: 12px;
+  }
+
+  .nav-main-links {
+    gap: 14px;
+  }
+
+  .nav-main-links > a {
+    font-size: .61rem;
+    letter-spacing: .35px;
+  }
+
+  .nav-tools-clean,
+  .nav-auth-clean {
+    gap: 7px;
+  }
+
+  .nav-publish-clean,
+  .nav-login-clean,
+  .nav-clean-trigger {
+    min-height: 35px;
+    padding-inline: 10px !important;
+    font-size: .62rem !important;
+  }
+}
+
+/* Tablet and mobile: no squeezed desktop navigation. */
+@media (max-width: 1200px) {
+  .navbar,
+  .navbar .nav-container {
+    height: 58px !important;
+    min-height: 58px !important;
+  }
+
+  .navbar .nav-container {
+    width: calc(100% - 32px);
+    padding: 0;
+    gap: 12px;
+  }
+
+  .navbar .nav-left .logo {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+
+  .navbar .nav-left .brand {
+    font-size: .66rem;
+    letter-spacing: 1.1px;
+  }
+
+  .navbar .nav-right-clean {
+    display: none !important;
+  }
+
+  .navbar .hamburger-btn {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar,
+  .navbar .nav-container {
+    height: 54px !important;
+    min-height: 54px !important;
+  }
+
+  .navbar .nav-container {
+    width: calc(100% - 24px);
+  }
+
+  .navbar .nav-left {
+    gap: 8px;
+  }
+
+  .navbar .nav-left .logo {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+
+  .navbar .nav-left .brand {
+    font-size: .61rem;
+    letter-spacing: .85px;
+  }
+
+  .navbar .hamburger-btn {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-main-links > a {
+    transition: none;
+  }
+}
+
+
+/* Responsive drawer fixes: same breakpoint as the compact navbar. */
+@media (max-width: 1200px) {
+  .mobile-menu { display: block !important; }
+  .mobile-menu-panel {
+    width: min(88vw, 320px);
+    max-width: min(320px, 88vw);
+    height: 100vh;
+    height: 100dvh;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+  .mobile-menu-header { padding-inline: 18px; padding-bottom: 14px; }
+  .mobile-menu-title { font-size: .78rem; letter-spacing: 3px; }
+  .mobile-menu-section { padding-inline: 12px; }
+  .mobile-menu-link {
+    min-height: 44px;
+    padding: 11px 13px;
+    font-size: .78rem;
+    letter-spacing: 1px;
+  }
+  .mobile-menu-footer { padding: 14px 18px; letter-spacing: 1.2px; }
+}
+
+@media (min-width: 1201px) {
+  .mobile-menu { display: none !important; }
+}
+
+@media (max-width: 360px) {
+  .navbar .nav-container { width: calc(100% - 18px); }
+  .navbar .nav-left { gap: 6px; }
+  .navbar .nav-left .brand { font-size: .58rem; letter-spacing: .55px; }
+  .navbar .hamburger-btn { width: 34px; height: 34px; flex-basis: 34px; }
+}

@@ -1,7 +1,7 @@
 // Service Worker de Dreaming Rose
 // Cachea archivos estáticos para que la web cargue rápido.
 
-const CACHE_NAME = 'dreaming-rose-release-20261030-v3';
+const CACHE_NAME = 'dreaming-rose-responsive-20261030-v3';
 
 const ARCHIVOS_CACHE = [
     './',
@@ -10,22 +10,23 @@ const ARCHIVOS_CACHE = [
     './creador.html',
     './moderacion.html',
     './perfil.html',
-    './css/catalogo.css',
-    './css/publish-optimized.css',
-    './css/creador-dashboard.css',
-    './css/perfil.css',
+    './css/catalogo.css?v=20261030-responsive-1',
+    './css/publish-optimized.css?v=20261030-responsive-1',
+    './css/creador-dashboard.css?v=20261030-responsive-1',
+    './css/perfil.css?v=20261030-responsive-1',
     './js/catalogo.js',
     './js/creador-dashboard.js',
     './js/moderacion.js',
     './js/perfil.js',
-    './css/style.css',
-    './css/refinamiento-layout.css',
-    './css/layout.css',
-    './css/components.css',
-    './css/pages.css',
-    './css/animations.css',
-    './css/launch.css',
-    './js/main.js',
+    './css/style.css?v=20261030-responsive-1',
+    './css/refinamiento-layout.css?v=20261030-responsive-1',
+    './css/layout.css?v=20261030-responsive-1',
+    './css/components.css?v=20261030-responsive-1',
+    './css/pages.css?v=20261030-responsive-1',
+    './css/animations.css?v=20261030-responsive-1',
+    './css/launch.css?v=20261030-responsive-1',
+    './css/navigation-responsive.css?v=20261030-responsive-1',
+    './js/main.js?v=20261030-responsive-1',
     './js/supabase.js',
     './js/auth.js',
     './js/games.js',
@@ -39,7 +40,7 @@ const ARCHIVOS_CACHE = [
     './js/username.js',
     './js/solicitudes.js',
     './js/apelaciones.js',
-    './js/mobile-menu.js',
+    './js/mobile-menu.js?v=20261030-responsive-1',
     './js/proyecto-oficial.js',
     './assets/Icons/rosaaa MArlo icono.png',
     './assets/Icons/Channel_Profile_Dreaming_Rose.png',

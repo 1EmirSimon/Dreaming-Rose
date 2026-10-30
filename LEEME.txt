@@ -1,0 +1,19 @@
+DREAMING ROSE — RESTAURACIÓN DE ESTILOS + NAVBAR RESPONSIVE
+
+CONTENIDO
+- css/: hojas de estilo originales restauradas con sus nombres/rutas correctos.
+- index.html, juegos.html, creador.html, moderacion.html, perfil.html: referencias CSS con versión nueva para evitar caché vieja.
+- service-worker.js: versión de caché renovada e incluye navigation-responsive.css.
+- js/mobile-menu.js: breakpoint sincronizado con el navbar y atributos accesibles.
+
+INSTALACIÓN
+1. Hacé una copia de seguridad de tu repositorio actual.
+2. Descomprimí este ZIP en la raíz del proyecto (donde están index.html, juegos.html y las carpetas css/ y js/).
+3. Aceptá reemplazar los archivos incluidos.
+4. No borres el resto de js/, assets/, ni archivos de configuración.
+5. Subí los cambios a GitHub para que Netlify despliegue la versión nueva.
+
+IMPORTANTE
+- El paquete no reemplaza tus imágenes, juegos, lógica de Supabase ni otros scripts.
+- Se restauran todas las hojas CSS presentes en los archivos que compartiste.
+- dstyle.css se conserva como hoja adicional, pero no se conecta a ninguna página porque ninguna de las páginas compartidas la referencia.

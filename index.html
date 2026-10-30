@@ -13,7 +13,8 @@
     <title>Dreaming Rose Hub | Studio</title>
 
     <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css?v=20261030-iphone-fix">
+    <link rel="stylesheet" href="css/style.css?v=20261030-responsive-1">
+<link rel="stylesheet" href="css/publish-optimized.css?v=20261030-responsive-1">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     
@@ -25,34 +26,7 @@
 @media(max-width:1100px){#userBadge{display:none!important}#userInfo{gap:6px!important}}
 @media(max-width:900px){.nav-right #userInfo{display:none!important}}
 </style>
-<style id="dreaming-rose-clean-navigation">
-.navbar .nav-container{gap:clamp(12px,2vw,28px);min-height:76px}
-.navbar .nav-left{flex:0 0 auto;gap:10px}
-.navbar .nav-left .logo{width:34px;height:34px;object-fit:contain}
-.navbar .nav-left .brand{font-size:.76rem;letter-spacing:3px;white-space:nowrap}
-.navbar .nav-right-clean{display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.2vw,34px);flex:1;min-width:0}
-.nav-main-links{display:flex;align-items:center;gap:clamp(14px,2vw,30px)}
-.nav-main-links>a{font-size:.68rem;font-weight:800;letter-spacing:1.2px;text-decoration:none;white-space:nowrap;transition:color .2s ease}
-.nav-main-links>a:hover{color:var(--neon,#00fff7)}
-.nav-tools-clean,.nav-auth-clean{display:flex;align-items:center;gap:10px;flex:0 0 auto}
-.nav-publish-clean{min-height:36px;padding:8px 14px!important;border-radius:7px!important;font-size:.68rem!important;letter-spacing:.8px}
-.nav-admin-menu,.nav-account-menu{position:relative}
-.nav-clean-trigger{list-style:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 12px;border:1px solid rgba(0,255,247,.38);border-radius:7px;color:var(--neon,#00fff7);background:rgba(0,255,247,.045);font:800 .66rem Inter,sans-serif;letter-spacing:.7px;cursor:pointer;white-space:nowrap}
-.nav-clean-trigger::-webkit-details-marker{display:none}
-.nav-clean-trigger:hover,.nav-admin-menu[open]>.nav-clean-trigger,.nav-account-menu[open]>.nav-clean-trigger{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.38)}
-.nav-account-trigger{border-color:rgba(255,255,255,.2);color:#f3f3f7;background:rgba(255,255,255,.035)}
-.nav-account-avatar{font-size:1rem}
-.nav-account-caret{opacity:.7;font-size:.9rem}
-.nav-dropdown{position:absolute;z-index:1000;top:calc(100% + 10px);right:0;min-width:205px;padding:7px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(12,13,20,.98);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(16px);display:grid;gap:3px}
-.nav-dropdown a,.nav-dropdown button{display:flex;align-items:center;gap:9px;width:100%;padding:10px 11px;border:0;border-radius:6px;background:transparent;color:#e9eaf0;text-align:left;text-decoration:none;font:600 .75rem Inter,sans-serif;cursor:pointer}
-.nav-dropdown a:hover,.nav-dropdown button:hover{background:rgba(255,255,255,.08);color:var(--neon,#00fff7)}
-.nav-dropdown-user{padding:9px 11px 10px;color:var(--neon,#00fff7);font-size:.7rem;font-weight:800;border-bottom:1px solid rgba(255,255,255,.09);margin-bottom:3px}
-.nav-dropdown .nav-logout-clean{border-top:1px solid rgba(255,255,255,.09);margin-top:4px;padding-top:12px;color:#ff8da2}
-.nav-login-clean{padding:9px 15px!important;font-size:.68rem!important}
-.nav-user-clean{position:relative}
-@media(max-width:1100px){.navbar .nav-container{gap:12px}.navbar .nav-right-clean{gap:12px}.nav-main-links{gap:13px}.nav-main-links>a{font-size:.61rem;letter-spacing:.7px}.navbar .nav-left .brand{font-size:.68rem;letter-spacing:2px}}
-@media(max-width:900px){.navbar .nav-right-clean{display:none}}
-</style>\n</head>
+</head>
 <body>
 
 <div id="scrollProgress" class="scroll-progress"></div>
@@ -148,7 +122,7 @@
 </button>
 
         <!-- Botón hamburguesa (FUERA de nav-right, hermano directo) -->
-        <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
+        <button id="hamburgerBtn" class="hamburger-btn" type="button" onclick="toggleMobileMenu()" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
@@ -784,6 +758,6 @@
 
 <!-- Carga de Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js?v=20261030-clean-nav-2"></script>
+<script type="module" src="js/main.js?v=20261030-responsive-1"></script>
 </body>
 </html>

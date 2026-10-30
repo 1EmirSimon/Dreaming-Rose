@@ -1,7 +1,7 @@
 // js/mobile-menu.js
 // Menú hamburguesa para mobile.
 
-const MOBILE_BREAKPOINT = 900;
+const MOBILE_BREAKPOINT = 1200;
 
 window.toggleMobileMenu = function() {
     const menu = document.getElementById("mobileMenu");
@@ -15,6 +15,9 @@ window.toggleMobileMenu = function() {
     } else {
         menu.classList.add("open");
         btn.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+        btn.setAttribute("aria-label", "Cerrar menú");
+        document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
     }
 };
@@ -26,11 +29,14 @@ window.closeMobileMenu = function() {
 
     menu.classList.remove("open");
     btn.classList.remove("open");
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "Abrir menú");
 
-    // Solo restauramos el scroll si NO hay otro modal abierto
+    // No desbloquear el documento si hay otro modal abierto.
     const hayModalAbierto = document.querySelector(".modal-overlay.active");
     if (!hayModalAbierto) {
-        document.body.style.overflow = "auto";
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
     }
 };
 
