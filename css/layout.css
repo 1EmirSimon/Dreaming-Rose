@@ -1,5 +1,6 @@
 /* =================
    RESET
+================= */
 
 * {
     margin: 0;
@@ -42,6 +43,7 @@ button {
 
 /* =================
    GLOBAL
+================= */
 
 .container {
 
@@ -96,6 +98,7 @@ button {
 
 /* =================
    NAVBAR
+================= */
 
 .navbar {
 
@@ -184,6 +187,7 @@ button {
 
 /* ==============================
    FOOTER
+================================= */
 
 .footer {
 
@@ -208,6 +212,7 @@ button {
 
 /* ========================
    RESPONSIVE
+=========================== */
 
 @media (max-width: 900px) {
 
@@ -335,6 +340,7 @@ button {
 
 /* ============================================================
    RESPONSIVE GLOBAL — Mobile First mejorado
+   ============================================================
    Cubre todas las secciones del sitio en mobile:
    - Hero, Navbar
    - Hub de comunidad (tarjetas de juegos)
@@ -342,10 +348,12 @@ button {
    - Modal de juego (detalles)
    - Modales generales (auth, admin, etc.)
    - Botones, footer, loader
+   ============================================================ */
 
 
 /* ============================================================
    1. HERO + NAVBAR
+============================================================ */
 
 @media (max-width: 900px) {
 
@@ -457,6 +465,7 @@ button {
 
 /* ============================================================
    2. SECCIONES GENERALES
+============================================================ */
 
 @media (max-width: 900px) {
     .section-dark,
@@ -503,6 +512,7 @@ button {
 
 /* ============================================================
    3. HUB DE COMUNIDAD — Tarjetas de juegos
+============================================================ */
 
 @media (max-width: 900px) {
     .hub-container {
@@ -601,6 +611,7 @@ button {
 
 /* ============================================================
    4. RANKING Y COMENTARIOS
+============================================================ */
 
 @media (max-width: 900px) {
     .ranking-layout-box {
@@ -705,6 +716,7 @@ button {
 
 /* ============================================================
    5. MODAL DE JUEGO (detalles)
+============================================================ */
 
 @media (max-width: 900px) {
     .modal-content.game-detail-modal {
@@ -858,6 +870,7 @@ button {
 
 /* ============================================================
    6. MODALES GENERALES (auth, admin, publicar, etc.)
+============================================================ */
 
 @media (max-width: 900px) {
     .modal-overlay,
@@ -952,6 +965,7 @@ button {
 
 /* ============================================================
    7. PANEL ADMIN
+============================================================ */
 
 @media (max-width: 700px) {
     .admin-subtabs {
@@ -993,6 +1007,7 @@ button {
 
 /* ============================================================
    8. SOLICITUDES Y APELACIONES
+============================================================ */
 
 @media (max-width: 700px) {
     .solicitud-card {
@@ -1023,6 +1038,7 @@ button {
 
 /* ============================================================
    9. FOOTER
+============================================================ */
 
 @media (max-width: 500px) {
     .footer {
@@ -1038,6 +1054,7 @@ button {
 
 /* ============================================================
    10. LOADER
+============================================================ */
 
 @media (max-width: 500px) {
     .loader-logo {
@@ -1062,6 +1079,7 @@ button {
 
 /* ============================================================
    11. DETALLES FINOS
+============================================================ */
 
 @media (max-width: 900px) {
     /* Evitar overflow horizontal */
@@ -1086,6 +1104,7 @@ button {
 
 /* ============================================================
    12. MENÚ MOBILE — ajustes finos
+============================================================ */
 
 @media (max-width: 900px) {
     .mobile-menu-panel {
@@ -1236,7 +1255,10 @@ button {
   .nav-right > a { font-size: .58rem; letter-spacing: .25px; }
   .nav-account-button, .nav-icon-button { padding: 7px 8px !important; }
 }
-
+@media (max-width: 1200px) {
+  .nav-right { display: none !important; }
+  .mobile-menu-toggle, #mobileMenuToggle, .hamburger-button, .hamburger-btn { display: flex !important; }
+}
 @media (max-width: 900px) {
   .nav-container { justify-content: space-between; }
   .nav-right { display: none !important; }
@@ -1246,116 +1268,3 @@ button {
 #mobileBtnCreatorDashboard[style*="flex"] { display: flex !important; }
 
 @media (min-width: 1601px) { .nav-container { max-width: 100% !important; } .nav-left .brand { font-size: .78rem; letter-spacing: 3px; } .nav-right { gap: 7px; } .nav-right > a { letter-spacing: .7px; font-size: .66rem; } .nav-account-button, .nav-icon-button { padding: 7px 9px !important; } }
-
-<<<<<<< HEAD
-
-
-
-
-/* DREAMING ROSE — navbar desktop corregida: todos los controles dentro del viewport. */
-.navbar, .navbar * { box-sizing: border-box; }
-.navbar { width: 100%; max-width: 100%; overflow: visible; }
-@media (min-width: 1201px) {
-  .nav-container {
-    width: 100% !important; max-width: 100% !important; min-width: 0 !important;
-    padding: 0 clamp(14px, 1.6vw, 28px) !important;
-    gap: clamp(10px, .9vw, 16px) !important;
-    justify-content: space-between !important;
-  }
-  .nav-left { flex: 0 0 auto !important; min-width: 0 !important; gap: 7px !important; }
-  .nav-left .logo { width: 36px !important; height: 36px !important; margin: 0 !important; }
-  .nav-left .brand { font-size: clamp(.62rem, .68vw, .76rem) !important; letter-spacing: clamp(1px, .12vw, 2px) !important; white-space: nowrap !important; }
-  .nav-right {
-    flex: 1 1 auto !important; min-width: 0 !important; width: auto !important;
-    display: flex !important; align-items: center !important; justify-content: flex-end !important;
-    gap: clamp(4px, .42vw, 8px) !important; overflow: visible !important;
-  }
-  .nav-right > a { flex: 0 1 auto !important; min-width: 0 !important; margin: 0 !important;
-    padding: 7px clamp(4px, .42vw, 8px) !important; font-size: clamp(.56rem, .59vw, .68rem) !important;
-    letter-spacing: .45px !important; white-space: nowrap !important; }
-  .nav-tools { flex: 0 0 auto !important; display: flex !important; gap: 5px !important; }
-  .nav-icon-button, .nav-account-button, #btnLogin, #btnSolicitarCreador,
-  #userInfo > .btn-close {
-    flex: 0 0 auto !important; min-width: 0 !important; min-height: 34px !important; height: 34px !important;
-    padding: 6px 8px !important; gap: 4px !important; font-size: .60rem !important;
-    letter-spacing: .25px !important; white-space: nowrap !important;
-  }
-  .nav-auth-area { flex: 0 0 auto !important; min-width: 0 !important; margin-left: 0 !important; }
-  #userInfo, .nav-account-links { display: flex !important; align-items: center !important; gap: 5px !important; min-width: 0 !important; }
-  #userBadge { display: none !important; }
-  .hamburger-btn { display: none !important; }
-}
-=======
-/* NAVBAR PC: layout compacto, sin desbordamiento ni reglas de merge conflict */
-@media (min-width: 1201px) {
-  .navbar { height: 64px !important; min-height: 64px !important; }
-  .nav-container {
-    width: 100% !important; max-width: 100% !important; height: 64px !important;
-    padding: 0 24px !important; margin: 0 auto !important;
-    display: flex !important; align-items: center !important; gap: 18px !important;
-    overflow: visible !important;
-  }
-  .nav-left { flex: 0 0 auto !important; min-width: max-content !important; gap: 8px !important; }
-  .nav-left .logo { width: 34px !important; height: 34px !important; margin: 0 !important; object-fit: contain; }
-  .nav-left .brand { font-size: .70rem !important; letter-spacing: 1.7px !important; white-space: nowrap !important; }
-  .nav-right {
-    flex: 1 1 auto !important; min-width: 0 !important; width: auto !important;
-    display: flex !important; align-items: center !important; justify-content: flex-end !important;
-    gap: clamp(5px, .65vw, 12px) !important; overflow: visible !important;
-  }
-  .nav-right > a {
-    flex: 0 1 auto !important; min-width: 0 !important; margin: 0 !important;
-    padding: 8px clamp(5px, .55vw, 10px) !important;
-    font-size: clamp(.58rem, .62vw, .70rem) !important; letter-spacing: .65px !important;
-    white-space: nowrap !important;
-  }
-  .nav-tools { flex: 0 0 auto !important; display: flex !important; gap: 6px !important; }
-  .nav-icon-button, .nav-account-button, #btnLogin, #btnSolicitarCreador,
-  #userInfo > .btn-close {
-    flex: 0 0 auto !important; min-width: 0 !important; min-height: 34px !important; height: 34px !important;
-    padding: 7px 10px !important; gap: 5px !important; border-radius: 8px !important;
-    font-size: .62rem !important; letter-spacing: .35px !important; white-space: nowrap !important;
-  }
-  .nav-icon-button > span:first-child, .nav-account-button > span:first-child { font-size: .88rem !important; }
-  .nav-icon-label { display: inline !important; }
-  .nav-auth-area { flex: 0 0 auto !important; min-width: 0 !important; margin-left: 2px !important; }
-  #userInfo, .nav-account-links { display: flex; align-items: center; gap: 5px !important; min-width: 0 !important; }
-  #userBadge { max-width: 90px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; font-size: .62rem !important; }
-  #btnCreatorDashboard[style*="inline-block"], #btnCreatorDashboard[style*="inline-flex"] {
-    display: inline-flex !important; visibility: visible !important; opacity: 1 !important;
-  }
-  .hamburger-btn { display: none !important; }
-}
-
-/* Portátiles: sigue siendo navbar de escritorio; solo se compactan controles y textos. */
->>>>>>> ad7a9d6f3daa982ebeb713d101d021960d7a506b
-@media (min-width: 981px) and (max-width: 1200px) {
-  .navbar { height: 58px !important; min-height: 58px !important; }
-  .nav-container { width: 100% !important; max-width: 100% !important; height: 58px !important; padding: 0 10px !important; gap: 7px !important; }
-  .nav-left { gap: 5px !important; }
-  .nav-left .logo { width: 29px !important; height: 29px !important; }
-  .nav-left .brand { font-size: .56rem !important; letter-spacing: .4px !important; }
-  .nav-right { display: flex !important; gap: 2px !important; }
-  .nav-right > a { padding: 7px 4px !important; font-size: .51rem !important; letter-spacing: 0 !important; }
-  .nav-icon-label { display: none !important; }
-  .nav-icon-button, .nav-account-button, #btnLogin, #btnSolicitarCreador,
-  #userInfo > .btn-close { min-height: 29px !important; height: 29px !important; padding: 5px 6px !important; font-size: .56rem !important; }
-  #userBadge { display: none !important; }
-  .hamburger-btn { display: none !important; }
-}
-
-/* Mobile menu is unchanged and only takes over at 980px and below. */
-@media (max-width: 980px) {
-  .nav-right { display: none !important; }
-  .hamburger-btn { display: flex !important; }
-  .nav-container { width: 100% !important; max-width: 100% !important; padding-inline: 18px !important; }
-}
-@media (max-width: 980px) {
-  .nav-right { display: none !important; }
-  .hamburger-btn { display: flex !important; }
-  .nav-container { width: 100%; max-width: 100%; padding-inline: 12px; }
-}
-<<<<<<< HEAD
-=======
-
->>>>>>> ad7a9d6f3daa982ebeb713d101d021960d7a506b

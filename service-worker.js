@@ -1,11 +1,7 @@
 // Service Worker de Dreaming Rose
 // Cachea archivos estáticos para que la web cargue rápido.
 
-<<<<<<< HEAD
-const CACHE_NAME = 'dreaming-rose-dashboard-navbar-20261030-v2';
-=======
-const CACHE_NAME = 'dreaming-rose-dashboard-root-metadata-20261029-v2';
->>>>>>> ad7a9d6f3daa982ebeb713d101d021960d7a506b
+const CACHE_NAME = 'dreaming-rose-layout-refresh-20261030-v2';
 
 const ARCHIVOS_CACHE = [
     './',
@@ -23,6 +19,7 @@ const ARCHIVOS_CACHE = [
     './js/moderacion.js',
     './js/perfil.js',
     './css/style.css',
+    './css/refinamiento-layout.css',
     './css/layout.css',
     './css/components.css',
     './css/pages.css',
@@ -78,6 +75,9 @@ self.addEventListener('activate', (event) => {
 // Fetch: red primero, cache como respaldo
 self.addEventListener('fetch', (event) => {
     const url = event.request.url;
+
+    // Solo aplicar estrategia de caché a solicitudes GET.
+    if (event.request.method !== 'GET') return;
 
     // No cachear llamadas a Supabase, Cloudflare, ni Google
     if (url.includes('supabase.co') || url.includes('cloudflare.com') || url.includes('google')) {
