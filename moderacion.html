@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#08080c">
+  <meta name="robots" content="noindex,nofollow">
   <title>Moderación de juegos | Dreaming Rose</title>
   <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
-  <link rel="stylesheet" href="css/style.css?v=20261030-desktop-clean-2">
+  <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -95,24 +96,26 @@
       .moderation-buttons .moderation-button{width:100%;min-height:44px}
     }
     @media(max-width:360px){.moderation-app-brand small{display:none}.moderation-return{font-size:.6rem}.moderation-stat span{font-size:.57rem}}
-  
-    .moderation-data-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
-    .moderation-data-grid>div{display:grid;gap:5px;min-width:0;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:8px;background:#101522}
-    .moderation-data-grid small{color:#78839a;font-size:.58rem;font-weight:800;letter-spacing:.08em}
-    .moderation-data-grid strong{color:#e6ebf5;font-size:.72rem;overflow-wrap:anywhere}
-    .moderation-tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-    .moderation-tags span{padding:4px 8px;border:1px solid rgba(0,255,247,.18);border-radius:99px;color:#8ce9e4;background:rgba(0,255,247,.05);font-size:.64rem}
-    .moderation-screenshots-wrap{display:grid;gap:8px;margin:14px 0}
-    .moderation-screenshots-wrap>strong{font-size:.72rem;color:#bfc7d6}
-    .moderation-screenshots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
-    .moderation-screenshots a{display:block;overflow:hidden;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#080b12;aspect-ratio:16/10}
-    .moderation-screenshots img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
-    .moderation-screenshots a:hover img{transform:scale(1.04)}
-    @media(max-width:850px){.moderation-data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:480px){.moderation-screenshots{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+    .moderation-cover-empty{display:grid;place-items:center;color:#8a93aa}
+    .moderation-game-title-wrap{min-width:0}
+    .moderation-id{color:#707990;font-size:.72rem;white-space:nowrap}
+    .moderation-data-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}
+    .moderation-data-grid>div{min-width:0;padding:10px 12px;border:1px solid #282d40;border-radius:9px;background:rgba(5,8,16,.55)}
+    .moderation-data-grid small,.moderation-data-grid strong{display:block;overflow-wrap:anywhere}
+    .moderation-data-grid small{font-size:.61rem;letter-spacing:1px;color:#8e98ad;margin-bottom:6px}
+    .moderation-data-grid strong{font-size:.78rem;color:#f0f2f8;line-height:1.4}
+    .moderation-tags{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+    .moderation-tag{padding:5px 9px;border:1px solid #30364b;border-radius:99px;color:#bfc8db;background:#111625;font-size:.7rem}
+    .moderation-screenshots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+    .moderation-screenshots a{display:block;min-width:0;border:1px solid #30364b;border-radius:9px;overflow:hidden;background:#080b13}
+    .moderation-screenshots img{display:block;width:100%;height:105px;object-fit:cover}
+    .moderation-reason-label{display:block;color:#d5d9e5;font-size:.78rem;font-weight:700;margin-top:14px}
+    .moderation-reason-label span{color:#929cb1;font-weight:400}
+    .moderation-review-note,.moderation-reviewed{color:#929cb1;font-size:.76rem;margin:10px 0}
+    @media(max-width:900px){.moderation-data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.moderation-screenshots{grid-template-columns:repeat(2,minmax(0,1fr))}.moderation-screenshots img{height:120px}}
+    @media(max-width:420px){.moderation-data-grid>div{padding:9px}.moderation-data-grid strong{font-size:.7rem}.moderation-screenshots img{height:95px}}
   </style>
-<link rel="stylesheet" href="css/desktop-responsive.css?v=20261030-desktop-clean-2">
 </head>
 <body>
 <header class="moderation-app-header">
@@ -152,6 +155,6 @@
     <p class="moderation-footnote">Los permisos reales se validan en Supabase. Esta interfaz no contiene claves privadas.</p>
   </div>
 </main>
-<script type="module" src="js/moderacion.js?v=20261030-admin-v3"></script>
+<script type="module" src="js/moderacion.js?v=20261031-admin-phase1-1"></script>
 </body>
 </html>

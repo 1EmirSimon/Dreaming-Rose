@@ -13,21 +13,16 @@
     <title>Dreaming Rose Hub | Studio</title>
 
     <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css?v=20261030-desktop-clean-2">
-<link rel="stylesheet" href="css/publish-optimized.css?v=20261030-desktop-clean-2">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/refinamiento-layout.css">
+<link rel="stylesheet" href="css/publish-optimized.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     
     <!-- LIBRERÍA DE SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-<style>
-.account-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:6px 10px;font-size:.65rem;white-space:nowrap}
-@media(max-width:1100px){#userBadge{display:none!important}#userInfo{gap:6px!important}}
-@media(max-width:900px){.nav-right #userInfo{display:none!important}}
-</style>
-<link rel="stylesheet" href="css/desktop-responsive.css?v=20261030-desktop-clean-2">
-    <link rel="stylesheet" href="css/admin-panel.css?v=20261030-admin-v3">
+    <link rel="stylesheet" href="css/admin-console.css">
 </head>
 <body>
 
@@ -84,24 +79,34 @@
                 <a href="#ranking">RANKING</a>
             </div>
 
+            <div class="nav-tools nav-tools-clean" aria-label="Acciones">
+                <button id="btnPublish" onclick="openUpload()" class="btn-primary nav-icon-button nav-publish-clean" style="display: none;" title="Publicar juego" aria-label="Publicar juego">
+                    <span aria-hidden="true">＋</span><span class="nav-icon-label">Publicar</span>
+                </button>
+                <details class="nav-admin-menu" id="navAdminMenu" style="display:none;">
+                    <summary class="nav-clean-trigger" aria-label="Administración">⚙ <span>Administración</span></summary>
+                    <div class="nav-dropdown nav-admin-dropdown">
+                        <button id="btnAdminPanel" onclick="openAdminModal()" type="button" style="display:none;">Panel de administración</button>
+                        <a href="moderacion.html">Moderación de juegos</a>
+                    </div>
+                </details>
+            </div>
+
             <div id="authArea" class="nav-auth-area nav-auth-clean">
-                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline nav-login-clean" type="button">Ingresar</button>
-                <div id="userInfo" class="nav-user-clean" style="display:none;">
+                <button id="btnLogin" onclick="openAuthModal()" class="btn-outline nav-login-clean">Ingresar</button>
+                <div id="userInfo" class="nav-user-clean" style="display: none; align-items: center; gap: 10px;">
                     <details class="nav-account-menu" id="navAccountMenu">
-                        <summary class="nav-clean-trigger nav-account-trigger" aria-label="Abrir menú de perfil">
+                        <summary class="nav-clean-trigger nav-account-trigger">
                             <span class="nav-account-avatar" aria-hidden="true">♙</span>
-                            <span class="nav-account-label">Perfil</span>
+                            <span class="nav-account-label">Mi cuenta</span>
                             <span class="nav-account-caret" aria-hidden="true">⌄</span>
                         </summary>
                         <div class="nav-dropdown nav-account-dropdown">
                             <span id="userBadge" class="nav-dropdown-user">@usuario</span>
                             <a id="btnProfile" href="perfil.html"><span aria-hidden="true">♙</span> Mi perfil</a>
                             <a id="btnCreatorDashboard" href="creador.html" style="display:none;"><span aria-hidden="true">▦</span> Mi dashboard</a>
-                            <a id="btnModerationLink" href="moderacion.html" style="display:none;"><span aria-hidden="true">🛡</span> Moderación de juegos</a>
-                            <button id="btnPublish" onclick="openUpload()" type="button" style="display:none;"><span aria-hidden="true">＋</span> Publicar juego</button>
-                            <button id="btnAdminPanel" onclick="openAdminModal()" type="button" style="display:none;"><span aria-hidden="true">⚙</span> Panel de administración</button>
-                            <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" type="button" style="display:none;"><span aria-hidden="true">✦</span> Solicitar ser creador</button>
-                            <button class="nav-logout-clean" onclick="logout()" type="button"><span aria-hidden="true">↪</span> Cerrar sesión</button>
+                            <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" type="button" style="display:none;">Solicitar ser creador</button>
+                            <button class="nav-logout-clean" onclick="logout()" type="button">Cerrar sesión</button>
                         </div>
                     </details>
                 </div>
@@ -114,7 +119,7 @@
 </button>
 
         <!-- Botón hamburguesa (FUERA de nav-right, hermano directo) -->
-        <button id="hamburgerBtn" class="hamburger-btn" type="button" onclick="toggleMobileMenu()" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
+        <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
             <span></span>
             <span></span>
             <span></span>
@@ -359,67 +364,82 @@
     </div>
 </div>
 
-<!-- PANEL ADMINISTRATIVO DREAMING ROSE -->
-<div id="adminModal" class="modal-overlay admin-modal-overlay" aria-hidden="true">
-  <section class="modal-content admin-panel-modal" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
-    <header class="admin-panel-header">
+<!-- MODAL PANEL DE ADMINISTRACIÓN (SOLO PARA MODERADOR Y ROOT) -->
+<div id="adminModal" class="modal-overlay">
+  <section class="modal-content admin-console" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
+    <header class="admin-console-header">
       <div>
-        <span class="admin-panel-eyebrow">DREAMING ROSE / STAFF</span>
+        <p class="admin-console-eyebrow">DREAMING ROSE / CONTROL</p>
         <h2 id="adminPanelTitle">Administración</h2>
-        <p>Usuarios, solicitudes, apelaciones y registro de actividad.</p>
+        <p class="admin-console-subtitle">Usuarios, solicitudes, apelaciones e historial de decisiones.</p>
       </div>
-      <button class="admin-panel-close" type="button" onclick="closeAdminModal()" aria-label="Cerrar panel">×</button>
+      <button class="admin-console-close" type="button" onclick="closeAdminModal()" aria-label="Cerrar administración">×</button>
     </header>
 
-    <div id="adminNotice" class="admin-notice" role="status" aria-live="polite">Verificando permisos…</div>
-
-    <nav class="admin-tabs" aria-label="Secciones administrativas" role="tablist">
-      <button id="tabAdminUsuarios" class="admin-tab active" type="button" role="tab" aria-controls="tabContentUsuarios" aria-selected="true" onclick="mostrarTabAdmin('usuarios')">Usuarios</button>
-      <button id="tabAdminSolicitudes" class="admin-tab" type="button" role="tab" aria-controls="tabContentSolicitudes" aria-selected="false" onclick="mostrarTabAdmin('solicitudes')">Solicitudes <span id="badgeSolicitudes" class="admin-tab-badge" hidden>0</span></button>
-      <button id="tabAdminApelaciones" class="admin-tab" type="button" role="tab" aria-controls="tabContentApelaciones" aria-selected="false" onclick="mostrarTabAdmin('apelaciones')">Apelaciones <span id="badgeApelaciones" class="admin-tab-badge" hidden>0</span></button>
-      <button id="tabAdminAuditoria" class="admin-tab" type="button" role="tab" aria-controls="tabContentAuditoria" aria-selected="false" onclick="mostrarTabAdmin('auditoria')">Actividad</button>
+    <nav class="admin-console-tabs" aria-label="Secciones de administración">
+      <button type="button" onclick="mostrarTabAdmin('usuarios')" id="tabAdminUsuarios" class="admin-console-tab active">Usuarios</button>
+      <button type="button" onclick="mostrarTabAdmin('solicitudes')" id="tabAdminSolicitudes" class="admin-console-tab">
+        Solicitudes <span id="badgeSolicitudes" class="admin-count-badge" style="display:none">0</span>
+      </button>
+      <button type="button" onclick="mostrarTabAdmin('apelaciones')" id="tabAdminApelaciones" class="admin-console-tab">
+        Apelaciones <span id="badgeApelaciones" class="admin-count-badge" style="display:none">0</span>
+      </button>
+      <button type="button" onclick="mostrarTabAdmin('historial')" id="tabAdminHistorial" class="admin-console-tab">Historial</button>
     </nav>
 
-    <section id="tabContentUsuarios" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminUsuarios">
-      <div class="admin-toolbar">
-        <div class="admin-subtabs" aria-label="Filtrar usuarios">
-          <button class="admin-subtab active" type="button" data-filter="todos" onclick="filtrarUsuariosAdmin('todos', this)">Todos</button>
-          <button class="admin-subtab" type="button" data-filter="admins" onclick="filtrarUsuariosAdmin('admins', this)">Staff</button>
-          <button class="admin-subtab" type="button" data-filter="usuarios" onclick="filtrarUsuariosAdmin('usuarios', this)">Usuarios</button>
-          <button class="admin-subtab" type="button" data-filter="creadores" onclick="filtrarUsuariosAdmin('creadores', this)">Creadores</button>
-          <button class="admin-subtab" type="button" data-filter="baneados" onclick="filtrarUsuariosAdmin('baneados', this)">Suspendidos</button>
-        </div>
-        <label class="admin-search-wrap" for="adminUserSearch">
-          <span aria-hidden="true">⌕</span>
-          <input id="adminUserSearch" type="search" placeholder="Buscar por nombre de usuario…" autocomplete="off">
-        </label>
+    <section id="tabContentUsuarios" class="admin-console-panel">
+      <div class="admin-panel-toolbar">
+        <div><h3>Usuarios</h3><p>Buscá cuentas y administrá sus permisos.</p></div>
+        <input id="adminUserSearch" class="admin-console-search" type="search" maxlength="64" placeholder="Buscar por usuario…" aria-label="Buscar usuario">
       </div>
-      <div class="admin-users-caption"><span id="adminUsersCount">Cargando usuarios…</span><button id="adminUsersRefresh" class="admin-refresh" type="button">Actualizar</button></div>
-      <div id="adminUsersList" class="admin-users-list" aria-live="polite"><p class="admin-empty">Cargando usuarios…</p></div>
-      <div id="adminUsersPager" class="admin-pager"></div>
+      <div class="admin-subtabs" role="group" aria-label="Filtrar usuarios">
+        <button type="button" onclick="filtrarUsuariosAdmin('todos', this)" class="admin-subtab active">Todos</button>
+        <button type="button" onclick="filtrarUsuariosAdmin('admins', this)" class="admin-subtab">Equipo</button>
+        <button type="button" onclick="filtrarUsuariosAdmin('usuarios', this)" class="admin-subtab">Usuarios</button>
+        <button type="button" onclick="filtrarUsuariosAdmin('baneados', this)" class="admin-subtab">Suspendidos</button>
+      </div>
+      <div class="admin-users-heading" aria-hidden="true"><span>Cuenta</span><span>Correo</span><span>Rol / advertencias</span><span>Acción</span></div>
+      <div id="adminUsersList" class="admin-console-list" aria-live="polite"></div>
+      <div class="admin-pagination">
+        <span id="adminUsersMeta">0 usuarios</span>
+        <div><button id="adminUsersPrev" type="button" class="admin-page-button" disabled>Anterior</button><button id="adminUsersNext" type="button" class="admin-page-button" disabled>Siguiente</button></div>
+      </div>
     </section>
 
-    <section id="tabContentSolicitudes" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminSolicitudes" hidden>
-      <div class="admin-section-heading"><div><h3>Solicitudes de creador</h3><p>Revisá las solicitudes pendientes y asigná el rol cuando corresponda.</p></div><button id="adminRequestsRefresh" class="admin-refresh" type="button">Actualizar</button></div>
-      <div id="listaSolicitudes" class="admin-review-list"><p class="admin-empty">Cargando solicitudes…</p></div>
+    <section id="tabContentSolicitudes" class="admin-console-panel" hidden>
+      <div class="admin-panel-toolbar"><div><h3>Solicitudes de creador</h3><p>Revisá las solicitudes pendientes para publicar juegos.</p></div></div>
+      <div id="listaSolicitudes" class="admin-console-list" aria-live="polite"></div>
     </section>
 
-    <section id="tabContentApelaciones" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminApelaciones" hidden>
-      <div class="admin-section-heading"><div><h3>Apelaciones</h3><p>Revisá los pedidos de usuarios suspendidos.</p></div><button id="adminAppealsRefresh" class="admin-refresh" type="button">Actualizar</button></div>
-      <div id="listaApelaciones" class="admin-review-list"><p class="admin-empty">Cargando apelaciones…</p></div>
+    <section id="tabContentApelaciones" class="admin-console-panel" hidden>
+      <div class="admin-panel-toolbar"><div><h3>Apelaciones</h3><p>Evaluá las solicitudes de revisión de cuentas suspendidas.</p></div></div>
+      <div id="listaApelaciones" class="admin-console-list" aria-live="polite"></div>
     </section>
 
-    <section id="tabContentAuditoria" class="admin-tab-panel" role="tabpanel" aria-labelledby="tabAdminAuditoria" hidden>
-      <div class="admin-section-heading"><div><h3>Registro de actividad</h3><p>Historial de cambios de roles, moderación y revisiones administrativas.</p></div><button id="adminAuditRefresh" class="admin-refresh" type="button">Actualizar</button></div>
+    <section id="tabContentHistorial" class="admin-console-panel" hidden>
+      <div class="admin-panel-toolbar"><div><h3>Historial administrativo</h3><p>Registro de cambios, decisiones y responsables.</p></div><button id="adminAuditRefresh" type="button" class="admin-page-button">Actualizar</button></div>
       <div class="admin-audit-toolbar">
-        <label class="admin-audit-filter-wrap"><span>Tipo de acción</span><select id="adminAuditFilter" aria-label="Filtrar actividad"><option value="todas">Todas las acciones</option><option value="usuarios">Usuarios y roles</option><option value="juegos">Publicaciones y juegos</option><option value="solicitudes">Solicitudes de creador</option><option value="apelaciones">Apelaciones</option></select></label>
-        <label class="admin-search-wrap admin-audit-search" for="adminAuditSearch"><span aria-hidden="true">⌕</span><input id="adminAuditSearch" type="search" placeholder="Buscar actor, usuario o motivo…" autocomplete="off"></label>
+        <input id="adminAuditSearch" class="admin-console-search" type="search" maxlength="60" placeholder="Buscar elemento…" aria-label="Buscar elemento en historial">
+        <select id="adminAuditFilter" class="admin-console-search" aria-label="Filtrar acciones">
+          <option value="todos">Todas las acciones</option>
+          <option value="user.role_changed">Cambios de rol</option>
+          <option value="game.moderation_changed">Moderación de juegos</option>
+          <option value="game.deleted">Juegos eliminados</option>
+          <option value="creator_request.resolved">Solicitudes resueltas</option>
+          <option value="appeal.resolved">Apelaciones resueltas</option>
+        </select>
       </div>
-      <div id="adminAuditCount" class="admin-audit-count">Cargando actividad…</div>
-      <div id="adminAuditList" class="admin-audit-list"><p class="admin-empty">Cargando actividad…</p></div>
+      <div id="adminAuditList" class="admin-console-list" aria-live="polite"></div>
+      <div class="admin-pagination">
+        <span id="adminAuditMeta">0 acciones</span>
+        <div><button id="adminAuditPrev" type="button" class="admin-page-button" disabled>Anterior</button><button id="adminAuditNext" type="button" class="admin-page-button" disabled>Siguiente</button></div>
+      </div>
     </section>
 
-    <footer class="admin-panel-footer"><span>Los permisos se validan nuevamente en Supabase al ejecutar cada acción.</span><button type="button" class="btn-close" onclick="closeAdminModal()">Cerrar</button></footer>
+    <footer class="admin-console-footer">
+      <span>Las decisiones administrativas se validan en Supabase.</span>
+      <button type="button" onclick="closeAdminModal()" class="btn-close">Cerrar</button>
+    </footer>
   </section>
 </div>
 
@@ -677,9 +697,6 @@
             <a id="mobileBtnCreatorDashboard" class="mobile-menu-link" href="creador.html" style="display:none;" onclick="closeMobileMenu()">
                 <span class="mobile-menu-icon">📊</span><span>MI DASHBOARD</span>
             </a>
-            <a id="mobileBtnModeration" class="mobile-menu-link" href="moderacion.html" style="display:none;" onclick="closeMobileMenu()">
-                <span class="mobile-menu-icon">🛡️</span><span>MODERACIÓN</span>
-            </a>
 
             <button id="mobileBtnPublish" class="mobile-menu-link" onclick="closeMobileMenu(); openUpload();" style="display: none;">
                 <span class="mobile-menu-icon">📤</span>
@@ -773,6 +790,6 @@
 
 <!-- Carga de Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js?v=20261030-desktop-clean-2"></script>
+<script type="module" src="js/main.js?v=20261031-admin-phase1-1"></script>
 </body>
 </html>

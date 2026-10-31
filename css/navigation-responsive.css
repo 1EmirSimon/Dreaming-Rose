@@ -27,7 +27,7 @@
   width: min(100% - 48px, 1540px);
   max-width: 1540px;
   min-width: 0;
-  height: 64px;
+  height: 68px;
   margin-inline: auto;
   padding: 0;
   display: flex;
@@ -46,10 +46,10 @@
 
 .navbar .nav-left .logo {
   display: block;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   margin: 0;
-  flex: 0 0 32px;
+  flex: 0 0 36px;
   object-fit: contain;
 }
 
@@ -344,11 +344,11 @@
 }
 
 /* Tablet and mobile: no squeezed desktop navigation. */
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
   .navbar,
   .navbar .nav-container {
-    height: 58px !important;
-    min-height: 58px !important;
+    height: 64px !important;
+    min-height: 64px !important;
   }
 
   .navbar .nav-container {
@@ -358,14 +358,14 @@
   }
 
   .navbar .nav-left .logo {
-    width: 30px;
-    height: 30px;
-    flex-basis: 30px;
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
   }
 
   .navbar .nav-left .brand {
-    font-size: .66rem;
-    letter-spacing: 1.1px;
+    font-size: .72rem;
+    letter-spacing: 1.6px;
   }
 
   .navbar .nav-right-clean {
@@ -380,8 +380,8 @@
 @media (max-width: 480px) {
   .navbar,
   .navbar .nav-container {
-    height: 54px !important;
-    min-height: 54px !important;
+    height: 60px !important;
+    min-height: 60px !important;
   }
 
   .navbar .nav-container {
@@ -393,20 +393,20 @@
   }
 
   .navbar .nav-left .logo {
-    width: 28px;
-    height: 28px;
-    flex-basis: 28px;
+    width: 31px;
+    height: 31px;
+    flex-basis: 31px;
   }
 
   .navbar .nav-left .brand {
-    font-size: .61rem;
-    letter-spacing: .85px;
+    font-size: .66rem;
+    letter-spacing: 1.15px;
   }
 
   .navbar .hamburger-btn {
-    width: 36px;
-    height: 36px;
-    flex-basis: 36px;
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
   }
 }
 
@@ -414,99 +414,4 @@
   .nav-main-links > a {
     transition: none;
   }
-}
-
-
-/* Responsive drawer fixes: same breakpoint as the compact navbar. */
-@media (max-width: 1200px) {
-  .mobile-menu { display: block !important; }
-  .mobile-menu-panel {
-    width: min(88vw, 320px);
-    max-width: min(320px, 88vw);
-    height: 100vh;
-    height: 100dvh;
-    padding-top: max(16px, env(safe-area-inset-top));
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
-    overscroll-behavior: contain;
-  }
-  .mobile-menu-header { padding-inline: 18px; padding-bottom: 14px; }
-  .mobile-menu-title { font-size: .78rem; letter-spacing: 3px; }
-  .mobile-menu-section { padding-inline: 12px; }
-  .mobile-menu-link {
-    min-height: 44px;
-    padding: 11px 13px;
-    font-size: .78rem;
-    letter-spacing: 1px;
-  }
-  .mobile-menu-footer { padding: 14px 18px; letter-spacing: 1.2px; }
-}
-
-@media (min-width: 1201px) {
-  .mobile-menu { display: none !important; }
-}
-
-@media (max-width: 360px) {
-  .navbar .nav-container { width: calc(100% - 18px); }
-  .navbar .nav-left { gap: 6px; }
-  .navbar .nav-left .brand { font-size: .58rem; letter-spacing: .55px; }
-  .navbar .hamburger-btn { width: 34px; height: 34px; flex-basis: 34px; }
-}
-
-
-/* DESKTOP POLISH 2026-10: a single Profile control contains all account actions. */
-.navbar .nav-container {
-  width: min(calc(100% - clamp(28px, 4vw, 64px)), 1600px);
-  gap: clamp(16px, 2.1vw, 34px);
-}
-.navbar .nav-right-clean {
-  flex: 1 1 auto;
-  justify-content: flex-end;
-  gap: clamp(22px, 3vw, 48px);
-}
-.nav-main-links { gap: clamp(18px, 2.4vw, 36px); }
-.nav-main-links > a { font-size: clamp(.66rem, .68vw, .74rem); letter-spacing: clamp(.5px, .08vw, 1.1px); }
-.navbar .nav-auth-clean { flex: 0 0 auto; }
-.navbar .nav-account-trigger { min-width: 104px; min-height: 39px; padding-inline: 14px !important; }
-.navbar .nav-account-label { font-size: .68rem; letter-spacing: .45px; }
-.navbar .nav-dropdown { min-width: 238px; padding: 8px; }
-.navbar .nav-dropdown a,
-.navbar .nav-dropdown button { min-height: 40px; gap: 10px; font-size: .75rem; }
-.navbar .nav-dropdown button { text-align: left; }
-.navbar .nav-dropdown button span,
-.navbar .nav-dropdown a span { width: 18px; text-align: center; }
-.navbar .nav-dropdown .nav-logout-clean { color: #ff9bad; }
-
-/* Small and medium laptops: retain only the brand and primary navigation + Profile. */
-@media (min-width: 1041px) and (max-width: 1320px) {
-  .navbar .nav-container { width: calc(100% - 44px); gap: 20px; }
-  .navbar .nav-left { gap: 8px; }
-  .navbar .nav-left .logo { width: 30px; height: 30px; flex-basis: 30px; }
-  .navbar .nav-left .brand { font-size: .65rem; letter-spacing: 1.2px; }
-  .navbar .nav-right-clean { gap: 24px; }
-  .nav-main-links { gap: 18px; }
-  .nav-main-links > a { font-size: .62rem; letter-spacing: .4px; }
-  .navbar .nav-account-trigger { min-width: 94px; min-height: 37px; padding-inline: 10px !important; }
-}
-
-/* Tablet and narrow viewports use the drawer rather than squeezed desktop controls. */
-@media (min-width: 1041px) {
-  .navbar .nav-right-clean { display: flex !important; }
-  .navbar .hamburger-btn { display: none !important; }
-  .mobile-menu { display: none !important; }
-}
-@media (max-width: 1040px) {
-  .navbar,
-  .navbar .nav-container { height: 60px !important; min-height: 60px !important; }
-  .navbar .nav-container { width: calc(100% - 36px); gap: 12px; }
-  .navbar .nav-right-clean { display: none !important; }
-  .navbar .hamburger-btn { display: inline-flex !important; }
-  .mobile-menu { display: block !important; }
-}
-@media (max-width: 480px) {
-  .navbar,
-  .navbar .nav-container { height: 56px !important; min-height: 56px !important; }
-  .navbar .nav-container { width: calc(100% - 24px); }
-  .navbar .nav-left .logo { width: 29px; height: 29px; flex-basis: 29px; }
-  .navbar .nav-left .brand { font-size: .6rem; letter-spacing: .8px; }
-  .navbar .hamburger-btn { width: 36px; height: 36px; flex-basis: 36px; }
 }

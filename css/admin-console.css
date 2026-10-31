@@ -1,0 +1,130 @@
+/* Dreaming Rose — consola administrativa */
+.admin-console.modal-content {
+  width: min(1040px, calc(100vw - 32px));
+  max-width: 1040px;
+  max-height: min(88vh, 900px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(18px, 2.6vw, 30px);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  background: #0d0e15;
+  color: #f4f5f8;
+  box-shadow: 0 28px 90px rgba(0,0,0,.62);
+}
+.admin-console * { box-sizing: border-box; }
+.admin-console-panel[hidden] { display: none !important; }
+.admin-console-header,
+.admin-panel-toolbar,
+.admin-pagination,
+.admin-console-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.admin-console-header { align-items: flex-start; margin-bottom: 20px; }
+.admin-console-eyebrow { margin: 0 0 7px; color: #ff6682; font-size: .65rem; font-weight: 800; letter-spacing: 2px; }
+.admin-console-header h2 { margin: 0; font-size: clamp(1.35rem, 2vw, 1.8rem); line-height: 1.2; }
+.admin-console-subtitle,
+.admin-panel-toolbar p { margin: 6px 0 0; color: #9299aa; font-size: .8rem; line-height: 1.5; }
+.admin-console-close {
+  flex: 0 0 38px; width: 38px; height: 38px; border: 1px solid #343747; border-radius: 9px;
+  background: #151722; color: #d8dbe5; font-size: 1.45rem; line-height: 1; cursor: pointer;
+}
+.admin-console-close:hover { border-color: #ff6682; color: #ff9aaa; }
+.admin-console-tabs {
+  display: flex; gap: 6px; overflow-x: auto; padding: 0 0 11px; margin-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.09); scrollbar-width: thin;
+}
+.admin-console-tab {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; flex: 0 0 auto;
+  min-height: 39px; padding: 0 14px; border: 1px solid transparent; border-radius: 8px;
+  background: transparent; color: #9ba2b2; font: 700 .75rem Inter, sans-serif; cursor: pointer;
+}
+.admin-console-tab:hover { color: #fff; background: rgba(255,255,255,.045); }
+.admin-console-tab.active { border-color: rgba(255,77,109,.28); background: rgba(255,77,109,.1); color: #ff8ca2; }
+.admin-count-badge { min-width: 19px; padding: 2px 6px; border-radius: 99px; background: #ff4d6d; color: #fff; font-size: .62rem; text-align: center; }
+.admin-panel-toolbar { align-items: flex-end; margin-bottom: 14px; }
+.admin-panel-toolbar h3 { margin: 0; font-size: 1.03rem; }
+.admin-panel-toolbar p { max-width: 560px; }
+.admin-console-search {
+  width: min(320px, 100%); min-width: 0; min-height: 40px; padding: 9px 11px;
+  border: 1px solid #343747; border-radius: 8px; outline: none; background: #11131c;
+  color: #f2f3f7; font: 500 .78rem Inter, sans-serif;
+}
+.admin-console-search:focus { border-color: rgba(0,233,233,.65); box-shadow: 0 0 0 3px rgba(0,233,233,.08); }
+.admin-audit-toolbar { display: flex; gap: 9px; margin-bottom: 12px; }
+.admin-audit-toolbar .admin-console-search:first-child { flex: 1; }
+.admin-audit-toolbar select { width: min(245px, 42%); }
+.admin-subtabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 13px; }
+.admin-subtab {
+  min-height: 32px; padding: 0 11px; border: 1px solid #303342; border-radius: 7px;
+  background: #12141d; color: #9ea5b5; font: 700 .68rem Inter, sans-serif; cursor: pointer;
+}
+.admin-subtab.active { border-color: #714153; background: rgba(255,77,109,.1); color: #ff9bad; }
+.admin-console-list { display: grid; gap: 9px; min-width: 0; }
+.admin-users-heading { display:grid; grid-template-columns:minmax(130px,1fr) minmax(160px,1.4fr) minmax(120px,.8fr) minmax(170px,1fr); gap:12px; padding:0 13px 5px; color:#737b8e; font-size:.61rem; font-weight:800; letter-spacing:.9px; text-transform:uppercase; }
+
+.admin-state { margin: 0; padding: 24px 14px; border: 1px dashed #343747; border-radius: 10px; color: #9198a9; font-size: .8rem; text-align: center; }
+.admin-state-error { border-color: #71384a; color: #ffabbc; }
+.admin-user-row {
+  display: grid; grid-template-columns: minmax(130px,1fr) minmax(160px,1.4fr) minmax(120px,.8fr) minmax(170px,1fr);
+  align-items: center; gap: 12px; padding: 12px 13px; border: 1px solid #282b37; border-radius: 10px; background: #11131b;
+}
+.admin-cell { min-width: 0; overflow-wrap: anywhere; color: #d8dbe5; font-size: .76rem; }
+.admin-cell-user strong { display: block; color: #fff; }
+.admin-cell small { display: block; margin-top: 4px; color: #858c9e; font-size: .65rem; }
+.admin-cell-action { display: flex; justify-content: flex-end; }
+.admin-console .role-select { width: 100%; min-height: 36px; padding: 7px 9px; border: 1px solid #393d4c; border-radius: 7px; background: #171a25; color: #f3f4f7; font: 600 .7rem Inter, sans-serif; }
+.admin-console .role-select:disabled { opacity: .55; cursor: not-allowed; }
+.admin-blocked-msg { color: #858c9d; font-size: .68rem; line-height: 1.4; }
+.admin-user-card { padding: 13px; border: 1px solid #292d3a; border-radius: 10px; background: #11131b; }
+.admin-user-card-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.admin-user-card-email,.admin-user-card-meta { margin-top: 6px; color: #969daf; font-size: .7rem; overflow-wrap: anywhere; }
+.admin-user-card-action { margin-top: 10px; }
+.admin-user-card-action .role-select { width: 100%; }
+.admin-pagination { margin-top: 13px; color: #858c9d; font-size: .68rem; }
+.admin-pagination>div { display: flex; gap: 7px; }
+.admin-page-button {
+  min-height: 34px; padding: 0 11px; border: 1px solid #343747; border-radius: 7px;
+  background: #151722; color: #e3e5ec; font: 700 .68rem Inter, sans-serif; cursor: pointer;
+}
+.admin-page-button:hover:not(:disabled) { border-color: #5c687d; }
+.admin-page-button:disabled { opacity: .4; cursor: not-allowed; }
+.admin-audit-entry { padding: 13px 14px; border: 1px solid #292d3a; border-radius: 10px; background: #11131b; }
+.admin-audit-entry-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.admin-audit-entry-top strong { color: #f4f5f8; font-size: .8rem; }
+.admin-audit-entry-top time { color: #858c9d; font-size: .65rem; text-align: right; }
+.admin-audit-entry-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; color: #a0a6b5; font-size: .66rem; }
+.admin-audit-entry-meta b { color: #e4e7ef; }
+.admin-audit-target { margin: 9px 0 4px; color: #ff91a6; font-size: .78rem; font-weight: 700; }
+.admin-audit-transition,.admin-audit-reason { margin: 4px 0 0; color: #a5acbd; font-size: .68rem; line-height: 1.5; overflow-wrap: anywhere; }
+.admin-audit-reason { color: #d0d4df; }
+.admin-console-footer { margin-top: 20px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.08); }
+.admin-console-footer>span { color: #777f91; font-size: .66rem; }
+.admin-console-footer .btn-close { min-width: 100px; }
+.admin-console .solicitud-card { padding: 14px; border: 1px solid #292d3a; border-radius: 10px; background: #11131b; }
+.admin-console .solicitud-mensaje { white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-console .solicitud-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-console .solicitud-btn { min-height: 36px; }
+@media (max-width: 720px) {
+  .admin-console.modal-content { width: calc(100vw - 18px); max-height: 92vh; padding: 15px; border-radius: 13px; }
+  .admin-console-tabs { gap: 3px; }
+  .admin-console-tab { min-height: 36px; padding-inline: 10px; font-size: .68rem; }
+  .admin-panel-toolbar { align-items: stretch; flex-direction: column; }
+  .admin-panel-toolbar .admin-console-search { width: 100%; }
+  .admin-users-heading { display:none; }
+  .admin-user-row { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
+  .admin-cell-action { justify-content: stretch; }
+  .admin-cell-action .role-select { width: 100%; }
+  .admin-audit-toolbar { flex-direction: column; }
+  .admin-audit-toolbar select { width: 100%; }
+  .admin-audit-entry-top { flex-direction: column; gap: 5px; }
+  .admin-audit-entry-top time { text-align: left; }
+  .admin-console-footer { align-items: flex-start; flex-direction: column; }
+  .admin-console-footer .btn-close { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-console * { scroll-behavior: auto !important; transition: none !important; }
+}
