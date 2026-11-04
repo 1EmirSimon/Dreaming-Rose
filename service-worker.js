@@ -1,6 +1,6 @@
 /* Dreaming Rose PWA — actualización segura de recursos */
 const CACHE_PREFIX = "dreaming-rose-";
-const CACHE_NAME = `${CACHE_PREFIX}phase1-20261031-v1`;
+const CACHE_NAME = `${CACHE_PREFIX}phase2-20261104-v1`;
 
 const APP_ASSETS = [
   "./",
@@ -11,6 +11,9 @@ const APP_ASSETS = [
   "./perfil.html",
   "./manifest.json",
   "./css/style.css",
+  "./css/desktop-responsive.css",
+  "./css/admin-panel.css",
+  "./css/dstyle.css",
   "./css/layout.css",
   "./css/components.css",
   "./css/pages.css",

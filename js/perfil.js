@@ -112,36 +112,69 @@ $("profileUsernameSave").addEventListener("click", async () => {
 
 $("birthDateSave").addEventListener("click", async () => {
   if (!currentUser || !currentProfile) return;
-  const input=$("birthDateInput");
-  const nextDate=input.value;
-  if (!nextDate) { $("birthDateHelp").textContent="Elegí una fecha válida."; return; }
-  if (currentProfile.birth_date_change_count >= 1) { showBirthDateState(); return; }
-  if (nextDate === currentProfile.birth_date) {
-    $("birthDateHelp").textContent="La fecha es igual a la actual; no se consumió el cambio.";
+
+  const input = $("birthDateInput");
+  const button = $("birthDateSave");
+  const help = $("birthDateHelp");
+  const nextDate = input.value;
+
+  if (!nextDate) {
+    help.textContent = "Elegí una fecha válida.";
     return;
   }
-  const confirmed=window.confirm("¿Querés guardar esta fecha? Solo podés corregirla una vez después del registro.");
-  if (!confirmed) return;
-  $("birthDateSave").disabled=true;
-  $("birthDateSave").textContent="Guardando…";
-  const {data,error}=await supabase.rpc("actualizar_fecha_nacimiento", {p_fecha: nextDate});
-  if (error || !data?.ok) {
-    $("birthDateHelp").textContent=error?.message || data?.message || "No se pudo guardar la fecha. Puede que ya hayas usado tu cambio.";
+  if (Number(currentProfile.birth_date_change_count || 0) >= 1) {
     showBirthDateState();
     return;
   }
-  const {data:profile,error:profileError}=await supabase.from("usuarios")
-    .select("username,role,created_at,birth_date,birth_date_change_count,age_group")
-    .eq("id",currentUser.id).single();
-  if (profileError || !profile) {
-    $("birthDateHelp").textContent="La fecha se guardó, pero no pudimos actualizar la vista. Recargá el perfil.";
+  if (nextDate === currentProfile.birth_date) {
+    help.textContent = "La fecha es igual a la actual; no se consumió el cambio.";
     return;
   }
-  currentProfile=profile;
-  showBirthDateState();
-  const ageGroup=profile.age_group==="menor_13"?"GRUPO PROTEGIDO":profile.age_group==="13_mas"?"13+": "SIN CLASIFICAR";
-  $("profileMeta").textContent=`${String(profile.role||"usuario").toUpperCase()} · ${ageGroup} · ${currentUser.email||"Correo no disponible"}`;
-  $("profileNotice").textContent="Fecha de nacimiento actualizada. El cambio permitido quedó registrado.";
+  if (nextDate > new Date().toISOString().slice(0, 10)) {
+    help.textContent = "La fecha de nacimiento no puede ser futura.";
+    return;
+  }
+  if (!window.confirm("¿Querés guardar esta fecha? Solo podés corregirla una vez después del registro.")) return;
+
+  button.disabled = true;
+  button.textContent = "Guardando…";
+  help.textContent = "";
+
+  try {
+    const { data, error } = await supabase.rpc("actualizar_fecha_nacimiento", { p_fecha: nextDate });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.message || "No se pudo guardar la fecha. Puede que ya hayas usado tu cambio.");
+
+    // La RPC confirmó el cambio: actualizar el estado local aunque falle la lectura posterior.
+    currentProfile.birth_date = nextDate;
+    currentProfile.birth_date_change_count = Math.max(1, Number(currentProfile.birth_date_change_count || 0) + 1);
+    showBirthDateState();
+
+    const { data: profile, error: profileError } = await supabase
+      .from("usuarios")
+      .select("username,role,created_at,birth_date,birth_date_change_count,age_group")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (!profileError && profile) {
+      currentProfile = profile;
+      const ageGroup = profile.age_group === "menor_13" ? "GRUPO PROTEGIDO" : profile.age_group === "13_mas" ? "13+" : "SIN CLASIFICAR";
+      $("profileMeta").textContent = `${String(profile.role || "usuario").toUpperCase()} · ${ageGroup} · ${currentUser.email || "Correo no disponible"}`;
+      showBirthDateState();
+      $("profileNotice").textContent = "Fecha de nacimiento actualizada. El cambio permitido quedó registrado.";
+      help.textContent = "La fecha se guardó correctamente.";
+    } else {
+      $("profileNotice").textContent = "La fecha se guardó correctamente. Para actualizar todos los datos visibles, recargá el perfil.";
+      help.textContent = "La fecha se guardó, pero no pudimos actualizar el resto de los datos. Recargá el perfil.";
+    }
+  } catch (error) {
+    console.error("Error al actualizar fecha de nacimiento:", error);
+    help.textContent = error?.message || "No se pudo guardar la fecha. Intentá nuevamente.";
+  } finally {
+    const changeUsed = Number(currentProfile?.birth_date_change_count || 0) >= 1;
+    button.disabled = changeUsed;
+    button.textContent = changeUsed ? "Cambio utilizado" : (currentProfile?.birth_date ? "Guardar único cambio" : "Guardar fecha");
+  }
 });
 
 $("profileLogout").addEventListener("click",async()=>{const {error}=await supabase.auth.signOut();if(error){alert("No se pudo cerrar sesión: "+error.message);return;}window.location.href="index.html";});
