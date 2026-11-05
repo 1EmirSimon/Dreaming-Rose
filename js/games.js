@@ -372,7 +372,7 @@ function renderGamesGrid(gamesList) {
                     ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}
                 </h4>
                 <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
-                <div class="game-card-category">${escapeHTML(game.categoria || 'Sin categoría')} · ${escapeHTML(game.plataforma || 'PC')}</div>
+                <div class="game-card-category">${escapeHTML(game.categoria || 'Sin categoría')} · ${game.download_url_pc && game.download_url_mobile ? 'PC + Móvil' : (game.download_url_mobile || /m[oó]vil/i.test(String(game.plataforma || '')) ? 'Móvil' : 'PC')}</div>
                 <div class="game-card-footer">
                     <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
                         ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
@@ -746,9 +746,11 @@ window.handlePublishGame = async function(event) {
     const description = document.getElementById("pubDescription")?.value.trim();
     const author = document.getElementById("pubAuthor")?.value.trim() || "Creador Anónimo";
     const imageFileInput = document.getElementById("pubImageFile");
-    const downloadUrl = document.getElementById("pubDownloadUrl")?.value.trim();
+    const downloadUrlPC = document.getElementById("pubDownloadUrlPC")?.value.trim() || "";
+    const downloadUrlMobile = document.getElementById("pubDownloadUrlMobile")?.value.trim() || "";
     const category = document.getElementById("pubCategory")?.value.trim();
-    const platform = document.getElementById("pubPlatform")?.value.trim();
+    const validPortUrl = (value) => { if (!value) return true; try { const u = new URL(value); return u.protocol === "https:" && ["drive.google.com", "mediafire.com"].some(host => u.hostname === host || u.hostname.endsWith(`.${host}`)); } catch { return false; } };
+    const platform = downloadUrlPC ? "PC" : "Móvil";
     const ageRating = document.getElementById("pubAgeRating")?.value.trim();
     const tagsRaw = document.getElementById("pubTags")?.value || "";
     const tags = [...new Set(tagsRaw.split(",").map(tag => tag.trim().replace(/^#/, "").slice(0, 24)).filter(Boolean))].slice(0, 3);
@@ -806,19 +808,15 @@ window.handlePublishGame = async function(event) {
         return;
     }
 
-    let parsedDownloadUrl;
-    try { parsedDownloadUrl = new URL(downloadUrl); } catch (_) { parsedDownloadUrl = null; }
-    const validDownloadHost = parsedDownloadUrl && parsedDownloadUrl.protocol === "https:" &&
-        (parsedDownloadUrl.hostname === "drive.google.com" || parsedDownloadUrl.hostname.endsWith(".drive.google.com") ||
-         parsedDownloadUrl.hostname === "mediafire.com" || parsedDownloadUrl.hostname.endsWith(".mediafire.com"));
-    if (!validDownloadHost) {
-        if (errorMsg) {
-            errorMsg.textContent = "⚠️ Usá un enlace HTTPS válido de Google Drive o MediaFire.";
-            errorMsg.style.display = "block";
-        }
+    if (!downloadUrlPC && !downloadUrlMobile) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Agregá al menos un enlace: PC o móvil."; errorMsg.style.display = "block"; }
         return;
     }
-    if (!category || !platform || !ageRating) {
+    if (!validPortUrl(downloadUrlPC) || !validPortUrl(downloadUrlMobile)) {
+        if (errorMsg) { errorMsg.textContent = "⚠️ Los enlaces deben ser HTTPS válidos de Google Drive o MediaFire."; errorMsg.style.display = "block"; }
+        return;
+    }
+    if (!category || !ageRating) {
         if (errorMsg) { errorMsg.textContent = "⚠️ Elegí una categoría, plataforma y público recomendado."; errorMsg.style.display = "block"; }
         return;
     }
@@ -900,7 +898,9 @@ window.handlePublishGame = async function(event) {
         screenshots: screenshotUrls,
         clasificacion_edad: ageRating,
         etiquetas: tags,
-        download_url: downloadUrl,
+        download_url: downloadUrlPC || downloadUrlMobile,
+        download_url_pc: downloadUrlPC || null,
+        download_url_mobile: downloadUrlMobile || null,
         categoria: category,
         categoria_confirmada: true,
         plataforma: platform,
@@ -1024,18 +1024,13 @@ window.openGameDetails = async function(gameInput) {
 
     const playBtn = document.getElementById("gameDownloadBtn");
     if (playBtn) {
-        const urlFinal = game.download_url || "https://drive.google.com/drive/folders/1lfdN5JWkNyDRUOx4O1VFtJYEO3SURPXE?usp=sharing";
-
-        playBtn.style.display = "inline-flex";
-
-        playBtn.onclick = function(e) {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            window.open(urlFinal, "_blank");
-            return false;
-        };
+        const legacyMobile = /m[oó]vil/i.test(String(game.plataforma || ""));
+        const pcUrl = game.download_url_pc || (!game.download_url_mobile && !legacyMobile ? game.download_url : null);
+        const mobileUrl = game.download_url_mobile || (legacyMobile ? game.download_url : null);
+        const links = [];
+        if (pcUrl) links.push(`<a class="btn-play-large" href="${escapeHTML(pcUrl)}" target="_blank" rel="noopener noreferrer">DESCARGAR PARA PC ↗</a>`);
+        if (mobileUrl) links.push(`<a class="btn-play-large" href="${escapeHTML(mobileUrl)}" target="_blank" rel="noopener noreferrer">DESCARGAR PARA MÓVIL ↗</a>`);
+        playBtn.outerHTML = `<div id="gameDownloadBtn" class="game-port-actions" style="display:flex;gap:10px;flex-wrap:wrap">${links.join("") || '<span class="btn-play-large" aria-disabled="true">PORT NO DISPONIBLE</span>'}</div>`;
     }
 
     await loadGameComments(game.id);

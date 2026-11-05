@@ -50,9 +50,11 @@ window.handlePublishProyectoOficial = async function(event) {
     const author = document.getElementById("proyAuthor")?.value.trim() || "Dreaming Rose";
     const genre = document.getElementById("proyGenre")?.value.trim() || "";
     const imageFileInput = document.getElementById("proyImageFile");
-    const downloadUrl = document.getElementById("proyDownloadUrl")?.value.trim();
+    const downloadUrlPC = document.getElementById("proyDownloadUrlPC")?.value.trim() || "";
+    const downloadUrlMobile = document.getElementById("proyDownloadUrlMobile")?.value.trim() || "";
+    const validPortUrl = value => { if (!value) return true; try { const u = new URL(value); return u.protocol === "https:" && ["drive.google.com", "mediafire.com"].some(h => u.hostname === h || u.hostname.endsWith(`.${h}`)); } catch { return false; } };
 
-    if (!title || !description || !downloadUrl) {
+    if (!title || !description || (!downloadUrlPC && !downloadUrlMobile) || !validPortUrl(downloadUrlPC) || !validPortUrl(downloadUrlMobile)) {
         if (errorMsg) {
             errorMsg.textContent = "⚠️ Completá todos los campos obligatorios.";
             errorMsg.style.display = "block";
@@ -105,7 +107,10 @@ window.handlePublishProyectoOficial = async function(event) {
         description: genre ? `${genre} — ${description}` : description,
         author,
         image_url: finalImageUrl,
-        download_url: downloadUrl,
+        download_url: downloadUrlPC || downloadUrlMobile,
+        download_url_pc: downloadUrlPC || null,
+        download_url_mobile: downloadUrlMobile || null,
+        plataforma: downloadUrlPC ? "PC" : "Móvil",
         likes_count: 0,
         views_count: 0,
         playing_count: 0,

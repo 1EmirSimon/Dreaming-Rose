@@ -1,7 +1,7 @@
 /* Formulario de publicación: optimizado para escritorio y móvil */
 #publishModal .modal-content { max-height: 90dvh; overflow-y: auto; }
 #publishForm > input:not([type="file"]), #publishForm > textarea, #publishForm > select,
-#publishForm .publish-image-field input, #publishForm #pubDownloadUrl, #publishForm #pubTags {
+#publishForm .publish-image-field input, #publishForm #pubDownloadUrl, #publishForm #pubDownloadUrlPC, #publishForm #pubDownloadUrlMobile, #publishForm #pubTags {
   box-sizing: border-box; width: 100%; padding: 11px 12px; border: 1px solid #343440; border-radius: 9px;
   background: #15151d; color: #f7f7fb; font: inherit;
 }

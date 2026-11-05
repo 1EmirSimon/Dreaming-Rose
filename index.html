@@ -475,10 +475,14 @@
                 <option value="">Elegí una categoría</option>
                 <option>Acción y lucha</option><option>Aventura y RPG</option><option>Plataformas</option><option>Carreras</option><option>Estrategia</option><option>Puzzle y lógica</option><option>Terror</option><option>Simulación</option><option>Deportes</option><option>Casual</option><option>Otro</option>
             </select>
-            <label for="pubPlatform" style="font-size: 0.8rem; color: #ddd;">Plataforma *</label>
-            <select id="pubPlatform" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
-                <option value="">Elegí una plataforma</option><option>PC</option><option>Móvil</option><option>Linux</option><option>Mac</option><option>Otra</option>
-            </select>
+            <div class="port-fields" style="display:grid;gap:10px;padding:12px;border:1px solid var(--border);border-radius:10px;background:#11111a;">
+                <strong>Versiones disponibles</strong>
+                <label for="pubDownloadUrlPC" style="font-size:.85rem;color:#ddd;">Enlace de descarga para PC</label>
+                <input type="url" id="pubDownloadUrlPC" placeholder="Google Drive o MediaFire · PC" autocomplete="url">
+                <label for="pubDownloadUrlMobile" style="font-size:.85rem;color:#ddd;">Enlace de descarga para móvil</label>
+                <input type="url" id="pubDownloadUrlMobile" placeholder="Google Drive o MediaFire · Android/iOS" autocomplete="url">
+                <small>Completá al menos uno. Podés agregar el otro port más adelante desde tu dashboard.</small>
+            </div>
             
             <div class="publish-image-field">
                 <label for="pubImageFile">Portada del juego *</label>
@@ -503,7 +507,7 @@
             <label for="pubTags">Etiquetas (opcional, máximo 3)</label>
             <input type="text" id="pubTags" maxlength="100" placeholder="Ej.: pixel art, un jugador, difícil">
             <small>Separá las etiquetas con comas. Máximo 3, sin repetir.</small>
-            <input type="url" id="pubDownloadUrl" placeholder="Enlace de descarga de Google Drive o MediaFire *" required>
+
 
             <div class="publish-schedule">
                 <label for="pubScheduleDate">🕒 Programar publicación (opcional)</label>
@@ -562,7 +566,11 @@
                 <input type="file" id="proyImageFile" accept="image/*" required style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
             </div>
 
-            <input type="url" id="proyDownloadUrl" placeholder="Link de descarga (Drive) *" required style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <label for="proyDownloadUrlPC">Port para PC</label>
+            <input type="url" id="proyDownloadUrlPC" placeholder="Enlace PC (Drive o MediaFire)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <label for="proyDownloadUrlMobile">Port para móvil</label>
+            <input type="url" id="proyDownloadUrlMobile" placeholder="Enlace móvil (Drive o MediaFire)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a24; color: #fff;">
+            <small>Completá al menos uno. El otro port se puede agregar después desde el dashboard.</small>
 
             <p id="proyectoError" style="color: #ff4d6d; font-size: 0.8rem; display: none;"></p>
 

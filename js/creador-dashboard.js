@@ -65,14 +65,15 @@ function gameCard(g) {
   const published = g.created_at ? new Date(g.created_at).toLocaleDateString("es-AR") : "Sin fecha";
   const reason = g.motivo_revision ? `<p class="creator-reason"><strong>Motivo de revisión:</strong> ${escapeHTML(g.motivo_revision)}</p>` : "";
   const missingCategory = !g.categoria || g.categoria_confirmada !== true;
-  const missingPlatform = !g.plataforma;
   const missingAge = !g.clasificacion_edad || g.clasificacion_edad === "Pendiente de clasificación";
-  const missingMeta = missingCategory || missingPlatform || missingAge;
+  const missingMeta = missingCategory || missingAge;
   const canEditMetadata = currentRole === "root" || (!isOfficial(g) && g.user_id === currentUserId);
-  const metadataNotice = missingMeta ? `<div class="creator-metadata-alert" role="status"><strong>⚠ Falta completar la ficha de este juego.</strong><p>${[missingCategory ? "confirmar categoría" : "", missingPlatform ? "plataforma" : "", missingAge ? "clasificación por edad" : ""].filter(Boolean).join(", ")}.</p>${canEditMetadata ? `<button class="creator-button creator-complete-toggle" type="button" data-game-id="${Number(g.id)}" aria-expanded="false">Completar ficha</button><form class="creator-metadata-form" data-game-form="${Number(g.id)}" hidden><label>Categoría<select name="categoria" required><option value="">Elegí una categoría</option>${["Acción y lucha","Aventura y RPG","Plataformas","Carreras","Estrategia","Puzzle y lógica","Terror","Simulación","Deportes","Casual","Otro"].map(value => `<option value="${value}" ${g.categoria === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label>Plataforma<select name="plataforma" required><option value="">Elegí una plataforma</option>${["PC","Móvil","Linux","Mac","Otra"].map(value => `<option value="${value}" ${g.plataforma === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="creator-age-field">Clasificación por edad<select name="clasificacion_edad" required><option value="Pendiente de clasificación" ${g.clasificacion_edad === "Pendiente de clasificación" ? "selected" : ""}>Pendiente de clasificación</option>${["Menores de 13","13+","16+","18+"].map(value => `<option value="${value}" ${g.clasificacion_edad === value ? "selected" : ""}>${value}</option>`).join("")}</select><small>Elegí según el contenido real del juego. Si no lo sabés, dejalo pendiente y consultá a moderación.</small></label><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar cambios</button><button class="creator-button creator-button-quiet" type="button" data-game-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-game-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : ""}</div>` : "";
-  const download = g.download_url
-    ? `<a class="creator-text-link" href="${escapeHTML(g.download_url)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
-    : `<span class="creator-muted">Sin enlace de descarga</span>`;
+  const metadataNotice = missingMeta ? `<div class="creator-metadata-alert" role="status"><strong>⚠ Falta completar la ficha de este juego.</strong><p>${[missingCategory ? "confirmar categoría" : "", missingAge ? "clasificación por edad" : ""].filter(Boolean).join(", ")}.</p>${canEditMetadata ? `<button class="creator-button creator-complete-toggle" type="button" data-game-id="${Number(g.id)}" aria-expanded="false">Completar ficha</button><form class="creator-metadata-form" data-game-form="${Number(g.id)}" hidden><label>Categoría<select name="categoria" required><option value="">Elegí una categoría</option>${["Acción y lucha","Aventura y RPG","Plataformas","Carreras","Estrategia","Puzzle y lógica","Terror","Simulación","Deportes","Casual","Otro"].map(value => `<option value="${value}" ${g.categoria === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><p class="creator-muted">Disponibilidad de ports: ${g.download_url_pc && g.download_url_mobile ? "PC + Móvil" : (g.download_url_mobile || String(g.plataforma || "").toLowerCase().includes("móvil")) ? "Móvil" : "PC"}. Se actualiza automáticamente según los enlaces cargados.</p><label class="creator-age-field">Clasificación por edad<select name="clasificacion_edad" required><option value="Pendiente de clasificación" ${g.clasificacion_edad === "Pendiente de clasificación" ? "selected" : ""}>Pendiente de clasificación</option>${["Menores de 13","13+","16+","18+"].map(value => `<option value="${value}" ${g.clasificacion_edad === value ? "selected" : ""}>${value}</option>`).join("")}</select><small>Elegí según el contenido real del juego. Si no lo sabés, dejalo pendiente y consultá a moderación.</small></label><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar cambios</button><button class="creator-button creator-button-quiet" type="button" data-game-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-game-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : ""}</div>` : "";
+  const legacyMobile = /m[oó]vil/i.test(String(g.plataforma || ""));
+  const pcPort = g.download_url_pc || (!g.download_url_mobile && !legacyMobile ? g.download_url : "");
+  const mobilePort = g.download_url_mobile || (legacyMobile ? g.download_url : "");
+  const download = `<div class="creator-port-links">${pcPort ? `<a class="creator-text-link" href="${escapeHTML(pcPort)}" target="_blank" rel="noopener noreferrer">Ver port PC ↗</a>` : `<span class="creator-muted">Sin port PC</span>`}${mobilePort ? `<a class="creator-text-link" href="${escapeHTML(mobilePort)}" target="_blank" rel="noopener noreferrer">Ver port móvil ↗</a>` : `<span class="creator-muted">Sin port móvil</span>`}</div>`;
+  const portEditor = canEditMetadata ? `<button class="creator-button creator-port-toggle" type="button" data-port-toggle="${Number(g.id)}" aria-expanded="false">Agregar o actualizar ports</button><form class="creator-metadata-form creator-port-form" data-port-form="${Number(g.id)}" hidden><label>Enlace para PC<input type="url" name="download_url_pc" value="${escapeHTML(pcPort)}" placeholder="https://..." /></label><label>Enlace para móvil<input type="url" name="download_url_mobile" value="${escapeHTML(mobilePort)}" placeholder="https://..." /></label><small>Dejá vacío el port que todavía no exista. Tiene que quedar al menos uno.</small><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar ports</button><button class="creator-button creator-button-quiet" type="button" data-port-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-port-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : "";
   const ownership = isOfficial(g) ? "Proyecto oficial Dreaming Rose" : (g.user_id === currentUserId ? "Tu publicación" : `Comunidad · ${escapeHTML(g.author || "Creador")}`);
 
   return `<article class="creator-game-card">
@@ -91,6 +92,7 @@ function gameCard(g) {
         <div><span>Visitas</span><strong>${visits}</strong></div>
         <div><span>Vistas contador</span><strong>${fmt(g.views_count)}</strong></div>
       </div>
+      ${portEditor}
       <div class="creator-game-footer">${download}<span class="creator-muted">${ownership}</span></div>
     </div>
   </article>`;
@@ -129,7 +131,7 @@ async function loadDashboard(user) {
   try {
     let gamesQuery = supabase
       .from("juegos")
-      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma,clasificacion_edad,categoria_confirmada")
+      .select("id,title,description,created_at,author,image_url,download_url,download_url_pc,download_url_mobile,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma,clasificacion_edad,categoria_confirmada")
       .order("es_proyecto_oficial", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -176,6 +178,29 @@ async function loadDashboard(user) {
 }
 
 async function saveGameMetadata(event) {
+  const portForm = event.target.closest("form[data-port-form]");
+  if (portForm) {
+    event.preventDefault();
+    const gameId = Number(portForm.dataset.portForm);
+    const game = myGames.find(item => Number(item.id) === gameId);
+    const canManage = game && (currentRole === "root" || (!isOfficial(game) && game.user_id === currentUserId));
+    if (!canManage) return;
+    const pc = portForm.elements.download_url_pc.value.trim();
+    const mobile = portForm.elements.download_url_mobile.value.trim();
+    const feedback = document.querySelector(`[data-port-feedback="${gameId}"]`);
+    const valid = value => { if (!value) return true; try { const u = new URL(value); return u.protocol === "https:" && ["drive.google.com","mediafire.com"].some(h => u.hostname === h || u.hostname.endsWith(`.${h}`)); } catch { return false; } };
+    if ((!pc && !mobile) || !valid(pc) || !valid(mobile)) { if (feedback) feedback.textContent = "Ingresá al menos un enlace HTTPS válido de Google Drive o MediaFire."; return; }
+    const submit = portForm.querySelector('button[type="submit"]'); submit.disabled = true; if (feedback) feedback.textContent = "Guardando…";
+    try {
+      let query = supabase.from("juegos").update({ download_url_pc: pc || null, download_url_mobile: mobile || null, download_url: pc || mobile, plataforma: pc ? "PC" : "Móvil" }).eq("id", gameId);
+      if (currentRole !== "root") query = query.eq("user_id", currentUserId);
+      const { data, error } = await query.select("id,download_url,download_url_pc,download_url_mobile,plataforma").single();
+      if (error) throw error;
+      Object.assign(game, data); renderGames(); setNotice(`Ports de “${game.title}” actualizados.`, "success");
+    } catch (error) { if (feedback) feedback.textContent = `No se pudieron guardar los ports: ${error.message || "error desconocido"}.`; }
+    finally { submit.disabled = false; }
+    return;
+  }
   const form = event.target.closest("form[data-game-form]");
   if (!form) return;
   event.preventDefault();
@@ -189,12 +214,12 @@ async function saveGameMetadata(event) {
     return;
   }
   const category = form.elements.categoria.value.trim();
-  const platform = form.elements.plataforma.value.trim();
+  const platform = game.download_url_pc ? "PC" : (game.download_url_mobile || String(game.plataforma || "").toLowerCase().includes("móvil")) ? "Móvil" : "PC";
   const ageRating = form.elements.clasificacion_edad.value.trim();
   const feedback = document.querySelector(`[data-game-feedback="${gameId}"]`);
   const submit = form.querySelector('button[type="submit"]');
-  if (!category || !platform || !ageRating) {
-    if (feedback) feedback.textContent = "Elegí una categoría, una plataforma y una clasificación por edad.";
+  if (!category || !ageRating) {
+    if (feedback) feedback.textContent = "Elegí una categoría y una clasificación por edad.";
     return;
   }
   submit.disabled = true;
@@ -228,6 +253,10 @@ async function saveGameMetadata(event) {
 }
 
 function handleMetadataActions(event) {
+  const portToggle = event.target.closest("[data-port-toggle]");
+  if (portToggle) { const form = document.querySelector(`[data-port-form="${portToggle.dataset.portToggle}"]`); if (form) { form.hidden = !form.hidden; portToggle.setAttribute("aria-expanded", String(!form.hidden)); } return; }
+  const portCancel = event.target.closest("[data-port-cancel]");
+  if (portCancel) { const id = portCancel.dataset.portCancel; const form = document.querySelector(`[data-port-form="${id}"]`); if (form) form.hidden = true; return; }
   const toggle = event.target.closest("[data-game-id]");
   if (toggle && toggle.classList.contains("creator-complete-toggle")) {
     const form = document.querySelector(`[data-game-form="${toggle.dataset.gameId}"]`);
