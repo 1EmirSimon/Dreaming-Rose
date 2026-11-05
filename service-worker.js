@@ -1,6 +1,6 @@
 /* Dreaming Rose PWA — actualización segura de recursos */
 const CACHE_PREFIX = "dreaming-rose-";
-const CACHE_NAME = `${CACHE_PREFIX}phase3-20261105-ports-v1`;
+const CACHE_NAME = `${CACHE_PREFIX}phase3-20261105-admin-center-v2`;
 
 const APP_ASSETS = [
   "./",

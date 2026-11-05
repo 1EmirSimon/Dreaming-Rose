@@ -74,7 +74,8 @@ function renderGame(game) {
   const author = safeText(game.author, "Creador no indicado");
   const description = safeText(game.description, "Sin descripción.");
   const imageUrl = safeHttpsUrl(game.image_url);
-  const downloadUrl = safeHttpsUrl(game.download_url);
+  const downloadPC = safeHttpsUrl(game.download_url_pc || game.download_url);
+  const downloadMobile = safeHttpsUrl(game.download_url_mobile);
   const status = game.estado_moderacion || "pendiente";
   const reason = safeText(game.motivo_revision || "", "");
   const statusClass = status === "aprobado" ? "approved" : status === "rechazado" ? "rejected" : "pending";
@@ -84,9 +85,10 @@ function renderGame(game) {
   const cover = imageUrl
     ? `<img class="moderation-cover" src="${safeText(imageUrl)}" alt="Portada de ${title}" loading="lazy" referrerpolicy="no-referrer">`
     : '<div class="moderation-cover moderation-cover-empty">SIN PORTADA</div>';
-  const download = downloadUrl
-    ? `<a href="${safeText(downloadUrl)}" target="_blank" rel="noopener noreferrer">Abrir enlace de descarga ↗</a>`
-    : "<span>Sin enlace HTTPS válido</span>";
+  const download = [
+    downloadPC ? `<a href="${safeText(downloadPC)}" target="_blank" rel="noopener noreferrer">Descarga PC ↗</a>` : "",
+    downloadMobile ? `<a href="${safeText(downloadMobile)}" target="_blank" rel="noopener noreferrer">Descarga móvil ↗</a>` : ""
+  ].filter(Boolean).join(" · ") || "<span>Sin enlaces HTTPS válidos</span>";
 
   const reasonEditor = status === "aprobado"
     ? `<p class="moderation-review-note">${reason ? `Motivo registrado: ${reason}` : "Sin observaciones registradas."}</p>`
@@ -177,7 +179,7 @@ async function loadGames() {
 
   try {
     const { data, error } = await supabase.from("juegos")
-      .select("id,title,description,created_at,author,image_url,download_url,user_id,publish_at,es_proyecto_oficial,estado_moderacion,revisado_por,revisado_at,motivo_revision,categoria,plataforma,screenshots,clasificacion_edad,etiquetas,categoria_confirmada")
+      .select("id,title,description,created_at,author,image_url,download_url,download_url_pc,download_url_mobile,user_id,publish_at,es_proyecto_oficial,estado_moderacion,revisado_por,revisado_at,motivo_revision,categoria,plataforma,screenshots,clasificacion_edad,etiquetas,categoria_confirmada")
       .order("created_at", { ascending: false })
       .limit(250);
     if (error) throw error;
