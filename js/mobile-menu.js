@@ -84,7 +84,10 @@ export function actualizarMenuMobile(user, profile) {
         guestSection.style.display = "flex";
         const btnDashboard = document.getElementById("mobileBtnCreatorDashboard");
         if (btnDashboard) btnDashboard.style.display = "none";
+        if (btnPublish) btnPublish.style.display = "none";
+        if (btnAdmin) btnAdmin.style.display = "none";
         if (btnModeration) btnModeration.style.display = "none";
+        if (btnSolicitar) btnSolicitar.style.display = "none";
     }
 }
 

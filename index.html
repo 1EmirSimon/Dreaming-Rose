@@ -13,7 +13,7 @@
     <title>Dreaming Rose Hub | Studio</title>
 
     <link rel="icon" href="assets/Icons/rosaaa MArlo icono.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=20261105-moderation-nav-v3">
     <link rel="stylesheet" href="css/refinamiento-layout.css">
 <link rel="stylesheet" href="css/publish-optimized.css">
 <link rel="stylesheet" href="css/community-links.css?v=20261104-1">
@@ -107,6 +107,7 @@
                             <a id="btnProfile" href="perfil.html"><span aria-hidden="true">♙</span> Mi perfil</a>
                             <a id="btnCreatorDashboard" href="creador.html" style="display:none;"><span aria-hidden="true">▦</span> Mi dashboard</a>
                             <button id="btnSolicitarCreador" onclick="openSolicitudCreador()" type="button" style="display:none;">Solicitar ser creador</button>
+                            <a id="btnModerationLink" class="nav-moderation-link" href="moderacion.html" style="display:none;"><span aria-hidden="true">🛡</span> Centro de moderación</a>
                             <button class="nav-logout-clean" onclick="logout()" type="button">Cerrar sesión</button>
                         </div>
                     </details>
@@ -120,7 +121,7 @@
 </button>
 
         <!-- Botón hamburguesa (FUERA de nav-right, hermano directo) -->
-        <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
+        <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Abrir menú" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
@@ -724,9 +725,14 @@
             </button>
 
             <button id="mobileBtnAdmin" class="mobile-menu-link" onclick="closeMobileMenu(); openAdminModal();" style="display: none;">
-                <span class="mobile-menu-icon">🛡️</span>
+                <span class="mobile-menu-icon">⚙️</span>
                 <span>PANEL ADMIN</span>
             </button>
+
+            <a id="mobileBtnModeration" class="mobile-menu-link mobile-menu-moderation" href="moderacion.html" style="display:none;" onclick="closeMobileMenu()">
+                <span class="mobile-menu-icon">🛡️</span>
+                <span>CENTRO DE MODERACIÓN</span>
+            </a>
 
             <button id="mobileBtnSolicitar" class="mobile-menu-link" onclick="closeMobileMenu(); openSolicitudCreador();" style="display: none;">
                 <span class="mobile-menu-icon">⭐</span>
@@ -814,6 +820,6 @@
 
 <!-- Carga de Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js?v=20261031-admin-phase1-1"></script>
+<script type="module" src="js/main.js?v=20261105-moderation-nav-v3"></script>
 </body>
 </html>

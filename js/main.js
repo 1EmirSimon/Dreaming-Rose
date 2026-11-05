@@ -23,7 +23,7 @@ window.addEventListener("load", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js?v=20261031-phase1-1", { updateViaCache: "none" })
+    navigator.serviceWorker.register("./service-worker.js?v=20261105-moderation-nav-v3", { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch((error) => console.error("Error registrando Service Worker:", error));
   });

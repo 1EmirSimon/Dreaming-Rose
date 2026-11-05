@@ -415,3 +415,70 @@
     transition: none;
   }
 }
+
+
+/* Centro de moderación: acceso destacado al final del menú de cuenta. */
+.nav-account-dropdown .nav-moderation-link {
+  margin-top: 5px;
+  border: 1px solid rgba(255, 77, 109, .28);
+  background: rgba(255, 77, 109, .09);
+  color: #ff8299;
+  font-weight: 800;
+}
+.nav-account-dropdown .nav-moderation-link:hover,
+.nav-account-dropdown .nav-moderation-link:focus-visible {
+  border-color: rgba(255, 77, 109, .65);
+  background: rgba(255, 77, 109, .16);
+  color: #fff;
+}
+.nav-account-dropdown .nav-moderation-link + .nav-logout-clean {
+  margin-top: 4px;
+}
+.mobile-menu-moderation {
+  border-color: rgba(255, 77, 109, .28) !important;
+  background: rgba(255, 77, 109, .09) !important;
+  color: #ff91a5 !important;
+}
+.mobile-menu-moderation:hover,
+.mobile-menu-moderation:focus-visible {
+  background: rgba(255, 77, 109, .17) !important;
+  border-color: rgba(255, 77, 109, .58) !important;
+  color: #fff !important;
+}
+
+/* Un solo breakpoint para el drawer: evita que la hamburguesa aparezca
+   mientras el propio menú permanece oculto por reglas antiguas. */
+@media (max-width: 1100px) {
+  .mobile-menu { display: block !important; }
+  .navbar .hamburger-btn {
+    position: relative;
+    z-index: 1202;
+    display: inline-flex !important;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    padding: 8px;
+    margin-left: auto;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 9px;
+    background: rgba(255,255,255,.06);
+    cursor: pointer;
+  }
+  .navbar .hamburger-btn span {
+    width: 19px;
+    height: 2px;
+    margin: 0;
+    flex: 0 0 2px;
+    background: #fff;
+  }
+}
+@media (min-width: 1101px) {
+  .mobile-menu { display: none !important; }
+  .navbar .hamburger-btn { display: none !important; }
+}
+@media (max-width: 480px) {
+  .navbar .nav-container { width: calc(100% - 24px); gap: 8px; }
+  .navbar .nav-left { min-width: 0; }
+  .navbar .nav-left .brand { overflow: hidden; text-overflow: ellipsis; }
+  .navbar .hamburger-btn { flex-basis: 40px; width: 40px; height: 40px; }
+}
