@@ -192,11 +192,22 @@ async function saveGameMetadata(event) {
     if ((!pc && !mobile) || !valid(pc) || !valid(mobile)) { if (feedback) feedback.textContent = "Ingresá al menos un enlace HTTPS válido de Google Drive o MediaFire."; return; }
     const submit = portForm.querySelector('button[type="submit"]'); submit.disabled = true; if (feedback) feedback.textContent = "Guardando…";
     try {
-      let query = supabase.from("juegos").update({ download_url_pc: pc || null, download_url_mobile: mobile || null, download_url: pc || mobile, plataforma: pc ? "PC" : "Móvil" }).eq("id", gameId);
-      if (currentRole !== "root") query = query.eq("user_id", currentUserId);
-      const { data, error } = await query.select("id,download_url,download_url_pc,download_url_mobile,plataforma").single();
+      // Los permisos UPDATE directos de juegos están restringidos por RLS.
+      // La RPC valida propietario/rol en servidor y actualiza únicamente los ports.
+      const { data, error } = await supabase.rpc("actualizar_ports_juego", {
+        p_juego_id: gameId,
+        p_download_url_pc: pc || null,
+        p_download_url_mobile: mobile || null
+      });
       if (error) throw error;
-      Object.assign(game, data); renderGames(); setNotice(`Ports de “${game.title}” actualizados.`, "success");
+      if (!data?.ok) throw new Error(data?.message || "No se pudieron actualizar los ports.");
+      Object.assign(game, {
+        download_url_pc: data.download_url_pc,
+        download_url_mobile: data.download_url_mobile,
+        download_url: data.download_url,
+        plataforma: data.plataforma
+      });
+      renderGames(); setNotice(`Ports de “${game.title}” actualizados.`, "success");
     } catch (error) { if (feedback) feedback.textContent = `No se pudieron guardar los ports: ${error.message || "error desconocido"}.`; }
     finally { submit.disabled = false; }
     return;
