@@ -5,7 +5,7 @@ import "./username.js";
 import "./solicitudes.js";
 import { showWebsite } from "./animations.js";
 import { initGames } from "./games.js";
-import { initAuth } from "./auth.js?v=20261031-admin-phase1-1";
+import { initAuth } from "./auth.js?v=20261106-desktop-moderation-ports-1";
 import "./mobile-menu.js";
 import { waitForLaunch } from "./launch.js";
 import "./hero.js";

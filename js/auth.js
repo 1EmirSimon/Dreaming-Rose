@@ -213,7 +213,11 @@ function updateUI(user, profile) {
 
         if (btnPublish) btnPublish.style.display = canPublish ? "flex" : "none";
         if (btnCreatorDashboard) btnCreatorDashboard.style.display = canPublish ? "flex" : "none";
-        if (btnModerationLink) btnModerationLink.style.display = canModerate ? "flex" : "none";
+        if (btnModerationLink) {
+            btnModerationLink.hidden = !canModerate;
+            btnModerationLink.style.display = canModerate ? "flex" : "none";
+            btnModerationLink.setAttribute("aria-hidden", canModerate ? "false" : "true");
+        }
         if (btnAdminPanel) btnAdminPanel.style.display = canModerate ? "flex" : "none";
         if (btnSolicitar) btnSolicitar.style.display = userRole === 'usuario' ? "flex" : "none";
 
@@ -241,7 +245,11 @@ function updateUI(user, profile) {
         if (userInfo) userInfo.style.display = "none";
         if (btnPublish) btnPublish.style.display = "none";
         if (btnCreatorDashboard) btnCreatorDashboard.style.display = "none";
-        if (btnModerationLink) btnModerationLink.style.display = "none";
+        if (btnModerationLink) {
+            btnModerationLink.hidden = true;
+            btnModerationLink.style.display = "none";
+            btnModerationLink.setAttribute("aria-hidden", "true");
+        }
         if (btnAdminPanel) btnAdminPanel.style.display = "none";
         const mobileCreatorDashboard = document.getElementById("mobileBtnCreatorDashboard");
         if (mobileCreatorDashboard) mobileCreatorDashboard.style.display = "none";

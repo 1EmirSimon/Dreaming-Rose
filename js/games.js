@@ -1027,10 +1027,17 @@ window.openGameDetails = async function(gameInput) {
         const legacyMobile = /m[oó]vil/i.test(String(game.plataforma || ""));
         const pcUrl = game.download_url_pc || (!game.download_url_mobile && !legacyMobile ? game.download_url : null);
         const mobileUrl = game.download_url_mobile || (legacyMobile ? game.download_url : null);
-        const links = [];
-        if (pcUrl) links.push(`<a class="btn-play-large" href="${escapeHTML(pcUrl)}" target="_blank" rel="noopener noreferrer">DESCARGAR PARA PC ↗</a>`);
-        if (mobileUrl) links.push(`<a class="btn-play-large" href="${escapeHTML(mobileUrl)}" target="_blank" rel="noopener noreferrer">DESCARGAR PARA MÓVIL ↗</a>`);
-        playBtn.outerHTML = `<div id="gameDownloadBtn" class="game-port-actions" style="display:flex;gap:10px;flex-wrap:wrap">${links.join("") || '<span class="btn-play-large" aria-disabled="true">PORT NO DISPONIBLE</span>'}</div>`;
+        const isMobileDevice = Boolean(
+            navigator.userAgentData?.mobile ||
+            /Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(navigator.userAgent || "")
+        );
+        const selectedUrl = isMobileDevice ? mobileUrl : pcUrl;
+        const selectedLabel = isMobileDevice ? "DESCARGAR PARA MÓVIL ↗" : "DESCARGAR PARA PC ↗";
+        const missingLabel = isMobileDevice ? "PORT MÓVIL NO DISPONIBLE" : "PORT PC NO DISPONIBLE";
+        const link = selectedUrl
+            ? `<a class="btn-play-large" href="${escapeHTML(selectedUrl)}" target="_blank" rel="noopener noreferrer">${selectedLabel}</a>`
+            : `<span class="btn-play-large" aria-disabled="true">${missingLabel}</span>`;
+        playBtn.outerHTML = `<div id="gameDownloadBtn" class="game-port-actions" style="display:flex;gap:10px;flex-wrap:wrap">${link}</div>`;
     }
 
     await loadGameComments(game.id);
