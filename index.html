@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="css/refinamiento-layout.css">
 <link rel="stylesheet" href="css/publish-optimized.css">
 <link rel="stylesheet" href="css/community-links.css?v=20261104-1">
+    <link rel="stylesheet" href="css/dreaming-rose-refresh.css?v=20261110-1">
 
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     
@@ -136,12 +137,17 @@
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content reveal">
-        <span class="tagline">PROYECTO DESTACADO</span>
-        <h1>METEOR <br> FIGHTER</h1>
-        <p>La evolución del combate técnico 2D. Domina el instinto.</p>
+        <span class="tagline">UN UNIVERSO DE JUEGOS INDEPENDIENTES</span>
+        <h1>IDEAS QUE<br><span>COBRAN VIDA.</span></h1>
+        <p>Descubrí proyectos independientes, explorá nuevos mundos y compartí tus propios videojuegos. En Dreaming Rose, cada creador tiene un lugar.</p>
+        <div class="hero-stats" aria-label="Qué ofrece Dreaming Rose">
+            <div><strong>INDIE</strong><span>Juegos independientes</span></div>
+            <div><strong>COMUNIDAD</strong><span>Creadores reales</span></div>
+            <div><strong>LIBRE</strong><span>Tu próximo proyecto</span></div>
+        </div>
         <div class="hero-actions">
-            <button class="btn-main" onclick="openMeteorHero()">DESCARGAR AHORA!</button>
-            <a href="#proyectos" class="btn-outline">EXPLORAR HUB</a>
+            <a class="btn-main" href="#proyectos">EXPLORAR PROYECTOS</a>
+            <a href="#comunidad" class="btn-outline">ENTRAR A LA COMUNIDAD</a>
         </div>
     </div>
 </section>
@@ -276,6 +282,7 @@
                 <p id="gameModalDescription" class="game-description-text">
                     Sin descripción disponible.
                 </p>
+                <div id="gameSocialLinks" class="game-social-links" hidden aria-label="Redes sociales del creador"></div>
 
                 <!-- Aviso de verificación -->
                 <div id="gameVerificationBadge"></div>
@@ -485,6 +492,19 @@
                 <small>Completá al menos uno. Podés agregar el otro port más adelante desde tu dashboard.</small>
             </div>
             
+            <fieldset class="publish-social-field">
+                <legend>Redes sociales y enlaces <span>(opcional)</span></legend>
+                <p>Agregá los perfiles del juego o del estudio. También podés completarlos más adelante desde tu dashboard.</p>
+                <div class="publish-social-grid">
+                    <label><span class="social-label-icon instagram">◎</span>Instagram<input type="url" id="pubSocialInstagram" placeholder="https://instagram.com/..." inputmode="url"></label>
+                    <label><span class="social-label-icon youtube">▶</span>YouTube<input type="url" id="pubSocialYoutube" placeholder="https://youtube.com/..." inputmode="url"></label>
+                    <label><span class="social-label-icon tiktok">♪</span>TikTok<input type="url" id="pubSocialTiktok" placeholder="https://tiktok.com/@..." inputmode="url"></label>
+                    <label><span class="social-label-icon discord">◉</span>Discord<input type="url" id="pubSocialDiscord" placeholder="https://discord.gg/..." inputmode="url"></label>
+                    <label><span class="social-label-icon x">𝕏</span>X<input type="url" id="pubSocialX" placeholder="https://x.com/..." inputmode="url"></label>
+                    <label><span class="social-label-icon website">↗</span>Sitio web<input type="url" id="pubSocialWebsite" placeholder="https://tusitio.com" inputmode="url"></label>
+                </div>
+            </fieldset>
+
             <div class="publish-image-field">
                 <label for="pubImageFile">Portada del juego *</label>
                 <input type="file" id="pubImageFile" accept="image/jpeg,image/png,image/webp,image/avif" required>
