@@ -1,0 +1,86 @@
+/* Dreaming Rose — corrección final de grillas y portadas.
+   Una sola tarjeta no debe expandirse para ocupar todo el ancho disponible. */
+#grid-proyectos.grid-projects,
+#community-games.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
+    justify-content: start;
+    align-items: stretch;
+    gap: 18px;
+}
+
+#grid-proyectos .project-card,
+#community-games .game-card-hub {
+    width: 100%;
+    max-width: 280px;
+    min-width: 0;
+    justify-self: start;
+}
+
+#grid-proyectos .project-card .card-media {
+    width: 100%;
+    height: 170px;
+    min-height: 170px;
+    max-height: 170px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+#grid-proyectos .project-card .card-media img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+#community-games .game-card-media {
+    width: 100%;
+    height: 170px;
+    min-height: 170px;
+    max-height: 170px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+#community-games .game-card-thumb {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    margin: 0 auto;
+}
+
+/* Tablet y móvil: conservar una grilla compacta sin imágenes estiradas. */
+@media (max-width: 700px) {
+    #grid-proyectos.grid-projects,
+    #community-games.games-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    #grid-proyectos .project-card,
+    #community-games .game-card-hub {
+        max-width: none;
+        width: 100%;
+    }
+
+    #grid-proyectos .project-card .card-media,
+    #community-games .game-card-media {
+        height: 140px;
+        min-height: 140px;
+        max-height: 140px;
+    }
+}
+
+@media (max-width: 390px) {
+    #grid-proyectos.grid-projects,
+    #community-games.games-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
