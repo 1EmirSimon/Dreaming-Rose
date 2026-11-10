@@ -409,7 +409,7 @@ function renderGamesGrid(gamesList) {
             </div>
             <div class="game-card-info">
                 <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">
-                    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}
+                    ${escapeHTML(game.title)}${String(game.estado_moderacion || '').toLowerCase() === 'aprobado' ? '<span class="verified-badge" title="Aprobado por moderación">✓</span>' : (game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : '')}
                 </h4>
                 <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
                 <div class="game-card-category">${escapeHTML(game.categoria || 'Sin categoría')} · ${game.download_url_pc && game.download_url_mobile ? 'PC + Móvil' : (game.download_url_mobile || /m[oó]vil/i.test(String(game.plataforma || '')) ? 'Móvil' : 'PC')}</div>
@@ -1063,7 +1063,20 @@ window.openGameDetails = async function(gameInput) {
 
     const verificacionBadge = document.getElementById("gameVerificationBadge");
     if (verificacionBadge) {
-        if (game.verificado) {
+        const estadoModeracion = String(game.estado_moderacion || "").trim().toLowerCase();
+        if (estadoModeracion === "aprobado") {
+            verificacionBadge.innerHTML = `
+                <div class="verificacion-ok">
+                    ✅ Juego aprobado por el equipo de moderación
+                </div>
+            `;
+        } else if (estadoModeracion === "rechazado" || estadoModeracion === "bloqueado") {
+            verificacionBadge.innerHTML = `
+                <div class="verificacion-peligro">
+                    ⚠️ Esta publicación no fue aprobada por moderación.
+                </div>
+            `;
+        } else if (game.verificado) {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-ok">
                     ✅ Verificado por Google Safe Browsing
@@ -1072,13 +1085,13 @@ window.openGameDetails = async function(gameInput) {
         } else if (game.verificado_at) {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-peligro">
-                    ⚠️ Este juego fue marcado como sospechoso. Descarágalo bajo tu propio riesgo.
+                    ⚠️ Este juego fue marcado como sospechoso. No recomendamos descargarlo.
                 </div>
             `;
         } else {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-pendiente">
-                    ⏳ Este juego aún no fue verificado. Descargalo bajo tu propio riesgo.
+                    ⏳ Esta publicación todavía está pendiente de moderación.
                 </div>
             `;
         }

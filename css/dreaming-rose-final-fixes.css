@@ -84,3 +84,32 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+
+/* Hero destacado: vuelve a priorizar el juego propio del estudio. */
+.hero-meteor-content {
+    max-width: 900px;
+}
+.hero-meteor-content .tagline {
+    margin-bottom: 24px;
+}
+.hero-meteor-content h1 {
+    max-width: 800px;
+    font-size: clamp(3.5rem, 8vw, 7.2rem);
+    line-height: .88;
+    letter-spacing: -.045em;
+}
+.hero-meteor-content h1 span {
+    color: #f04464;
+}
+.hero-meteor-content > p {
+    max-width: 590px;
+}
+.hero-meteor-content .hero-actions {
+    margin-top: 30px;
+}
+@media (max-width: 700px) {
+    .hero-meteor-content h1 {
+        font-size: clamp(3rem, 15vw, 5rem);
+    }
+}
