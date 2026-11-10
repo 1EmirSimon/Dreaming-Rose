@@ -7,7 +7,33 @@ const ports=g=>{const legacyMobile=String(g.plataforma||"").toLowerCase().includ
 function reportButton(g){return `<button class="report-game-btn" type="button" data-report-game="${Number(g.id)}" data-report-title="${esc(g.title)}">⚑ REPORTAR JUEGO</button>`;}
 function ensureReportDialog(){if(document.getElementById("gameReportDialog"))return;const d=document.createElement("dialog");d.id="gameReportDialog";d.className="game-report-dialog";d.innerHTML=`<form id="gameReportForm"><button type="button" class="report-close" aria-label="Cerrar">×</button><p class="eyebrow">SEGURIDAD DE LA COMUNIDAD</p><h2>Reportar publicación</h2><p id="reportGameTitle" class="report-game-title"></p><label for="reportReason">Motivo</label><select id="reportReason" required><option value="">Seleccioná un motivo</option><option value="contenido_inapropiado">Contenido inapropiado</option><option value="enlace_roto">Enlace de descarga roto</option><option value="archivo_sospechoso">Virus o archivo sospechoso</option><option value="descripcion_engañosa">Descripción engañosa</option><option value="spam">Spam o publicidad engañosa</option><option value="derechos_autor">Derechos de autor</option><option value="otro">Otro</option></select><label for="reportDetail">Explicación</label><textarea id="reportDetail" minlength="10" maxlength="1200" rows="5" placeholder="Contanos qué problema encontraste (mínimo 10 caracteres)." required></textarea><small id="reportDailyLimit">Máximo 3 reportes por día.</small><p id="reportFeedback" role="status"></p><button class="download" id="sendGameReport" type="submit">ENVIAR REPORTE</button></form>`;document.body.appendChild(d);d.querySelector('.report-close').addEventListener('click',()=>d.close());d.addEventListener('click',e=>{if(e.target===d)d.close()});d.querySelector('form').addEventListener('submit',sendGameReport);}
 let reportGameId=null;
-async function sendGameReport(e){e.preventDefault();const {data:{user}}=await supabase.auth.getUser();const feedback=document.getElementById('reportFeedback');const button=document.getElementById('sendGameReport');if(!user){feedback.textContent='Iniciá sesión para enviar un reporte.';return;}button.disabled=true;feedback.textContent='Enviando…';const {data,error}=await supabase.rpc('enviar_reporte_juego',{p_juego_id:reportGameId,p_motivo:document.getElementById('reportReason').value,p_detalle:document.getElementById('reportDetail').value.trim()});button.disabled=false;if(error){feedback.textContent=error.message||'No se pudo enviar el reporte.';return;}feedback.textContent=`Reporte enviado. Te quedan ${data?.remaining_today??0} reportes disponibles hoy.`;document.getElementById('gameReportForm').reset();setTimeout(()=>document.getElementById('gameReportDialog').close(),1800);}
+async function sendGameReport(e){
+  e.preventDefault();
+  const feedback=document.getElementById('reportFeedback');
+  const button=document.getElementById('sendGameReport');
+  if(button.disabled)return;
+  button.disabled=true;
+  feedback.textContent='Verificando sesión…';
+  try{
+    const {data:{user},error:authError}=await supabase.auth.getUser();
+    if(authError)throw authError;
+    if(!user){feedback.textContent='Iniciá sesión para enviar un reporte.';return;}
+    feedback.textContent='Enviando…';
+    const {data,error}=await supabase.rpc('enviar_reporte_juego',{
+      p_juego_id:reportGameId,
+      p_motivo:document.getElementById('reportReason').value,
+      p_detalle:document.getElementById('reportDetail').value.trim()
+    });
+    if(error)throw error;
+    feedback.textContent=`Reporte enviado. Te quedan ${data?.remaining_today??0} reportes disponibles hoy.`;
+    document.getElementById('gameReportForm').reset();
+    window.setTimeout(()=>document.getElementById('gameReportDialog')?.close(),1800);
+  }catch(error){
+    feedback.textContent=error.message||'No se pudo enviar el reporte. Intentá nuevamente.';
+  }finally{
+    button.disabled=false;
+  }
+}
 function openReport(id,title){reportGameId=Number(id);ensureReportDialog();document.getElementById('reportGameTitle').textContent=title;document.getElementById('reportFeedback').textContent='';document.getElementById('gameReportDialog').showModal();}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-report-game]');if(b)openReport(b.dataset.reportGame,b.dataset.reportTitle||'Juego');});
 function render(){const query=(document.getElementById("searchGames").value||"").trim().toLowerCase();const platform=document.getElementById("platformFilter").value;const age=document.getElementById("ageFilter").value;const visible=games.filter(g=>{const p=ports(g);const available=[p.pc?"PC":null,p.mobile?"Móvil":null].filter(Boolean);return(selectedCategory==="Todas"||g.categoria===selectedCategory)&&(!platform||available.includes(platform))&&(!age||g.clasificacion_edad===age)&&(`${g.title||""} ${g.author||""} ${g.description||""}`).toLowerCase().includes(query)});

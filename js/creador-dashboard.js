@@ -208,7 +208,13 @@ async function saveGameMetadata(event) {
         plataforma: data.plataforma
       });
       renderGames(); setNotice(`Ports de “${game.title}” actualizados.`, "success");
-    } catch (error) { if (feedback) feedback.textContent = `No se pudieron guardar los ports: ${error.message || "error desconocido"}.`; }
+    } catch (error) {
+      const missingRpc = error?.code === "PGRST202" || /actualizar_ports_juego.*(not found|schema cache)|could not find the function/i.test(error?.message || "");
+      const message = missingRpc
+        ? "Falta aplicar la migración 20261106150000_add_secure_game_ports_rpc.sql en Supabase."
+        : (error.message || "error desconocido");
+      if (feedback) feedback.textContent = `No se pudieron guardar los ports: ${message}`;
+    }
     finally { submit.disabled = false; }
     return;
   }

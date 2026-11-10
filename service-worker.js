@@ -1,6 +1,6 @@
 /* Dreaming Rose PWA — actualización segura de recursos */
 const CACHE_PREFIX = "dreaming-rose-";
-const CACHE_NAME = `${CACHE_PREFIX}phase3-20261110-game-reports-v1`;
+const CACHE_NAME = `${CACHE_PREFIX}phase3-20261110-frontend-audit-v2`;
 
 const APP_ASSETS = [
   "./",
@@ -8,6 +8,7 @@ const APP_ASSETS = [
   "./juegos.html",
   "./creador.html",
   "./moderacion.html",
+  "./reportes.html",
   "./perfil.html",
   "./manifest.json",
   "./css/style.css",
@@ -33,6 +34,7 @@ const APP_ASSETS = [
   "./js/games.js",
   "./js/admin.js",
   "./js/moderacion.js",
+  "./js/reportes.js",
   "./js/catalogo.js",
   "./js/creador-dashboard.js",
   "./js/perfil.js",
