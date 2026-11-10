@@ -23,7 +23,7 @@ window.addEventListener("load", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js?v=20261110-frontend-audit-v2", { updateViaCache: "none" })
+    navigator.serviceWorker.register("./service-worker.js?v=20261110-meteor-hero-fix-v4", { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch((error) => console.error("Error registrando Service Worker:", error));
   });

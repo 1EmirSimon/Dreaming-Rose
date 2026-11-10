@@ -1,6 +1,6 @@
 /* Dreaming Rose PWA — actualización segura de recursos */
 const CACHE_PREFIX = "dreaming-rose-";
-const CACHE_NAME = `${CACHE_PREFIX}phase3-20261110-cinematic-socials-v3`;
+const CACHE_NAME = `${CACHE_PREFIX}phase4-20261110-meteor-hero-fix-v4`;
 
 const APP_ASSETS = [
   "./",
@@ -24,6 +24,7 @@ const APP_ASSETS = [
   "./css/publish-optimized.css",
   "./css/community-links.css",
   "./css/dreaming-rose-refresh.css",
+  "./css/dreaming-rose-final-fixes.css",
   "./css/catalogo.css",
   "./css/creador-dashboard.css",
   "./css/perfil.css",
