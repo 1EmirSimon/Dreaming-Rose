@@ -1,0 +1,75 @@
+/* Corrección exclusiva de la sección "Nuestros Proyectos".
+   No modifica las tarjetas del Hub. */
+#proyectos #grid-proyectos.grid-projects {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 280px)) !important;
+    justify-content: start !important;
+    align-items: stretch;
+    gap: 18px;
+    width: 100%;
+}
+
+#proyectos #grid-proyectos > .project-card {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 280px !important;
+    height: 100%;
+    justify-self: start;
+}
+
+#proyectos #grid-proyectos > .project-card .card-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 150px;
+    min-height: 150px;
+    max-height: 150px;
+    padding: 8px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#proyectos #grid-proyectos > .project-card .card-media img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+#proyectos #grid-proyectos > .project-card .card-body {
+    min-width: 0;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+#proyectos #grid-proyectos > .project-card .card-body h3,
+#proyectos #grid-proyectos > .project-card .card-body p {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 680px) {
+    #proyectos #grid-proyectos.grid-projects {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px;
+    }
+    #proyectos #grid-proyectos > .project-card {
+        max-width: none !important;
+    }
+    #proyectos #grid-proyectos > .project-card .card-media {
+        height: 130px;
+        min-height: 130px;
+        max-height: 130px;
+    }
+}
+
+@media (max-width: 390px) {
+    #proyectos #grid-proyectos.grid-projects {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
