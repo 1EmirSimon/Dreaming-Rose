@@ -24,7 +24,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
     <link rel="stylesheet" href="css/admin-console.css">
-    <link rel="stylesheet" href="css/dreaming-rose-final-fixes.css?v=20261110-3">
 </head>
 <body>
 
@@ -136,13 +135,13 @@
         <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters" class="hero-img">
     </div>
     <div class="hero-overlay"></div>
-    <div class="hero-content reveal hero-meteor-content">
+    <div class="hero-content reveal">
         <span class="tagline">PROYECTO DESTACADO</span>
-        <h1>METEOR<br><span>FIGHTERS</span></h1>
-        <p>La evolución del combate técnico 2D. Enfrentate a criaturas prehistóricas, dominá el instinto y desatá combos devastadores.</p>
+        <h1>METEOR <br> FIGHTER</h1>
+        <p>La evolución del combate técnico 2D. Domina el instinto.</p>
         <div class="hero-actions">
-            <button class="btn-main" type="button" onclick="openMeteorHero()">DESCUBRIR METEOR FIGHTERS</button>
-            <a href="#proyectos" class="btn-outline">EXPLORAR LA COMUNIDAD</a>
+            <button class="btn-main" onclick="openMeteorHero()">DESCARGAR AHORA!</button>
+            <a href="#proyectos" class="btn-outline">EXPLORAR HUB</a>
         </div>
     </div>
 </section>
@@ -155,7 +154,7 @@
     <div class="container">
         <div class="section-title reveal with-action">
             <div>
-                <h2>Proyectos y Juegos Comunidad</h2>
+                <h2>NUESTROS PROYECTOS</h2>
                 <div class="title-line"></div>
             </div>
             <button id="btnAgregarProyectoOficial" onclick="openProyectoOficial()" class="btn-outline" style="display: none; padding: 8px 16px; font-size: 0.7rem;">
@@ -486,19 +485,6 @@
                 <small>Completá al menos uno. Podés agregar el otro port más adelante desde tu dashboard.</small>
             </div>
             
-            <fieldset class="publish-social-field">
-                <legend>Redes sociales y enlaces <span>(opcional)</span></legend>
-                <p>Agregá los perfiles del juego o del estudio. También podés completarlos más adelante desde tu dashboard.</p>
-                <div class="publish-social-grid">
-                    <label><span class="social-label-icon instagram">◎</span>Instagram<input type="url" id="pubSocialInstagram" placeholder="https://instagram.com/..." inputmode="url"></label>
-                    <label><span class="social-label-icon youtube">▶</span>YouTube<input type="url" id="pubSocialYoutube" placeholder="https://youtube.com/..." inputmode="url"></label>
-                    <label><span class="social-label-icon tiktok">♪</span>TikTok<input type="url" id="pubSocialTiktok" placeholder="https://tiktok.com/@..." inputmode="url"></label>
-                    <label><span class="social-label-icon discord">◉</span>Discord<input type="url" id="pubSocialDiscord" placeholder="https://discord.gg/..." inputmode="url"></label>
-                    <label><span class="social-label-icon x">𝕏</span>X<input type="url" id="pubSocialX" placeholder="https://x.com/..." inputmode="url"></label>
-                    <label><span class="social-label-icon website">↗</span>Sitio web<input type="url" id="pubSocialWebsite" placeholder="https://tusitio.com" inputmode="url"></label>
-                </div>
-            </fieldset>
-
             <div class="publish-image-field">
                 <label for="pubImageFile">Portada del juego *</label>
                 <input type="file" id="pubImageFile" accept="image/jpeg,image/png,image/webp,image/avif" required>

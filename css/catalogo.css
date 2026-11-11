@@ -5,13 +5,3 @@
 
 .catalog-notice{margin:14px 0;padding:12px 14px;border:1px solid rgba(255,77,109,.45);border-radius:10px;background:rgba(255,77,109,.08);color:#ffdbe2;font-size:.9rem;line-height:1.5}
 .report-game-btn{display:block;width:100%;margin-top:10px;padding:10px 12px;border:1px solid #663044;border-radius:9px;background:#171018;color:#ff9ab0;font:800 11px Inter,sans-serif;letter-spacing:.8px;cursor:pointer}.report-game-btn:hover{background:#29131d;border-color:#ff4168}.game-report-dialog{width:min(520px,calc(100% - 24px));max-height:90dvh;overflow:auto;border:1px solid #663044;border-radius:16px;background:#101017;color:#f5f5f7;padding:24px;box-shadow:0 24px 90px #000b}.game-report-dialog::backdrop{background:#030308d9;backdrop-filter:blur(5px)}.game-report-dialog form{display:grid;gap:12px}.game-report-dialog h2{margin:0}.game-report-dialog label{font-size:12px;font-weight:800;color:#ddd}.game-report-dialog select,.game-report-dialog textarea{width:100%;padding:12px;border:1px solid #39313b;border-radius:8px;background:#171720;color:#fff;font:14px Inter,sans-serif}.game-report-dialog textarea{resize:vertical}.game-report-dialog small,.game-report-dialog #reportFeedback{color:#ff9ab0;font-size:12px;overflow-wrap:anywhere}.game-report-dialog .report-close{justify-self:end;background:none;border:0;color:#fff;font-size:25px;cursor:pointer}.report-game-title{color:#ff91a8;font-weight:800;margin:0}
-
-/* Dreaming Rose: portadas controladas y enlaces sociales de creadores */
-.game-grid { grid-template-columns: repeat(auto-fill,minmax(min(100%,280px),360px)); justify-content:start; align-items:start; }
-.game-card { width:100%; max-width:360px; }
-.cover { display:block; width:100%; height:190px; aspect-ratio:auto; object-fit:contain; object-position:center; padding:0; background:#08080e; }
-.catalog-social-links { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 2px; }
-.catalog-social-link { display:inline-flex; width:30px; height:30px; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.15); border-radius:50%; background:#1b1720; color:#f5e9ee; text-decoration:none; font-size:15px; font-weight:800; }
-.catalog-social-link:hover { border-color:#ff4168; color:#ff91a8; }
-@media(max-width:800px){.game-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.game-card{max-width:none}.cover{height:145px}}
-@media(max-width:520px){.game-grid{grid-template-columns:1fr}.cover{height:180px}}

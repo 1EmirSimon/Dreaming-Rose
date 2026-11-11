@@ -349,43 +349,6 @@ export async function cargarProyectosOficiales() {
 // RENDER DE TARJETAS Y RANKING
 // ============================================================
 
-const SOCIAL_PLATFORMS = {
-    instagram: { label: "Instagram", icon: "◎", hosts: ["instagram.com"] },
-    youtube: { label: "YouTube", icon: "▶", hosts: ["youtube.com", "youtu.be"] },
-    tiktok: { label: "TikTok", icon: "♪", hosts: ["tiktok.com"] },
-    discord: { label: "Discord", icon: "◉", hosts: ["discord.gg", "discord.com"] },
-    x: { label: "X", icon: "𝕏", hosts: ["x.com", "twitter.com"] },
-    website: { label: "Sitio web", icon: "↗", hosts: [] }
-};
-
-function normalizeSocialLinks(value) {
-    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-    const result = {};
-    for (const [key, config] of Object.entries(SOCIAL_PLATFORMS)) {
-        const raw = typeof value[key] === "string" ? value[key].trim() : "";
-        if (!raw) continue;
-        try {
-            const url = new URL(raw);
-            const host = url.hostname.toLowerCase().replace(/^www\./, "");
-            const allowed = config.hosts.length === 0
-                ? url.protocol === "https:"
-                : url.protocol === "https:" && config.hosts.some(domain => host === domain || host.endsWith(`.${domain}`));
-            if (allowed) result[key] = url.href;
-        } catch { /* enlaces inválidos no se muestran */ }
-    }
-    return result;
-}
-
-function renderSocialLinks(value, className = "game-social-links") {
-    const links = normalizeSocialLinks(value);
-    const items = Object.entries(links).map(([key, url]) => {
-        const platform = SOCIAL_PLATFORMS[key];
-        return `<a class="game-social-link social-${key}" href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" aria-label="${platform.label}" title="${platform.label}">${platform.icon}</a>`;
-    }).join("");
-    return items ? `<div class="${className}" aria-label="Redes sociales del creador">${items}</div>` : "";
-}
-
-
 function renderGamesGrid(gamesList) {
     const container = document.getElementById("community-games");
     if (!container) return;
@@ -403,17 +366,13 @@ function renderGamesGrid(gamesList) {
         card.dataset.gameId = game.id;
 
         card.innerHTML = `
-            <div class="game-card-media">
-                <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}"
-                     class="game-card-thumb" data-game-id="${game.id}" alt="Portada de ${escapeHTML(game.title)}" loading="lazy">
-            </div>
+            <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}" class="game-card-thumb" data-game-id="${game.id}">
             <div class="game-card-info">
                 <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">
-                    ${escapeHTML(game.title)}${String(game.estado_moderacion || '').toLowerCase() === 'aprobado' ? '<span class="verified-badge" title="Aprobado por moderación">✓</span>' : (game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : '')}
+                    ${escapeHTML(game.title)}${game.verificado ? '<span class="verified-badge" title="Verificado por Google Safe Browsing">✅</span>' : ''}
                 </h4>
                 <div class="game-card-author">☑ ${escapeHTML(game.author) || 'Anónimo'}</div>
                 <div class="game-card-category">${escapeHTML(game.categoria || 'Sin categoría')} · ${game.download_url_pc && game.download_url_mobile ? 'PC + Móvil' : (game.download_url_mobile || /m[oó]vil/i.test(String(game.plataforma || '')) ? 'Móvil' : 'PC')}</div>
-                ${renderSocialLinks(game.social_links, "game-social-links game-card-socials")}
                 <div class="game-card-footer">
                     <button class="like-btn-direct ${misLikes.has(Number(game.id)) ? 'liked' : ''}" data-like-id="${game.id}">
                         ❤️ <span id="like-count-${game.id}">${game.likes_count || 0}</span>
@@ -795,26 +754,6 @@ window.handlePublishGame = async function(event) {
     const ageRating = document.getElementById("pubAgeRating")?.value.trim();
     const tagsRaw = document.getElementById("pubTags")?.value || "";
     const tags = [...new Set(tagsRaw.split(",").map(tag => tag.trim().replace(/^#/, "").slice(0, 24)).filter(Boolean))].slice(0, 3);
-    const socialLinks = {
-        instagram: document.getElementById("pubSocialInstagram")?.value.trim() || "",
-        youtube: document.getElementById("pubSocialYoutube")?.value.trim() || "",
-        tiktok: document.getElementById("pubSocialTiktok")?.value.trim() || "",
-        discord: document.getElementById("pubSocialDiscord")?.value.trim() || "",
-        x: document.getElementById("pubSocialX")?.value.trim() || "",
-        website: document.getElementById("pubSocialWebsite")?.value.trim() || ""
-    };
-    const validSocialUrl = (key, value) => {
-        if (!value) return true;
-        try {
-            const url = new URL(value);
-            if (url.protocol !== "https:") return false;
-            const config = SOCIAL_PLATFORMS[key];
-            if (!config) return false;
-            if (!config.hosts.length) return true;
-            const host = url.hostname.toLowerCase().replace(/^www\./, "");
-            return config.hosts.some(domain => host === domain || host.endsWith(`.${domain}`));
-        } catch { return false; }
-    };
     const screenshotsInput = document.getElementById("pubScreenshots");
     const screenshotFiles = Array.from(screenshotsInput?.files || []);
     const scheduleInput = document.getElementById("pubScheduleDate")?.value;
@@ -879,10 +818,6 @@ window.handlePublishGame = async function(event) {
     }
     if (!category || !ageRating) {
         if (errorMsg) { errorMsg.textContent = "⚠️ Elegí una categoría, plataforma y público recomendado."; errorMsg.style.display = "block"; }
-        return;
-    }
-    if (Object.entries(socialLinks).some(([key, value]) => !validSocialUrl(key, value))) {
-        if (errorMsg) { errorMsg.textContent = "⚠️ Revisá los enlaces sociales: usá HTTPS y la dirección del sitio correspondiente."; errorMsg.style.display = "block"; }
         return;
     }
     if (!imageFileInput?.files?.[0]) {
@@ -968,7 +903,6 @@ window.handlePublishGame = async function(event) {
         download_url_mobile: downloadUrlMobile || null,
         categoria: category,
         categoria_confirmada: true,
-        social_links: Object.fromEntries(Object.entries(socialLinks).filter(([, value]) => value)),
         plataforma: platform,
         likes_count: 0,
         views_count: 0,
@@ -1053,30 +987,10 @@ window.openGameDetails = async function(gameInput) {
     if (document.getElementById("gameModalAuthor")) document.getElementById("gameModalAuthor").textContent = `Creador: ${game.author || 'Dreaming Rose'}`;
     if (document.getElementById("gameModalImg")) document.getElementById("gameModalImg").src = game.image_url || 'assets/images/Meteor Fighters.png';
     if (document.getElementById("gameModalDescription")) document.getElementById("gameModalDescription").textContent = game.description || "Sin descripción disponible.";
-    const socialContainer = document.getElementById("gameSocialLinks");
-    if (socialContainer) {
-        const renderedSocials = renderSocialLinks(game.social_links);
-        socialContainer.outerHTML = renderedSocials
-            ? renderedSocials.replace('class="game-social-links"', 'id="gameSocialLinks" class="game-social-links"')
-            : '<div id="gameSocialLinks" class="game-social-links" hidden></div>';
-    }
 
     const verificacionBadge = document.getElementById("gameVerificationBadge");
     if (verificacionBadge) {
-        const estadoModeracion = String(game.estado_moderacion || "").trim().toLowerCase();
-        if (estadoModeracion === "aprobado") {
-            verificacionBadge.innerHTML = `
-                <div class="verificacion-ok">
-                    ✅ Juego aprobado por el equipo de moderación
-                </div>
-            `;
-        } else if (estadoModeracion === "rechazado" || estadoModeracion === "bloqueado") {
-            verificacionBadge.innerHTML = `
-                <div class="verificacion-peligro">
-                    ⚠️ Esta publicación no fue aprobada por moderación.
-                </div>
-            `;
-        } else if (game.verificado) {
+        if (game.verificado) {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-ok">
                     ✅ Verificado por Google Safe Browsing
@@ -1085,13 +999,13 @@ window.openGameDetails = async function(gameInput) {
         } else if (game.verificado_at) {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-peligro">
-                    ⚠️ Este juego fue marcado como sospechoso. No recomendamos descargarlo.
+                    ⚠️ Este juego fue marcado como sospechoso. Descarágalo bajo tu propio riesgo.
                 </div>
             `;
         } else {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-pendiente">
-                    ⏳ Esta publicación todavía está pendiente de moderación.
+                    ⏳ Este juego aún no fue verificado. Descargalo bajo tu propio riesgo.
                 </div>
             `;
         }

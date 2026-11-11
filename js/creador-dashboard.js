@@ -1,19 +1,6 @@
 import { supabase } from "./supabase.js";
 
 const $ = (id) => document.getElementById(id);
-const SOCIAL_FIELDS = [
-  ["instagram", "Instagram", "https://instagram.com/..."],
-  ["youtube", "YouTube", "https://youtube.com/..."],
-  ["tiktok", "TikTok", "https://tiktok.com/@..."],
-  ["discord", "Discord", "https://discord.gg/..."],
-  ["x", "X", "https://x.com/..."],
-  ["website", "Sitio web", "https://tusitio.com"]
-];
-const SOCIAL_HOSTS = {
-  instagram: ["instagram.com"], youtube: ["youtube.com", "youtu.be"],
-  tiktok: ["tiktok.com"], discord: ["discord.gg", "discord.com"],
-  x: ["x.com", "twitter.com"], website: []
-};
 let myGames = [];
 let visitCounts = new Map();
 let visitsAvailable = true;
@@ -69,22 +56,6 @@ function renderSummary() {
     : "Publicaciones asociadas a tu cuenta";
 }
 
-function socialIcon(key) {
-  const icons = { instagram: "◎", youtube: "▶", tiktok: "♪", discord: "◉", x: "𝕏", website: "↗" };
-  return `<span class="creator-social-icon social-${key}" aria-hidden="true">${icons[key] || "↗"}</span>`;
-}
-
-function validSocialUrl(key, value) {
-  if (!value) return true;
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "https:") return false;
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    const allowed = SOCIAL_HOSTS[key] || [];
-    return allowed.length ? allowed.some(domain => host === domain || host.endsWith(`.${domain}`)) : true;
-  } catch { return false; }
-}
-
 function gameCard(g) {
   const status = statusLabel(g);
   const image = g.image_url
@@ -103,9 +74,6 @@ function gameCard(g) {
   const mobilePort = g.download_url_mobile || (legacyMobile ? g.download_url : "");
   const download = `<div class="creator-port-links">${pcPort ? `<a class="creator-text-link" href="${escapeHTML(pcPort)}" target="_blank" rel="noopener noreferrer">Ver port PC ↗</a>` : `<span class="creator-muted">Sin port PC</span>`}${mobilePort ? `<a class="creator-text-link" href="${escapeHTML(mobilePort)}" target="_blank" rel="noopener noreferrer">Ver port móvil ↗</a>` : `<span class="creator-muted">Sin port móvil</span>`}</div>`;
   const portEditor = canEditMetadata ? `<button class="creator-button creator-port-toggle" type="button" data-port-toggle="${Number(g.id)}" aria-expanded="false">Agregar o actualizar ports</button><form class="creator-metadata-form creator-port-form" data-port-form="${Number(g.id)}" hidden><label>Enlace para PC<input type="url" name="download_url_pc" value="${escapeHTML(pcPort)}" placeholder="https://..." /></label><label>Enlace para móvil<input type="url" name="download_url_mobile" value="${escapeHTML(mobilePort)}" placeholder="https://..." /></label><small>Dejá vacío el port que todavía no exista. Tiene que quedar al menos uno.</small><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar ports</button><button class="creator-button creator-button-quiet" type="button" data-port-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-port-feedback="${Number(g.id)}" aria-live="polite"></p></form>` : "";
-  const socials = g.social_links && typeof g.social_links === "object" && !Array.isArray(g.social_links) ? g.social_links : {};
-  const socialPreview = SOCIAL_FIELDS.filter(([key]) => typeof socials[key] === "string" && socials[key].trim() && validSocialUrl(key, socials[key])).map(([key, label]) => `<a class="creator-social-chip social-${key}" href="${escapeHTML(socials[key])}" target="_blank" rel="noopener noreferrer" title="${label}">${socialIcon(key)}<span>${label}</span></a>`).join("");
-  const socialEditor = canEditMetadata ? `<section class="creator-social-editor"><div class="creator-social-heading"><strong>Redes y enlaces</strong><span>Opcional</span></div><div class="creator-social-preview">${socialPreview || '<span class="creator-muted">Todavía no agregaste redes sociales.</span>'}</div><button class="creator-button creator-social-toggle" type="button" data-social-toggle="${Number(g.id)}" aria-expanded="false">${socialPreview ? "Editar redes sociales" : "Agregar redes sociales"}</button><form class="creator-metadata-form creator-social-form" data-social-form="${Number(g.id)}" hidden><div class="creator-social-fields">${SOCIAL_FIELDS.map(([key,label,placeholder]) => `<label><span>${socialIcon(key)} ${label}</span><input type="url" name="${key}" value="${escapeHTML(typeof socials[key] === "string" ? socials[key] : "")}" placeholder="${placeholder}" inputmode="url"></label>`).join("")}</div><small>Usá enlaces HTTPS. Podés completar solo las redes que quieras.</small><div class="creator-metadata-actions"><button class="creator-button" type="submit">Guardar redes</button><button class="creator-button creator-button-quiet" type="button" data-social-cancel="${Number(g.id)}">Cancelar</button></div><p class="creator-metadata-feedback" data-social-feedback="${Number(g.id)}" aria-live="polite"></p></form></section>` : "";
   const ownership = isOfficial(g) ? "Proyecto oficial Dreaming Rose" : (g.user_id === currentUserId ? "Tu publicación" : `Comunidad · ${escapeHTML(g.author || "Creador")}`);
 
   return `<article class="creator-game-card">
@@ -163,7 +131,7 @@ async function loadDashboard(user) {
   try {
     let gamesQuery = supabase
       .from("juegos")
-      .select("id,title,description,created_at,author,image_url,download_url,download_url_pc,download_url_mobile,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma,clasificacion_edad,categoria_confirmada,social_links")
+      .select("id,title,description,created_at,author,image_url,download_url,download_url_pc,download_url_mobile,user_id,publish_at,likes_count,views_count,playing_count,es_proyecto_oficial,estado_moderacion,motivo_revision,categoria,plataforma,clasificacion_edad,categoria_confirmada")
       .order("es_proyecto_oficial", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -210,39 +178,6 @@ async function loadDashboard(user) {
 }
 
 async function saveGameMetadata(event) {
-  const socialForm = event.target.closest("form[data-social-form]");
-  if (socialForm) {
-    event.preventDefault();
-    const gameId = Number(socialForm.dataset.socialForm);
-    const game = myGames.find(item => Number(item.id) === gameId);
-    const canManage = game && (currentRole === "root" || (!isOfficial(game) && game.user_id === currentUserId));
-    if (!canManage) return;
-    const nextLinks = Object.fromEntries(SOCIAL_FIELDS.map(([key]) => [key, socialForm.elements[key].value.trim()]).filter(([, value]) => value));
-    const feedback = document.querySelector(`[data-social-feedback="${gameId}"]`);
-    if (Object.entries(nextLinks).some(([key, value]) => !validSocialUrl(key, value))) {
-      if (feedback) feedback.textContent = "Revisá los enlaces: deben ser HTTPS y pertenecer a la plataforma elegida.";
-      return;
-    }
-    const submit = socialForm.querySelector('button[type="submit"]');
-    submit.disabled = true;
-    if (feedback) feedback.textContent = "Guardando redes sociales…";
-    try {
-      const { data, error } = await supabase.from("juegos")
-        .update({ social_links: nextLinks })
-        .eq("id", gameId)
-        .select("id,social_links")
-        .single();
-      if (error) throw error;
-      game.social_links = data.social_links || {};
-      renderGames();
-      setNotice(`Redes sociales de “${game.title}” actualizadas.`, "success");
-    } catch (error) {
-      console.error("No se pudieron guardar las redes sociales:", error);
-      if (feedback) feedback.textContent = `No se pudo guardar: ${error.message || "error desconocido"}. Si aparece un error de permisos, hay que revisar la política UPDATE de juegos para el propietario.`;
-    } finally { submit.disabled = false; }
-    return;
-  }
-
   const portForm = event.target.closest("form[data-port-form]");
   if (portForm) {
     event.preventDefault();
@@ -335,25 +270,6 @@ async function saveGameMetadata(event) {
 }
 
 function handleMetadataActions(event) {
-  const socialToggle = event.target.closest("[data-social-toggle]");
-  if (socialToggle) {
-    const form = document.querySelector(`[data-social-form="${socialToggle.dataset.socialToggle}"]`);
-    if (form) {
-      form.hidden = !form.hidden;
-      socialToggle.setAttribute("aria-expanded", String(!form.hidden));
-      socialToggle.textContent = form.hidden ? "Editar redes sociales" : "Ocultar redes sociales";
-    }
-    return;
-  }
-  const socialCancel = event.target.closest("[data-social-cancel]");
-  if (socialCancel) {
-    const id = socialCancel.dataset.socialCancel;
-    const form = document.querySelector(`[data-social-form="${id}"]`);
-    const button = document.querySelector(`[data-social-toggle="${id}"]`);
-    if (form) form.hidden = true;
-    if (button) { button.setAttribute("aria-expanded", "false"); button.textContent = "Editar redes sociales"; }
-    return;
-  }
   const portToggle = event.target.closest("[data-port-toggle]");
   if (portToggle) { const form = document.querySelector(`[data-port-form="${portToggle.dataset.portToggle}"]`); if (form) { form.hidden = !form.hidden; portToggle.setAttribute("aria-expanded", String(!form.hidden)); } return; }
   const portCancel = event.target.closest("[data-port-cancel]");
