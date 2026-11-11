@@ -1,0 +1,72 @@
+/* Dreaming Rose — cards de la sección Comunidad */
+#community-games.games-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 350px)) !important;
+    justify-content: start !important;
+    align-items: stretch;
+    gap: 18px;
+    width: 100%;
+}
+
+#community-games.games-grid > .game-card-hub {
+    width: 100%;
+    max-width: 350px;
+    min-width: 0;
+    justify-self: start;
+    display: flex;
+    flex-direction: column;
+}
+
+#community-games .game-card-thumb {
+    display: block;
+    width: 100%;
+    height: 180px;
+    min-height: 180px;
+    max-height: 180px;
+    padding: 8px;
+    object-fit: contain;
+    object-position: center;
+    background: #0a0a10;
+    box-sizing: border-box;
+    flex: 0 0 180px;
+}
+
+#community-games .game-card-info {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+#community-games .game-card-info h4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#community-games .game-card-info p,
+#community-games .game-card-info .game-description {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+    #community-games.games-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px;
+    }
+    #community-games.games-grid > .game-card-hub {
+        max-width: none;
+    }
+    #community-games .game-card-thumb {
+        height: 140px;
+        min-height: 140px;
+        max-height: 140px;
+        flex-basis: 140px;
+    }
+}
+
+@media (max-width: 420px) {
+    #community-games.games-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
