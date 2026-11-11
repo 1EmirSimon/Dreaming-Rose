@@ -367,12 +367,9 @@ function renderGamesGrid(gamesList) {
 
         card.innerHTML = `
             <div class="game-card-media">
-                <img
-                    src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}"
-                    class="game-card-thumb"
-                    data-game-id="${game.id}"
-                    alt="Portada de ${escapeHTML(game.title)}"
-                    loading="lazy">
+                <img src="${escapeHTML(game.image_url) || 'assets/images/Meteor Fighters.png'}"
+                     class="game-card-thumb" data-game-id="${game.id}"
+                     alt="Portada de ${escapeHTML(game.title)}" loading="lazy">
             </div>
             <div class="game-card-info">
                 <h4 class="game-title-click" data-game-id="${game.id}" style="cursor:pointer">
