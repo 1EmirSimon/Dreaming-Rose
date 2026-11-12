@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="css/admin-console.css">
   <link rel="stylesheet" href="css/proyectos-oficiales-fix.css?v=20261111-projects-only-2">
 <link rel="stylesheet" href="css/community-cards-final-fix.css?v=20261111-community-card-3">
+<link rel="stylesheet" href="css/hero-carousel.css?v=20261112-1">
 </head>
 <body>
 
@@ -132,19 +133,24 @@
 </header>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero hero-carousel" id="heroCarousel" aria-label="Juegos destacados">
     <div class="hero-parallax-bg">
-        <img src="assets/images/Meteor Fighters.png" alt="Meteor Fighters" class="hero-img">
+        <img id="heroGameImage" src="assets/images/Meteor Fighters.png" alt="Portada del juego destacado" class="hero-img">
     </div>
     <div class="hero-overlay"></div>
-    <div class="hero-content reveal">
-        <span class="tagline">PROYECTO DESTACADO</span>
-        <h1>METEOR <br> FIGHTER</h1>
-        <p>La evolución del combate técnico 2D. Domina el instinto.</p>
+    <div class="hero-content hero-meteor-content reveal" aria-live="polite">
+        <span class="tagline" id="heroGameTagline">JUEGO DESTACADO</span>
+        <h1 id="heroGameTitle">METEOR<br>FIGHTERS</h1>
+        <p id="heroGameDescription">La evolución del combate técnico 2D. Domina el instinto.</p>
         <div class="hero-actions">
-            <button class="btn-main" onclick="openMeteorHero()">DESCARGAR AHORA!</button>
+            <button class="btn-main" id="heroGameAction" type="button" onclick="openMeteorHero()">VER JUEGO</button>
             <a href="#proyectos" class="btn-outline">EXPLORAR HUB</a>
         </div>
+    </div>
+    <div class="hero-carousel-controls" aria-label="Controles del carrusel">
+        <button class="hero-carousel-arrow" id="heroPrev" type="button" aria-label="Juego anterior">‹</button>
+        <div class="hero-carousel-indicators" id="heroIndicators" aria-label="Seleccionar juego"></div>
+        <button class="hero-carousel-arrow" id="heroNext" type="button" aria-label="Juego siguiente">›</button>
     </div>
 </section>
 
@@ -822,6 +828,6 @@
 
 <!-- Carga de Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-<script type="module" src="js/main.js?v=20261106-desktop-moderation-ports-1"></script>
+<script type="module" src="js/main.js?v=20261112-hero-carousel-1"></script>
 </body>
 </html>

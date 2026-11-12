@@ -1,0 +1,101 @@
+/* Carrusel automático del proyecto destacado */
+.hero-carousel {
+    isolation: isolate;
+}
+.hero-carousel .hero-parallax-bg {
+    transition: opacity .35s ease;
+}
+.hero-carousel.is-changing .hero-parallax-bg,
+.hero-carousel.is-changing .hero-content {
+    opacity: .35;
+}
+.hero-carousel .hero-img {
+    transition: opacity .35s ease, filter .35s ease;
+}
+.hero-carousel .hero-content {
+    transition: opacity .25s ease, transform .35s ease;
+}
+.hero-carousel-controls {
+    position: absolute;
+    z-index: 5;
+    right: clamp(20px, 5vw, 76px);
+    bottom: clamp(24px, 5vh, 52px);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.hero-carousel-arrow {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.42);
+    border-radius: 50%;
+    background: rgba(8,8,12,.58);
+    color: #fff;
+    font: 300 34px/1 Inter, sans-serif;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    backdrop-filter: blur(8px);
+}
+.hero-carousel-arrow:hover {
+    background: var(--accent, #ff4d6d);
+    border-color: var(--accent, #ff4d6d);
+    transform: scale(1.06);
+}
+.hero-carousel-indicators {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    max-width: min(38vw, 280px);
+    overflow: hidden;
+}
+.hero-carousel-dot {
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border: 0;
+    border-radius: 99px;
+    background: rgba(255,255,255,.42);
+    cursor: pointer;
+    transition: width .25s ease, background .25s ease;
+}
+.hero-carousel-dot.active {
+    width: 22px;
+    background: var(--accent, #ff4d6d);
+}
+.hero-carousel #heroGameAction {
+    cursor: pointer;
+}
+@media (max-width: 700px) {
+    .hero-carousel {
+        padding-bottom: 105px;
+    }
+    .hero-carousel-controls {
+        left: 50%;
+        right: auto;
+        bottom: 26px;
+        transform: translateX(-50%);
+        gap: 12px;
+    }
+    .hero-carousel-arrow {
+        width: 42px;
+        height: 42px;
+        font-size: 31px;
+    }
+    .hero-carousel-indicators {
+        max-width: 48vw;
+    }
+    .hero-carousel .hero-content {
+        padding-bottom: 10px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero-carousel *,
+    .hero-carousel *::before,
+    .hero-carousel *::after {
+        transition-duration: .01ms !important;
+    }
+}
