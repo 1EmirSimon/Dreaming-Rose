@@ -994,22 +994,32 @@ window.openGameDetails = async function(gameInput) {
 
     const verificacionBadge = document.getElementById("gameVerificationBadge");
     if (verificacionBadge) {
-        if (game.verificado) {
+        const estadoModeracion = String(game.estado_moderacion || "pendiente").toLowerCase();
+
+        if (game.verificado === true) {
+            // Verificación técnica del enlace mediante Google Safe Browsing.
             verificacionBadge.innerHTML = `
                 <div class="verificacion-ok">
-                    ✅ Verificado por Google Safe Browsing
+                    ✅ Enlace verificado por Google Safe Browsing
                 </div>
             `;
-        } else if (game.verificado_at) {
+        } else if (estadoModeracion === "aprobado") {
+            // Aprobación humana: no debe confundirse con el análisis automático.
+            verificacionBadge.innerHTML = `
+                <div class="verificacion-ok">
+                    ✅ Juego revisado y aprobado por moderación de Dreaming Rose
+                </div>
+            `;
+        } else if (estadoModeracion === "rechazado") {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-peligro">
-                    ⚠️ Este juego fue marcado como sospechoso. Descarágalo bajo tu propio riesgo.
+                    ⚠️ Este juego no fue aprobado por el equipo de moderación.
                 </div>
             `;
         } else {
             verificacionBadge.innerHTML = `
                 <div class="verificacion-pendiente">
-                    ⏳ Este juego aún no fue verificado. Descargalo bajo tu propio riesgo.
+                    ⏳ Este juego todavía está pendiente de revisión por moderación.
                 </div>
             `;
         }
