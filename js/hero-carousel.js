@@ -66,6 +66,7 @@ function showGame(index, resetTimer = false, direction = 1) {
     // sin zoom ni paneo interno de la portada.
     incoming.src = getGameImage(game);
     incoming.alt = `Portada de ${game.title || "juego destacado"}`;
+
     const slideClasses = [
         "is-active",
         "slide-in-from-right",
