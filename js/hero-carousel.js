@@ -60,27 +60,39 @@ function showGame(index, resetTimer = false, direction = 1) {
     const incomingLayer = 1 - activeImageLayer;
     const outgoing = images[activeImageLayer];
     const incoming = images[incomingLayer];
-    slideDirection = direction >= 0 ? 1 : -1;
+    const directionSign = direction >= 0 ? 1 : -1;
+    const incomingClass = directionSign > 0 ? "slide-in-from-right" : "slide-in-from-left";
+    const outgoingClass = directionSign > 0 ? "slide-out-to-left" : "slide-out-to-right";
 
-    // La imagen entrante comienza fuera del hero y se desliza completa,
-    // sin zoom ni paneo interno de la portada.
-    incoming.src = getGameImage(game);
-    incoming.alt = `Portada de ${game.title || "juego destacado"}`;
-    const slideClasses = [
-        "is-active",
+    // Limpiar solamente la capa entrante. La saliente debe conservar su
+    // posición activa (translateX(0)) hasta que comience su salida.
+    const transitionClasses = [
         "slide-in-from-right",
         "slide-in-from-left",
         "slide-out-to-left",
         "slide-out-to-right"
     ];
-    images.forEach(image => image.classList.remove(...slideClasses));
-    incoming.classList.remove("is-active", "slide-in-from-right", "slide-in-from-left");
-    outgoing.classList.remove("slide-out-to-left", "slide-out-to-right");
-    incoming.classList.add(slideDirection > 0 ? "slide-in-from-right" : "slide-in-from-left");
+    incoming.classList.remove("is-active", ...transitionClasses);
+    outgoing.classList.remove(...transitionClasses);
+
+    incoming.src = getGameImage(game);
+    incoming.alt = `Portada de ${game.title || "juego destacado"}`;
+    incoming.classList.add(incomingClass);
+
+    // Primero se fija la portada entrante fuera del área visible y luego
+    // se activa para que el navegador interpole el desplazamiento completo.
     void incoming.offsetWidth;
     incoming.classList.add("is-active");
-    outgoing.classList.add(slideDirection > 0 ? "slide-out-to-left" : "slide-out-to-right");
+    outgoing.classList.add(outgoingClass);
     activeImageLayer = incomingLayer;
+
+    // Al terminar, dejar la capa nueva como única activa y preparar la vieja
+    // fuera de pantalla para el próximo cambio.
+    window.setTimeout(() => {
+        outgoing.classList.remove("is-active", ...transitionClasses);
+        incoming.classList.remove(...transitionClasses);
+        incoming.classList.add("is-active");
+    }, 850);
 
     hero.classList.add("is-changing");
     tagline.classList.add("hero-copy-exit");
