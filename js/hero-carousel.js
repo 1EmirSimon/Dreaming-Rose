@@ -43,8 +43,6 @@ function showGame(index, resetTimer = false, direction = 1) {
 
     const nextIndex = (index + heroGames.length) % heroGames.length;
     if (nextIndex === currentIndex && heroGames.length > 1) return;
-    currentIndex = nextIndex;
-    const game = heroGames[currentIndex];
 
     const hero = document.getElementById("heroCarousel");
     const images = [
@@ -57,62 +55,91 @@ function showGame(index, resetTimer = false, direction = 1) {
     const action = document.getElementById("heroGameAction");
     if (!hero || !images[0] || !images[1] || !tagline || !title || !description || !action) return;
 
-    const incomingLayer = 1 - activeImageLayer;
+    const game = heroGames[nextIndex];
+    const incomingIndex = 1 - activeImageLayer;
+    const incoming = images[incomingIndex];
     const outgoing = images[activeImageLayer];
-    const incoming = images[incomingLayer];
-    const directionSign = direction >= 0 ? 1 : -1;
-    const incomingClass = directionSign > 0 ? "slide-in-from-right" : "slide-in-from-left";
-    const outgoingClass = directionSign > 0 ? "slide-out-to-left" : "slide-out-to-right";
+    const sign = direction >= 0 ? 1 : -1;
+    const enterClass = sign > 0 ? "is-entering-right" : "is-entering-left";
+    const exitClass = sign > 0 ? "is-exiting-left" : "is-exiting-right";
+    const motionClasses = ["is-entering-right", "is-entering-left", "is-exiting-left", "is-exiting-right"];
 
-    // Limpiar solamente la capa entrante. La saliente debe conservar su
-    // posición activa (translateX(0)) hasta que comience su salida.
-    const transitionClasses = [
-        "slide-in-from-right",
-        "slide-in-from-left",
-        "slide-out-to-left",
-        "slide-out-to-right"
-    ];
-    incoming.classList.remove("is-active", ...transitionClasses);
-    outgoing.classList.remove(...transitionClasses);
-
+    // Prepara la portada entrante fuera del viewport y espera a que esté lista.
+    incoming.classList.remove("is-active", ...motionClasses);
+    outgoing.classList.remove(...motionClasses);
+    incoming.style.transition = "none";
+    incoming.style.transform = `translate3d(${sign * 100}%, 0, 0)`;
+    incoming.style.zIndex = "3";
+    outgoing.style.transition = "none";
+    outgoing.style.transform = "translate3d(0, 0, 0)";
+    outgoing.style.zIndex = "2";
     incoming.src = getGameImage(game);
     incoming.alt = `Portada de ${game.title || "juego destacado"}`;
-    incoming.classList.add(incomingClass);
 
-    // Primero se fija la portada entrante fuera del área visible y luego
-    // se activa para que el navegador interpole el desplazamiento completo.
-    void incoming.offsetWidth;
-    incoming.classList.add("is-active");
-    outgoing.classList.add(outgoingClass);
-    activeImageLayer = incomingLayer;
+    const beginSlide = () => {
+        // Fuerza el estado inicial antes de activar la transición.
+        void incoming.offsetWidth;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const duration = 920;
+                const easing = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+                incoming.style.transition = `transform ${duration}ms ${easing}`;
+                outgoing.style.transition = `transform ${duration}ms ${easing}`;
+                incoming.style.transform = "translate3d(0, 0, 0)";
+                outgoing.style.transform = `translate3d(${-sign * 100}%, 0, 0)`;
+                incoming.classList.add("is-active", enterClass);
+                outgoing.classList.add(exitClass);
 
-    // Al terminar, dejar la capa nueva como única activa y preparar la vieja
-    // fuera de pantalla para el próximo cambio.
-    window.setTimeout(() => {
-        outgoing.classList.remove("is-active", ...transitionClasses);
-        incoming.classList.remove(...transitionClasses);
-        incoming.classList.add("is-active");
-    }, 850);
+                // El contenido acompaña el cambio sin competir con el movimiento de la portada.
+                hero.classList.add("is-changing");
+                [tagline, title, description].forEach(el => el.classList.add("hero-copy-exit"));
+                window.setTimeout(() => {
+                    currentIndex = nextIndex;
+                    title.textContent = game.title || "Juego destacado";
+                    description.textContent = game.description || "Descubrí este juego de la comunidad Dreaming Rose.";
+                    tagline.textContent = game.es_proyecto_oficial ? "PROYECTO DREAMING ROSE" : "JUEGO DE LA COMUNIDAD";
+                    action.textContent = "VER JUEGO";
+                    action.onclick = () => {
+                        if (typeof window.openGameDetails === "function") window.openGameDetails(game.id);
+                        else window.location.href = "juegos.html";
+                    };
+                    [tagline, title, description].forEach(el => {
+                        el.classList.remove("hero-copy-exit");
+                        el.classList.add("hero-copy-enter");
+                    });
+                    renderIndicators();
+                    window.setTimeout(() => {
+                        [tagline, title, description].forEach(el => el.classList.remove("hero-copy-enter"));
+                        hero.classList.remove("is-changing");
+                    }, 420);
+                }, 300);
 
-    hero.classList.add("is-changing");
-    tagline.classList.add("hero-copy-exit");
-    title.classList.add("hero-copy-exit");
-    description.classList.add("hero-copy-exit");
-    window.setTimeout(() => {
-        title.textContent = game.title || "Juego destacado";
-        description.textContent = game.description || "Descubrí este juego de la comunidad Dreaming Rose.";
-        tagline.textContent = game.es_proyecto_oficial ? "PROYECTO DREAMING ROSE" : "JUEGO DE LA COMUNIDAD";
-        action.textContent = "VER JUEGO";
-        action.onclick = () => {
-            if (typeof window.openGameDetails === "function") window.openGameDetails(game.id);
-            else window.location.href = "juegos.html";
-        };
-        [tagline, title, description].forEach(el => el.classList.remove("hero-copy-exit"));
-        [tagline, title, description].forEach(el => el.classList.add("hero-copy-enter"));
-        window.setTimeout(() => [tagline, title, description].forEach(el => el.classList.remove("hero-copy-enter")), 420);
-        hero.classList.remove("is-changing");
-        renderIndicators();
-    }, 220);
+                const finish = event => {
+                    if (event && event.target !== incoming) return;
+                    incoming.removeEventListener("transitionend", finish);
+                    outgoing.style.transition = "none";
+                    outgoing.style.transform = `translate3d(${sign * 100}%, 0, 0)`;
+                    outgoing.classList.remove("is-active", ...motionClasses);
+                    outgoing.style.zIndex = "1";
+                    incoming.style.transition = "none";
+                    incoming.style.transform = "translate3d(0, 0, 0)";
+                    incoming.style.zIndex = "2";
+                    incoming.classList.remove(...motionClasses);
+                    activeImageLayer = incomingIndex;
+                };
+                incoming.addEventListener("transitionend", finish, { once: true });
+                // Fallback para navegadores que no emiten transitionend al cambiar de pestaña.
+                window.setTimeout(() => finish(), 1100);
+            });
+        });
+    };
+
+    if (incoming.complete && incoming.naturalWidth > 0) {
+        beginSlide();
+    } else {
+        incoming.onload = beginSlide;
+        incoming.onerror = beginSlide;
+    }
 
     if (resetTimer) restartAutoplay();
 }
