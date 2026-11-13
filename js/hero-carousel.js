@@ -6,6 +6,8 @@ let currentIndex = 0;
 let autoplayTimer = null;
 let touchStartX = 0;
 let touchEndX = 0;
+let activeImageLayer = 0;
+let slideDirection = 1;
 
 const AUTOPLAY_DELAY = 5000;
 const FALLBACK_IMAGE = "assets/images/Meteor Fighters.png";
@@ -31,54 +33,76 @@ function renderIndicators() {
         dot.className = `hero-carousel-dot${index === currentIndex ? " active" : ""}`;
         dot.setAttribute("aria-label", `Mostrar ${game.title || "juego"} (${index + 1})`);
         dot.setAttribute("aria-current", index === currentIndex ? "true" : "false");
-        dot.addEventListener("click", () => showGame(index, true));
+        dot.addEventListener("click", () => showGame(index, true, index > currentIndex ? 1 : -1));
         container.appendChild(dot);
     });
 }
 
-function showGame(index, resetTimer = false) {
+function showGame(index, resetTimer = false, direction = 1) {
     if (!heroGames.length) return;
 
-    currentIndex = (index + heroGames.length) % heroGames.length;
+    const nextIndex = (index + heroGames.length) % heroGames.length;
+    if (nextIndex === currentIndex && heroGames.length > 1) return;
+    currentIndex = nextIndex;
     const game = heroGames[currentIndex];
 
     const hero = document.getElementById("heroCarousel");
-    const image = document.getElementById("heroGameImage");
+    const images = [
+        document.getElementById("heroGameImage"),
+        document.getElementById("heroGameImageNext")
+    ];
     const tagline = document.getElementById("heroGameTagline");
     const title = document.getElementById("heroGameTitle");
     const description = document.getElementById("heroGameDescription");
     const action = document.getElementById("heroGameAction");
+    if (!hero || !images[0] || !images[1] || !tagline || !title || !description || !action) return;
 
-    if (!hero || !image || !tagline || !title || !description || !action) return;
+    const incomingLayer = 1 - activeImageLayer;
+    const outgoing = images[activeImageLayer];
+    const incoming = images[incomingLayer];
+    slideDirection = direction >= 0 ? 1 : -1;
+
+    // La imagen entrante comienza fuera del hero y se desliza completa,
+    // sin zoom ni paneo interno de la portada.
+    incoming.src = getGameImage(game);
+    incoming.alt = `Portada de ${game.title || "juego destacado"}`;
+    incoming.classList.remove("is-active", "slide-in-from-right", "slide-in-from-left");
+    outgoing.classList.remove("slide-out-to-left", "slide-out-to-right");
+    incoming.classList.add(slideDirection > 0 ? "slide-in-from-right" : "slide-in-from-left");
+    void incoming.offsetWidth;
+    incoming.classList.add("is-active");
+    outgoing.classList.add(slideDirection > 0 ? "slide-out-to-left" : "slide-out-to-right");
+    activeImageLayer = incomingLayer;
 
     hero.classList.add("is-changing");
+    tagline.classList.add("hero-copy-exit");
+    title.classList.add("hero-copy-exit");
+    description.classList.add("hero-copy-exit");
     window.setTimeout(() => {
-        image.src = getGameImage(game);
-        image.alt = `Portada de ${game.title || "juego destacado"}`;
         title.textContent = game.title || "Juego destacado";
         description.textContent = game.description || "Descubrí este juego de la comunidad Dreaming Rose.";
         tagline.textContent = game.es_proyecto_oficial ? "PROYECTO DREAMING ROSE" : "JUEGO DE LA COMUNIDAD";
         action.textContent = "VER JUEGO";
         action.onclick = () => {
-            if (typeof window.openGameDetails === "function") {
-                window.openGameDetails(game.id);
-            } else {
-                window.location.href = "juegos.html";
-            }
+            if (typeof window.openGameDetails === "function") window.openGameDetails(game.id);
+            else window.location.href = "juegos.html";
         };
+        [tagline, title, description].forEach(el => el.classList.remove("hero-copy-exit"));
+        [tagline, title, description].forEach(el => el.classList.add("hero-copy-enter"));
+        window.setTimeout(() => [tagline, title, description].forEach(el => el.classList.remove("hero-copy-enter")), 420);
         hero.classList.remove("is-changing");
         renderIndicators();
-    }, 180);
+    }, 220);
 
     if (resetTimer) restartAutoplay();
 }
 
 function nextGame() {
-    if (heroGames.length > 1) showGame(currentIndex + 1);
+    if (heroGames.length > 1) showGame(currentIndex + 1, false, 1);
 }
 
 function previousGame() {
-    if (heroGames.length > 1) showGame(currentIndex - 1);
+    if (heroGames.length > 1) showGame(currentIndex - 1, false, -1);
 }
 
 function stopAutoplay() {

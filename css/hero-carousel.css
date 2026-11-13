@@ -1,101 +1,42 @@
-/* Carrusel automático del proyecto destacado */
-.hero-carousel {
-    isolation: isolate;
+/* Carrusel tipo Netflix: se desplaza la portada completa, no su contenido interno. */
+.hero-carousel { isolation: isolate; }
+.hero-carousel .hero-parallax-bg { overflow: hidden; }
+.hero-carousel .hero-slide-image {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: 62% center;
+    transform: translateX(105%); opacity: 1;
+    transition: none; animation: none !important;
+    will-change: transform;
 }
-.hero-carousel .hero-parallax-bg {
-    transition: opacity .35s ease;
+.hero-carousel .hero-slide-image.is-active { transform: translateX(0); }
+.hero-carousel .hero-slide-image.slide-in-from-right { transform: translateX(105%); }
+.hero-carousel .hero-slide-image.slide-in-from-left { transform: translateX(-105%); }
+.hero-carousel .hero-slide-image.slide-in-from-right.is-active,
+.hero-carousel .hero-slide-image.slide-in-from-left.is-active {
+    transition: transform .72s cubic-bezier(.22,.72,.18,1);
+    transform: translateX(0);
 }
-.hero-carousel.is-changing .hero-parallax-bg,
-.hero-carousel.is-changing .hero-content {
-    opacity: .35;
+.hero-carousel .hero-slide-image.slide-out-to-left { transition: transform .72s cubic-bezier(.22,.72,.18,1); transform: translateX(-105%); }
+.hero-carousel .hero-slide-image.slide-out-to-right { transition: transform .72s cubic-bezier(.22,.72,.18,1); transform: translateX(105%); }
+.hero-carousel .hero-content { transition: opacity .22s ease, transform .32s ease; }
+.hero-carousel .hero-copy-exit { opacity: 0; transform: translateY(10px); }
+.hero-carousel .hero-copy-enter { animation: heroCarouselCopyIn .42s ease both; }
+@keyframes heroCarouselCopyIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.hero-carousel-controls { position:absolute; z-index:5; right:clamp(20px,5vw,76px); bottom:clamp(24px,5vh,52px); display:flex; align-items:center; gap:14px; }
+.hero-carousel-arrow { width:46px; height:46px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.42); border-radius:50%; background:rgba(8,8,12,.58); color:#fff; font:300 34px/1 Inter,sans-serif; cursor:pointer; transition:background .2s ease,border-color .2s ease,transform .2s ease; backdrop-filter:blur(8px); }
+.hero-carousel-arrow:hover { background:var(--accent,#ff4d6d); border-color:var(--accent,#ff4d6d); transform:scale(1.06); }
+.hero-carousel-indicators { display:flex; align-items:center; justify-content:center; gap:7px; max-width:min(38vw,280px); overflow:hidden; }
+.hero-carousel-dot { flex:0 0 7px; width:7px; height:7px; padding:0; border:0; border-radius:99px; background:rgba(255,255,255,.42); cursor:pointer; transition:width .25s ease,background .25s ease; }
+.hero-carousel-dot.active { width:22px; background:var(--accent,#ff4d6d); }
+.hero-carousel #heroGameAction { cursor:pointer; }
+@media(max-width:700px) {
+ .hero-carousel { padding-bottom:105px; }
+ .hero-carousel-controls { left:50%; right:auto; bottom:26px; transform:translateX(-50%); gap:12px; }
+ .hero-carousel-arrow { width:42px; height:42px; font-size:31px; }
+ .hero-carousel-indicators { max-width:48vw; }
+ .hero-carousel .hero-content { padding-bottom:10px; }
+ .hero-carousel .hero-slide-image { object-position:66% center; }
 }
-.hero-carousel .hero-img {
-    transition: opacity .35s ease, filter .35s ease;
-}
-.hero-carousel .hero-content {
-    transition: opacity .25s ease, transform .35s ease;
-}
-.hero-carousel-controls {
-    position: absolute;
-    z-index: 5;
-    right: clamp(20px, 5vw, 76px);
-    bottom: clamp(24px, 5vh, 52px);
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-.hero-carousel-arrow {
-    width: 46px;
-    height: 46px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(255,255,255,.42);
-    border-radius: 50%;
-    background: rgba(8,8,12,.58);
-    color: #fff;
-    font: 300 34px/1 Inter, sans-serif;
-    cursor: pointer;
-    transition: background .2s ease, border-color .2s ease, transform .2s ease;
-    backdrop-filter: blur(8px);
-}
-.hero-carousel-arrow:hover {
-    background: var(--accent, #ff4d6d);
-    border-color: var(--accent, #ff4d6d);
-    transform: scale(1.06);
-}
-.hero-carousel-indicators {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    max-width: min(38vw, 280px);
-    overflow: hidden;
-}
-.hero-carousel-dot {
-    flex: 0 0 7px;
-    width: 7px;
-    height: 7px;
-    padding: 0;
-    border: 0;
-    border-radius: 99px;
-    background: rgba(255,255,255,.42);
-    cursor: pointer;
-    transition: width .25s ease, background .25s ease;
-}
-.hero-carousel-dot.active {
-    width: 22px;
-    background: var(--accent, #ff4d6d);
-}
-.hero-carousel #heroGameAction {
-    cursor: pointer;
-}
-@media (max-width: 700px) {
-    .hero-carousel {
-        padding-bottom: 105px;
-    }
-    .hero-carousel-controls {
-        left: 50%;
-        right: auto;
-        bottom: 26px;
-        transform: translateX(-50%);
-        gap: 12px;
-    }
-    .hero-carousel-arrow {
-        width: 42px;
-        height: 42px;
-        font-size: 31px;
-    }
-    .hero-carousel-indicators {
-        max-width: 48vw;
-    }
-    .hero-carousel .hero-content {
-        padding-bottom: 10px;
-    }
-}
-@media (prefers-reduced-motion: reduce) {
-    .hero-carousel *,
-    .hero-carousel *::before,
-    .hero-carousel *::after {
-        transition-duration: .01ms !important;
-    }
+@media(prefers-reduced-motion:reduce) {
+ .hero-carousel .hero-slide-image, .hero-carousel .hero-content, .hero-carousel .hero-copy-enter { transition:none!important; animation:none!important; }
 }
