@@ -66,10 +66,6 @@ function showGame(index, resetTimer = false, direction = 1) {
     // sin zoom ni paneo interno de la portada.
     incoming.src = getGameImage(game);
     incoming.alt = `Portada de ${game.title || "juego destacado"}`;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> f038f548a7072b46bea54b7b04052495f7e9317a
     const slideClasses = [
         "is-active",
         "slide-in-from-right",
@@ -78,13 +74,6 @@ function showGame(index, resetTimer = false, direction = 1) {
         "slide-out-to-right"
     ];
     images.forEach(image => image.classList.remove(...slideClasses));
-<<<<<<< HEAD
-=======
-=======
-    incoming.classList.remove("is-active", "slide-in-from-right", "slide-in-from-left");
-    outgoing.classList.remove("slide-out-to-left", "slide-out-to-right");
->>>>>>> 924bdc37ae6efba2c1286739265b7fce32e28cd4
->>>>>>> f038f548a7072b46bea54b7b04052495f7e9317a
     incoming.classList.add(slideDirection > 0 ? "slide-in-from-right" : "slide-in-from-left");
     void incoming.offsetWidth;
     incoming.classList.add("is-active");
