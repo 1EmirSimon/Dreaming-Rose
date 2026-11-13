@@ -9,10 +9,12 @@ import { initAuth } from "./auth.js?v=20261106-desktop-moderation-ports-1";
 import "./mobile-menu.js";
 import { waitForLaunch } from "./launch.js";
 import "./hero.js";
+import { initHeroCarousel } from "./hero-carousel.js";
 import "./admin.js?v=20261031-admin-phase1-1";
 import "./proyecto-oficial.js";
 
 initAuth();
+initHeroCarousel();
 
 const preloadLogo = new Image();
 preloadLogo.src = "assets/Icons/Channel_Profile_Dreaming_Rose.png";

@@ -1,0 +1,86 @@
+/*
+ * Carrusel principal Dreaming Rose.
+ * Se anula explícitamente el efecto Ken Burns heredado de pages.css:
+ * las portadas NO hacen zoom ni paneo interno; se desplaza cada imagen
+ * completa de un extremo al otro del hero.
+ */
+.hero-carousel { position: relative; isolation: isolate; overflow: hidden; }
+.hero-carousel .hero-parallax-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    transform: none !important;
+    animation: none !important;
+    will-change: auto !important;
+}
+.hero-carousel .hero-slide-image,
+.hero-carousel .hero-parallax-bg .hero-img {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover;
+    object-position: 62% center;
+    /* Sobrescribe transform:scale() y @keyframes heroKenBurns del CSS anterior. */
+    animation: none !important;
+    transition: none;
+    transform: translate3d(100%, 0, 0) !important;
+    opacity: 1 !important;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+.hero-carousel .hero-slide-image.is-active {
+    transform: translate3d(0, 0, 0) !important;
+}
+.hero-carousel .hero-slide-image.slide-in-from-right { transform: translate3d(100%, 0, 0) !important; }
+.hero-carousel .hero-slide-image.slide-in-from-left { transform: translate3d(-100%, 0, 0) !important; }
+.hero-carousel .hero-slide-image.slide-in-from-right.is-active,
+.hero-carousel .hero-slide-image.slide-in-from-left.is-active {
+    transition: transform .78s cubic-bezier(.72, 0, .22, 1) !important;
+    transform: translate3d(0, 0, 0) !important;
+}
+.hero-carousel .hero-slide-image.slide-out-to-left {
+    transition: transform .78s cubic-bezier(.72, 0, .22, 1) !important;
+    transform: translate3d(-100%, 0, 0) !important;
+}
+.hero-carousel .hero-slide-image.slide-out-to-right {
+    transition: transform .78s cubic-bezier(.72, 0, .22, 1) !important;
+    transform: translate3d(100%, 0, 0) !important;
+}
+.hero-carousel .hero-content { transition: opacity .25s ease; }
+.hero-carousel .hero-copy-exit { opacity: 0; }
+.hero-carousel .hero-copy-enter { animation: heroCarouselCopyIn .38s ease both; }
+@keyframes heroCarouselCopyIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.hero-carousel-controls {
+    position: absolute; z-index: 5; right: clamp(20px,5vw,76px);
+    bottom: clamp(24px,5vh,52px); display: flex; align-items: center; gap: 14px;
+}
+.hero-carousel-arrow {
+    width: 46px; height: 46px; display: grid; place-items: center;
+    border: 1px solid rgba(255,255,255,.42); border-radius: 50%;
+    background: rgba(8,8,12,.58); color: #fff; font: 300 34px/1 Inter,sans-serif;
+    cursor: pointer; backdrop-filter: blur(8px);
+}
+.hero-carousel-arrow:hover { background: var(--accent,#ff4d6d); border-color: var(--accent,#ff4d6d); }
+.hero-carousel-indicators { display:flex; align-items:center; justify-content:center; gap:7px; max-width:min(38vw,280px); overflow:hidden; }
+.hero-carousel-dot { flex:0 0 7px; width:7px; height:7px; padding:0; border:0; border-radius:99px; background:rgba(255,255,255,.42); cursor:pointer; }
+.hero-carousel-dot.active { width:22px; background:var(--accent,#ff4d6d); }
+.hero-carousel #heroGameAction { cursor:pointer; }
+@media(max-width:700px) {
+ .hero-carousel { padding-bottom:105px; }
+ .hero-carousel-controls { left:50%; right:auto; bottom:26px; transform:translateX(-50%); gap:12px; }
+ .hero-carousel-arrow { width:42px; height:42px; font-size:31px; }
+ .hero-carousel-indicators { max-width:48vw; }
+ .hero-carousel .hero-content { padding-bottom:10px; }
+ .hero-carousel .hero-slide-image { object-position:66% center; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .hero-carousel .hero-slide-image, .hero-carousel .hero-content, .hero-carousel .hero-copy-enter {
+   transition:none!important; animation:none!important;
+ }
+}
