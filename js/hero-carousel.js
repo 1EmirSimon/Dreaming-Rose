@@ -8,6 +8,7 @@ let touchStartX = 0;
 let touchEndX = 0;
 let activeImageLayer = 0;
 let slideDirection = 1;
+let isAnimating = false;
 
 const AUTOPLAY_DELAY = 5000;
 const FALLBACK_IMAGE = "assets/images/Meteor Fighters.png";
@@ -39,10 +40,10 @@ function renderIndicators() {
 }
 
 function showGame(index, resetTimer = false, direction = 1) {
-    if (!heroGames.length) return;
+    if (!heroGames.length || isAnimating) return;
 
     const nextIndex = (index + heroGames.length) % heroGames.length;
-    if (nextIndex === currentIndex && heroGames.length > 1) return;
+    if (nextIndex === currentIndex) return;
 
     const hero = document.getElementById("heroCarousel");
     const images = [
@@ -60,85 +61,86 @@ function showGame(index, resetTimer = false, direction = 1) {
     const incoming = images[incomingIndex];
     const outgoing = images[activeImageLayer];
     const sign = direction >= 0 ? 1 : -1;
-    const enterClass = sign > 0 ? "is-entering-right" : "is-entering-left";
-    const exitClass = sign > 0 ? "is-exiting-left" : "is-exiting-right";
-    const motionClasses = ["is-entering-right", "is-entering-left", "is-exiting-left", "is-exiting-right"];
+    const motionMs = 780;
 
-    // Prepara la portada entrante fuera del viewport y espera a que esté lista.
-    incoming.classList.remove("is-active", ...motionClasses);
-    outgoing.classList.remove(...motionClasses);
+    isAnimating = true;
+    incoming.getAnimations().forEach(animation => animation.cancel());
+    outgoing.getAnimations().forEach(animation => animation.cancel());
+
+    // Mantener las capas en el mismo plano: solo se anima translateX,
+    // nunca scale, background-position ni zoom de la portada.
     incoming.style.transition = "none";
-    incoming.style.transform = `translate3d(${sign * 100}%, 0, 0)`;
-    incoming.style.zIndex = "3";
     outgoing.style.transition = "none";
-    outgoing.style.transform = "translate3d(0, 0, 0)";
+    incoming.style.animation = "none";
+    outgoing.style.animation = "none";
+    incoming.style.transform = `translate3d(${sign * 100}%,0,0)`;
+    outgoing.style.transform = "translate3d(0,0,0)";
+    incoming.style.opacity = "1";
+    outgoing.style.opacity = "1";
+    incoming.style.zIndex = "3";
     outgoing.style.zIndex = "2";
     incoming.src = getGameImage(game);
     incoming.alt = `Portada de ${game.title || "juego destacado"}`;
 
-    const beginSlide = () => {
-        // Fuerza el estado inicial antes de activar la transición.
-        void incoming.offsetWidth;
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                const duration = 920;
-                const easing = "cubic-bezier(0.22, 0.61, 0.36, 1)";
-                incoming.style.transition = `transform ${duration}ms ${easing}`;
-                outgoing.style.transition = `transform ${duration}ms ${easing}`;
-                incoming.style.transform = "translate3d(0, 0, 0)";
-                outgoing.style.transform = `translate3d(${-sign * 100}%, 0, 0)`;
-                incoming.classList.add("is-active", enterClass);
-                outgoing.classList.add(exitClass);
+    const startAnimation = () => {
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const duration = reduceMotion ? 0 : motionMs;
+        const easing = "cubic-bezier(0.76, 0, 0.24, 1)";
 
-                // El contenido acompaña el cambio sin competir con el movimiento de la portada.
-                hero.classList.add("is-changing");
-                [tagline, title, description].forEach(el => el.classList.add("hero-copy-exit"));
-                window.setTimeout(() => {
-                    currentIndex = nextIndex;
-                    title.textContent = game.title || "Juego destacado";
-                    description.textContent = game.description || "Descubrí este juego de la comunidad Dreaming Rose.";
-                    tagline.textContent = game.es_proyecto_oficial ? "PROYECTO DREAMING ROSE" : "JUEGO DE LA COMUNIDAD";
-                    action.textContent = "VER JUEGO";
-                    action.onclick = () => {
-                        if (typeof window.openGameDetails === "function") window.openGameDetails(game.id);
-                        else window.location.href = "juegos.html";
-                    };
-                    [tagline, title, description].forEach(el => {
-                        el.classList.remove("hero-copy-exit");
-                        el.classList.add("hero-copy-enter");
-                    });
-                    renderIndicators();
-                    window.setTimeout(() => {
-                        [tagline, title, description].forEach(el => el.classList.remove("hero-copy-enter"));
-                        hero.classList.remove("is-changing");
-                    }, 420);
-                }, 300);
+        // La portada entrante y la saliente viajan exactamente la misma distancia
+        // y duración, dando sensación de una única cinta horizontal.
+        const incomingAnimation = incoming.animate([
+            { transform: `translate3d(${sign * 100}%,0,0)` },
+            { transform: "translate3d(0,0,0)" }
+        ], { duration, easing, fill: "forwards" });
 
-                const finish = event => {
-                    if (event && event.target !== incoming) return;
-                    incoming.removeEventListener("transitionend", finish);
-                    outgoing.style.transition = "none";
-                    outgoing.style.transform = `translate3d(${sign * 100}%, 0, 0)`;
-                    outgoing.classList.remove("is-active", ...motionClasses);
-                    outgoing.style.zIndex = "1";
-                    incoming.style.transition = "none";
-                    incoming.style.transform = "translate3d(0, 0, 0)";
-                    incoming.style.zIndex = "2";
-                    incoming.classList.remove(...motionClasses);
-                    activeImageLayer = incomingIndex;
-                };
-                incoming.addEventListener("transitionend", finish, { once: true });
-                // Fallback para navegadores que no emiten transitionend al cambiar de pestaña.
-                window.setTimeout(() => finish(), 1100);
+        const outgoingAnimation = outgoing.animate([
+            { transform: "translate3d(0,0,0)" },
+            { transform: `translate3d(${-sign * 100}%,0,0)` }
+        ], { duration, easing, fill: "forwards" });
+
+        hero.classList.add("is-changing");
+        [tagline, title, description].forEach(el => el.classList.add("hero-copy-exit"));
+
+        // Actualizar el texto en el punto medio del desplazamiento.
+        window.setTimeout(() => {
+            currentIndex = nextIndex;
+            title.textContent = game.title || "Juego destacado";
+            description.textContent = game.description || "Descubrí este juego de la comunidad Dreaming Rose.";
+            tagline.textContent = game.es_proyecto_oficial ? "PROYECTO DREAMING ROSE" : "JUEGO DE LA COMUNIDAD";
+            action.textContent = "VER JUEGO";
+            action.onclick = () => {
+                if (typeof window.openGameDetails === "function") window.openGameDetails(game.id);
+                else window.location.href = "juegos.html";
+            };
+            [tagline, title, description].forEach(el => {
+                el.classList.remove("hero-copy-exit");
+                el.classList.add("hero-copy-enter");
             });
+            renderIndicators();
+        }, duration * 0.42);
+
+        Promise.all([incomingAnimation.finished, outgoingAnimation.finished]).then(() => {
+            incoming.style.transform = "translate3d(0,0,0)";
+            outgoing.style.transform = `translate3d(${sign * 100}%,0,0)`;
+            incoming.style.zIndex = "2";
+            outgoing.style.zIndex = "1";
+            incomingAnimation.cancel();
+            outgoingAnimation.cancel();
+            activeImageLayer = incomingIndex;
+            isAnimating = false;
+            [tagline, title, description].forEach(el => el.classList.remove("hero-copy-enter"));
+            hero.classList.remove("is-changing");
+        }).catch(() => {
+            isAnimating = false;
         });
     };
 
     if (incoming.complete && incoming.naturalWidth > 0) {
-        beginSlide();
+        requestAnimationFrame(startAnimation);
     } else {
-        incoming.onload = beginSlide;
-        incoming.onerror = beginSlide;
+        incoming.onload = () => requestAnimationFrame(startAnimation);
+        incoming.onerror = () => requestAnimationFrame(startAnimation);
     }
 
     if (resetTimer) restartAutoplay();

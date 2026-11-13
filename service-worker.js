@@ -3,7 +3,7 @@ const CACHE_PREFIX = "dreaming-rose-";
 const CACHE_NAME = `${CACHE_PREFIX}phase3-20261113-netflix-slide-v2`;
 
 const APP_ASSETS = [
-  "./",
+  -waapi-v3"./",
   "./index.html",
   "./juegos.html",
   "./creador.html",

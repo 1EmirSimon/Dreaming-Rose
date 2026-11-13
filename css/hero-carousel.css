@@ -1,142 +1,60 @@
-/*
- * Dreaming Rose — Hero carousel premium slide.
- * The complete cover moves horizontally as a single layer.
- * No Ken Burns, scale, parallax or internal image movement.
- */
-.hero-carousel {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-}
+/* Dreaming Rose — transicion horizontal del hero, sin zoom. */
+.hero-carousel { position:relative; isolation:isolate; overflow:hidden; }
 .hero-carousel .hero-parallax-bg {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    transform: none !important;
-    animation: none !important;
-    will-change: auto !important;
+    position:absolute; inset:0; overflow:hidden;
+    transform:none !important; animation:none !important;
 }
 .hero-carousel .hero-slide-image,
 .hero-carousel .hero-parallax-bg .hero-img {
-    position: absolute !important;
-    inset: 0 !important;
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    object-fit: cover;
-    object-position: 62% center;
-    transform: translate3d(100%, 0, 0);
-    opacity: 1 !important;
-    animation: none !important;
-    transition: none;
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    position:absolute !important; inset:0 !important;
+    display:block; width:100% !important; height:100% !important;
+    max-width:none !important; object-fit:cover; object-position:62% center;
+    opacity:1 !important; animation:none !important;
+    transition:none !important; will-change:transform;
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
 }
-.hero-carousel .hero-slide-image.is-active {
-    transform: translate3d(0, 0, 0);
-    z-index: 2;
-}
-.hero-carousel .hero-slide-image.is-entering-right,
-.hero-carousel .hero-slide-image.is-entering-left,
-.hero-carousel .hero-slide-image.is-exiting-left,
-.hero-carousel .hero-slide-image.is-exiting-right {
-    animation: none !important;
-}
-.hero-carousel .hero-overlay {
-    z-index: 1;
-    pointer-events: none;
-}
+.hero-carousel .hero-slide-image.is-active { transform:translate3d(0,0,0); z-index:2; }
+.hero-carousel .hero-overlay { z-index:1; pointer-events:none; }
 .hero-carousel .hero-content {
-    position: relative;
-    z-index: 4;
-    transition: opacity .32s ease, transform .42s cubic-bezier(.22,.61,.36,1);
+    position:relative; z-index:4;
+    transition:opacity .22s ease, transform .28s ease;
 }
-.hero-carousel .hero-copy-exit {
-    opacity: 0;
-    transform: translate3d(0, 10px, 0);
-}
-.hero-carousel .hero-copy-enter {
-    animation: heroCarouselCopyIn .52s cubic-bezier(.22,.61,.36,1) both;
-}
-@keyframes heroCarouselCopyIn {
-    from { opacity: 0; transform: translate3d(0, 13px, 0); }
-    to { opacity: 1; transform: translate3d(0, 0, 0); }
+.hero-carousel .hero-copy-exit { opacity:0; transform:translate3d(0,8px,0); }
+.hero-carousel .hero-copy-enter { animation:heroCopyIn .38s ease both; }
+@keyframes heroCopyIn {
+    from { opacity:0; transform:translate3d(0,9px,0); }
+    to { opacity:1; transform:translate3d(0,0,0); }
 }
 .hero-carousel-controls {
-    position: absolute;
-    z-index: 6;
-    right: clamp(20px,5vw,76px);
-    bottom: clamp(24px,5vh,52px);
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    position:absolute; z-index:6; right:clamp(20px,5vw,76px);
+    bottom:clamp(24px,5vh,52px); display:flex; align-items:center; gap:14px;
 }
 .hero-carousel-arrow {
-    width: 46px;
-    height: 46px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(255,255,255,.42);
-    border-radius: 50%;
-    background: rgba(8,8,12,.58);
-    color: #fff;
-    font: 300 34px/1 Inter,sans-serif;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    width:46px; height:46px; display:grid; place-items:center;
+    border:1px solid rgba(255,255,255,.42); border-radius:50%;
+    background:rgba(8,8,12,.58); color:#fff;
+    font:300 34px/1 Inter,sans-serif; cursor:pointer;
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    transition:background .2s ease,border-color .2s ease,transform .2s ease;
 }
-.hero-carousel-arrow:hover {
-    background: var(--accent,#ff4d6d);
-    border-color: var(--accent,#ff4d6d);
-    transform: scale(1.06);
-}
-.hero-carousel-arrow:active { transform: scale(.96); }
-.hero-carousel-indicators {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    max-width:min(38vw,280px);
-    overflow:hidden;
-}
+.hero-carousel-arrow:hover { background:var(--accent,#ff4d6d); border-color:var(--accent,#ff4d6d); }
+.hero-carousel-arrow:active { transform:scale(.96); }
+.hero-carousel-indicators { display:flex; align-items:center; justify-content:center; gap:7px; max-width:min(38vw,280px); overflow:hidden; }
 .hero-carousel-dot {
-    flex:0 0 7px;
-    width:7px;
-    height:7px;
-    padding:0;
-    border:0;
-    border-radius:99px;
-    background:rgba(255,255,255,.42);
-    cursor:pointer;
-    transition: width .28s ease, background .28s ease;
+    flex:0 0 7px; width:7px; height:7px; padding:0; border:0; border-radius:99px;
+    background:rgba(255,255,255,.42); cursor:pointer;
+    transition:width .25s ease,background .25s ease;
 }
-.hero-carousel-dot.active {
-    width:22px;
-    background:var(--accent,#ff4d6d);
-}
+.hero-carousel-dot.active { width:22px; background:var(--accent,#ff4d6d); }
 .hero-carousel #heroGameAction { cursor:pointer; }
 @media(max-width:700px) {
     .hero-carousel { padding-bottom:105px; }
-    .hero-carousel-controls {
-        left:50%;
-        right:auto;
-        bottom:26px;
-        transform:translateX(-50%);
-        gap:12px;
-    }
+    .hero-carousel-controls { left:50%; right:auto; bottom:26px; transform:translateX(-50%); gap:12px; }
     .hero-carousel-arrow { width:42px; height:42px; font-size:31px; }
     .hero-carousel-indicators { max-width:48vw; }
     .hero-carousel .hero-content { padding-bottom:10px; }
     .hero-carousel .hero-slide-image { object-position:66% center; }
 }
 @media(prefers-reduced-motion:reduce) {
-    .hero-carousel .hero-slide-image,
-    .hero-carousel .hero-content,
-    .hero-carousel .hero-copy-enter {
-        transition:none !important;
-        animation:none !important;
-    }
+    .hero-carousel .hero-content,.hero-carousel .hero-copy-enter { transition:none !important; animation:none !important; }
 }
